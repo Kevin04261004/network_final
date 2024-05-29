@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3762d61a4f5cf9b4989938db39d8343e
+timeCreated: 1488652879
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 84804
+  packageName: Urban Dumpsters pack
+  packageVersion: 1.0
+  assetPath: Assets/Dumpsters/Prefabs/Dumpster_A1_Blue.prefab
+  uploadId: 166147

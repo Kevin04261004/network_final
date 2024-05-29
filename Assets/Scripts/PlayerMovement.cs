@@ -10,23 +10,22 @@ public class PlayerMovement : MonoBehaviour
     /* property */
     [field: SerializeField] public float RunSpeed { get; private set; } = 6f;
     [field: SerializeField] public float WalkSpeed { get; private set; } = 3f;
-    [field: SerializeField] public float JumpPower { get; private set; } = 6f;
     [field: SerializeField] public float Gravity { get; private set; } = -9.81f;
     [field: SerializeField] public bool OnGrounded { get; private set; } = true;
     [field: SerializeField] public float GroundedRadius { get; private set; } = 0.26f;
     [field: SerializeField] public LayerMask GroundLayers { get; private set; }
     [field: SerializeField] public float RotationSmoothTime { get; private set; } = 0.05f;
-    [Tooltip("점프 다시 가능한 시간")] public float JumpTimeout = 0.50f;
 
     [Tooltip("코요테 타임")] public float FallTimeout = 0.15f;
     /* Movement */
     private float _curSpeed = 0f;
     private float _verticalVelocity = 0f;
+    [SerializeField] private bool bIsAnalogMovement = false;
+    [SerializeField] private float SpeedChangeRate = 10;
     
-    /* Jump && Velocity */
+    /* Velocity */
     private float _fallTimeoutDelta = 0f;
-    private float _jumpTimeoutDelta = 0f;
-    
+
     /* Camera */
     private const float _threshold = 0.01f;
     private float _cinemachineTargetYaw;
@@ -52,7 +51,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Animator _animator;
     private static readonly int OnGround = Animator.StringToHash("OnGround");
     private static readonly int Speed = Animator.StringToHash("speed");
-    private static readonly int Jump = Animator.StringToHash("jump");
     private static readonly int Fall = Animator.StringToHash("fall");
 
     private bool IsCurrentDeviceMouse
@@ -74,14 +72,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        _jumpTimeoutDelta = JumpTimeout;
         _fallTimeoutDelta = FallTimeout;
     }
 
     private void Update()
     {
         Move();
-        ProcessJump();
         ProcessGravity();
         ProcessCharacterControllerMove();
     }
@@ -137,11 +133,33 @@ public class PlayerMovement : MonoBehaviour
 
     private void Move()
     {
-        _curSpeed = _inputHandler.sprint ? RunSpeed : WalkSpeed;
+        float targetSpeed = _inputHandler.sprint ? RunSpeed : WalkSpeed;
 
         if (_inputHandler.moveVec == Vector2.zero)
         {
-            _curSpeed = 0f;
+            targetSpeed = 0f;
+        }
+        
+        float currentHorizontalSpeed = new Vector3(_characterController.velocity.x, 0.0f, _characterController.velocity.z).magnitude;
+
+        float speedOffset = 0.1f;
+        float inputMagnitude = bIsAnalogMovement ? _inputHandler.moveVec.magnitude : 1f;
+
+        // accelerate or decelerate to target speed
+        if (currentHorizontalSpeed < targetSpeed - speedOffset ||
+            currentHorizontalSpeed > targetSpeed + speedOffset)
+        {
+            // creates curved result rather than a linear one giving a more organic speed change
+            // note T in Lerp is clamped, so we don't need to clamp our speed
+            _curSpeed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
+                Time.deltaTime * SpeedChangeRate);
+
+            // round speed to 3 decimal places
+            _curSpeed = Mathf.Round(_curSpeed * 1000f) / 1000f;
+        }
+        else
+        {
+            _curSpeed = targetSpeed;
         }
         
         Vector3 inputDirection = new Vector3(_inputHandler.moveVec.x, 0.0f, _inputHandler.moveVec.y).normalized;
@@ -157,18 +175,7 @@ public class PlayerMovement : MonoBehaviour
         }
         
 
-        if (Math.Abs(_curSpeed - RunSpeed) < float.Epsilon)
-        {
-            _animator.SetFloat(Speed, RunSpeed);
-        }
-        else if (Math.Abs(_curSpeed - WalkSpeed) < float.Epsilon)
-        {
-            _animator.SetFloat(Speed, WalkSpeed);
-        }
-        else
-        {
-            _animator.SetFloat(Speed, _curSpeed / RunSpeed);
-        }
+        _animator.SetFloat(Speed, _curSpeed / RunSpeed);
     }
 
     private void ProcessCharacterControllerMove()
@@ -183,23 +190,16 @@ public class PlayerMovement : MonoBehaviour
         if (OnGrounded)
         {
             _fallTimeoutDelta = FallTimeout;
-            
-            _animator.SetBool(Jump, false);
+
             _animator.SetBool(Fall, false);
             
             if (_verticalVelocity < 0.0f)
             {
                 _verticalVelocity = -2f;
             }
-
-            if (_jumpTimeoutDelta >= 0.0f)
-            {
-                _jumpTimeoutDelta -= Time.deltaTime;
-            }
         }
         else
         {
-            _jumpTimeoutDelta = JumpTimeout;
 
             if (_fallTimeoutDelta >= 0.0f)
             {
@@ -210,23 +210,10 @@ public class PlayerMovement : MonoBehaviour
                 _animator.SetBool(Fall, true);
             }
 
-            // if we are not grounded, do not jump
-            _inputHandler.jump = false;
         }
         if (_verticalVelocity < _terminalVelocity)
         {
             _verticalVelocity += Gravity * Time.deltaTime;
-        }
-    }
-
-    private void ProcessJump()
-    {
-        if (OnGrounded && _inputHandler.jump && _jumpTimeoutDelta <= 0.0f)
-        {
-            // the square root of H * -2 * G = how much velocity needed to reach desired height
-            _verticalVelocity = Mathf.Sqrt(JumpPower * -2f * Gravity);
-
-            _animator.SetBool(Jump, true);
         }
     }
 }

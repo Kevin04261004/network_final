@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 64c361e79d93bca4ea14d3e190ea8ba7
+timeCreated: 1488653240
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 84804
+  packageName: Urban Dumpsters pack
+  packageVersion: 1.0
+  assetPath: Assets/Dumpsters/Prefabs/Dumpster_A1_Yellow.prefab
+  uploadId: 166147
