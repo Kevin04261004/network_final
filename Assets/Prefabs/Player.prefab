@@ -260,7 +260,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveVec: {x: 0, y: 0}
   lookVec: {x: 0, y: 0}
-  jump: 0
   sprint: 0
   cursorLocked: 1
   cursorInputForLook: 1
@@ -276,26 +275,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfa3bf374b08d944c80755eb46ca4375, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <RunSpeed>k__BackingField: 6
-  <WalkSpeed>k__BackingField: 3
-  <JumpPower>k__BackingField: 2
-  <Gravity>k__BackingField: -9.81
   <OnGrounded>k__BackingField: 1
   <GroundedRadius>k__BackingField: 0.26
   <GroundLayers>k__BackingField:
     serializedVersion: 2
     m_Bits: 64
   <RotationSmoothTime>k__BackingField: 0.15
-  JumpTimeout: 0.5
   FallTimeout: 0.15
   bIsAnalogMovement: 1
   SpeedChangeRate: 10
   _cameraAngleOverride: 20
-  _terminalVelocity: 63
   _bottomClamp: -30
   _topClamp: 70
   _cameraTargetTransform: {fileID: 6222143439075306353}
   _groundCheckTransform: {fileID: 971380599082974693}
+  _playerStat: {fileID: 11400000, guid: 7fb7b3a19dfe7754db36515260a3c048, type: 2}
   _animator: {fileID: 4541951450297617085}
 --- !u!1 &8736761097905908551
 GameObject:
@@ -538,6 +532,10 @@ PrefabInstance:
     - target: {fileID: 4116401870129570769, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4540229000190281644, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7093791603881671045, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
       propertyPath: m_IsActive

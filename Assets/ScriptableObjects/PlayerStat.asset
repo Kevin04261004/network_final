@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d135fe9bad7be44f9db24ca8b5f1b69, type: 3}
+  m_Name: PlayerStat
+  m_EditorClassIdentifier: 
+  information: "\uD50C\uB808\uC774\uC5B4\uC758 \uC2DC\uC791 \uC2A4\uD0EF\n"
+  <WalkSpeed>k__BackingField: 3
+  <RunSpeed>k__BackingField: 6
+  <Gravity>k__BackingField: -9.81
+  <TerminalVelocity>k__BackingField: 63
