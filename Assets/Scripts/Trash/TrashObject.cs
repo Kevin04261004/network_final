@@ -1,16 +1,7 @@
 using UnityEngine;
 
-public class TrashObject : MonoBehaviour
+public class TrashObject : NetworkObject
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [field: SerializeField] public TrashData Data { get; private set; }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

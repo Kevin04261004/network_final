@@ -3,12 +3,7 @@ using UnityEngine;
 
 public class NetworkObject : MonoBehaviour
 {
-    private static uint s_id = 0;
-    [field: SerializeField] public uint id { get; private set; }
+    // 서버가 id를 지정할 수 있게 만들기.
+    private uint id;
 
-    public NetworkObject()
-    {
-        id = s_id;
-        s_id++;
-    }
 }

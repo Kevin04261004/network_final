@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2499027294676021897}
   - component: {fileID: 176391770683915052}
   - component: {fileID: 5815371803305428605}
+  - component: {fileID: 4099872961559371302}
   m_Layer: 7
   m_Name: Cola Can
   m_TagString: Trash
@@ -28,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 5855913472972708555}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.507482, y: 3.1065502, z: -12.118823}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -108,3 +109,16 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.09494366, y: 0.15346396, z: 0.09029679}
   m_Center: {x: 0.000000007450581, y: 0.07673198, z: -0.000000007450581}
+--- !u!114 &4099872961559371302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5855913472972708555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0b0d4e4feb6d3941870f746f0445d3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Data>k__BackingField: {fileID: 11400000, guid: 61ae3187f7c213e41b29a715470abd62, type: 2}
