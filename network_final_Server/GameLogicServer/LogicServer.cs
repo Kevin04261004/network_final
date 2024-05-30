@@ -24,11 +24,12 @@ namespace GameLogicServer
 
             byte[] recvBuffer = new byte[MAX_BUF_SIZE];
             byte[] partialBuffer = new byte[MAX_BUF_SIZE];
+            int partialSize = 0;
+
             Queue<char> beforeID = new Queue<char>(5);
             char packetID = (char)0;
             Int16 packetSize = 0;
             PacketDataInfo.EPacketType packetType = PacketDataInfo.EPacketType.None;
-            int partialSize = 0;
             while (true)
             {
                 int recvByteSize = serverSock.ReceiveFrom(recvBuffer, ref clientEndPoint);

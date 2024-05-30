@@ -17,7 +17,6 @@ namespace GameLogicServer
             {
                 packetHandlerEvents.Add(packetType, null); // 기본값은 null로 초기화
             }
-            SetAllHandlers();
         }
         public static void SetHandler(PacketDataInfo.EPacketType packetType, PacketHandlerEvent handler)
         {
@@ -28,12 +27,6 @@ namespace GameLogicServer
         {
             Logger.Log($"{clientEndPoint.Address}", $"packetType: {type}", ConsoleColor.Cyan);
             packetHandlerEvents[type](clientEndPoint, packetBuffer);
-        }
-
-        private static void SetAllHandlers()
-        {
-            SetHandler(PacketDataInfo.EPacketType.Client_TryConnectToServer, LogicServer.ClientConnected);
-            SetHandler(PacketDataInfo.EPacketType.Client_ExitGame, LogicServer.ClientDisConnected);
         }
     }
 }
