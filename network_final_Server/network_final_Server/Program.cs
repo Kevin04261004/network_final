@@ -10,7 +10,7 @@ namespace network_final_Server
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            
         }
     }
 }
