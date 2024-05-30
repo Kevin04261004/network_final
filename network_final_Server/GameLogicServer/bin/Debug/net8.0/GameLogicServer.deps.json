@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "GameLogicServer/1.0.0": {
+        "dependencies": {
+          "DYUtil": "1.0.0"
+        },
+        "runtime": {
+          "GameLogicServer.dll": {}
+        }
+      },
+      "DYUtil/1.0.0": {
+        "runtime": {
+          "DYUtil.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "GameLogicServer/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "DYUtil/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

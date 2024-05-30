@@ -1,7 +1,0 @@
-D:\GitHub\network_final\network_final_Server\network_final_Server\bin\Debug\network_final_Server.exe.config
-D:\GitHub\network_final\network_final_Server\network_final_Server\bin\Debug\network_final_Server.exe
-D:\GitHub\network_final\network_final_Server\network_final_Server\bin\Debug\network_final_Server.pdb
-D:\GitHub\network_final\network_final_Server\network_final_Server\obj\Debug\network_final_Server.csproj.AssemblyReference.cache
-D:\GitHub\network_final\network_final_Server\network_final_Server\obj\Debug\network_final_Server.csproj.CoreCompileInputs.cache
-D:\GitHub\network_final\network_final_Server\network_final_Server\obj\Debug\network_final_Server.exe
-D:\GitHub\network_final\network_final_Server\network_final_Server\obj\Debug\network_final_Server.pdb
