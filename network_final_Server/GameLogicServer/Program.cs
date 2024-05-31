@@ -13,7 +13,7 @@ namespace GameLogicServer
             serverThread.Start();
 
             IPFinder.TryGetMyIPv4(out string myIp);
-            Logger.Log($"{myIp}:{LogicServer.PORT_NUM}", "Game Server Started...", ConsoleColor.Green);
+            Logger.Log($"{myIp}:{LogicServer._portNum}", "Game Server Started...", ConsoleColor.Green);
             Logger.Log("Info", "Enter To Exit Server", ConsoleColor.Blue);
             Console.ReadLine();
             Console.ResetColor();
