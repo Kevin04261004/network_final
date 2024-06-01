@@ -5,29 +5,28 @@ using DYUtil;
 
 namespace GameLogicServer
 {
-    public static class LogicServer
+    public class LogicServer : BaseServer
     {
-        public static readonly int PORT_NUM = 10000;
-        private static readonly int MAX_BUF_SIZE = 1024;
-        private static readonly int CHECK_BEFORE_ID_SIZE = 10;
-        private static Socket? serverSock = null;
-        public static HashSet<IPEndPoint> connectedClients = new HashSet<IPEndPoint>();
+        public GameLogicPacketHandler packetHandler;
 
-        public static void ServerFunction()
+        public LogicServer(int portNum) : base(portNum)
+        {
+            packetHandler = new GameLogicPacketHandler();
+        }
+
+        public override void ServerFunction()
         {
             InitServer();
             Debug.Assert(serverSock != null);
             SetAllHandlers();
 
-            EndPoint clientEndPoint = new IPEndPoint(IPAddress.Any, PORT_NUM);
+            EndPoint clientEndPoint = new IPEndPoint(IPAddress.Any, portNumber);
             Debug.Assert(clientEndPoint != null);
 
             byte[] recvBuffer = new byte[MAX_BUF_SIZE];
             byte[] partialBuffer = new byte[MAX_BUF_SIZE];
             int partialSize = 0;
 
-            Queue<char> beforeID = new Queue<char>(5);
-            char packetID = (char)0;
             Int16 packetSize = 0;
             PacketDataInfo.EPacketType packetType = PacketDataInfo.EPacketType.None;
             while (true)
@@ -44,7 +43,7 @@ namespace GameLogicServer
                     int offset = 0;
                     packetSize = BitConverter.ToInt16(recvBuffer, offset);
                     offset += PacketDataInfo.PacketSizeSize;
-                    packetID = BitConverter.ToChar(recvBuffer, offset);
+                    char packetID = BitConverter.ToChar(recvBuffer, offset);
                     offset += PacketDataInfo.PacketIDSize;
                     packetType = (PacketDataInfo.EPacketType)BitConverter.ToInt16(recvBuffer, offset);
                     offset += PacketDataInfo.PacketTypeSize;
@@ -59,22 +58,15 @@ namespace GameLogicServer
                 if (partialSize >= packetSize)
                 {
                     partialSize = 0;
-                    if(!beforeID.Contains(packetID))
-                    {
-                        Debug.Assert(packetType != PacketDataInfo.EPacketType.None);
-                        byte[] data = new byte[packetSize - PacketDataInfo.HeaderSize];
-                        Array.Copy(partialBuffer, 0, data, 0, data.Length);
-                        PacketHandler.ProcessPacket(clientIPEndPoint, packetType, data);
-                    }
-                    if(beforeID.Count > CHECK_BEFORE_ID_SIZE)
-                    {
-                        beforeID.Dequeue();
-                    }
-                    beforeID.Enqueue(packetID);
+
+                    Debug.Assert(packetType != PacketDataInfo.EPacketType.None);
+                    byte[] data = new byte[packetSize - PacketDataInfo.HeaderSize];
+                    Array.Copy(partialBuffer, 0, data, 0, data.Length);
+                    packetHandler.ProcessPacket(clientIPEndPoint, packetType, data);
                 }
             }
         }
-        private static void InitServer()
+        private void InitServer()
         {
             try
             {
@@ -88,22 +80,22 @@ namespace GameLogicServer
                 Logger.LogError("Binding Error", ex.Message, true);
             }
         }
-        private static void SetAllHandlers()
+        private void SetAllHandlers()
         {
-            PacketHandler.SetHandler(PacketDataInfo.EPacketType.Client_TryConnectToServer, LogicServer.ClientConnected);
-            PacketHandler.SetHandler(PacketDataInfo.EPacketType.Client_ExitGame, LogicServer.ClientDisConnected);
+            packetHandler.SetHandler(PacketDataInfo.EPacketType.Client_TryConnectToServer, ClientConnected);
+            packetHandler.SetHandler(PacketDataInfo.EPacketType.Client_ExitGame, ClientDisConnected);
         }
 
         #region Delegate PacketHandle Functions
-        public static void ClientConnected(IPEndPoint endPoint, byte[] data)
+        public void ClientConnected(IPEndPoint endPoint, byte[] data)
         {
             Logger.Log($"{endPoint.Address}", "Success Connect Server", ConsoleColor.Green);
 
             connectedClients.Add(endPoint);
         }
-        public static void ClientDisConnected(IPEndPoint endPoint, byte[] data)
+        public void ClientDisConnected(IPEndPoint endPoint, byte[] data)
         {
-            Logger.Log($"{endPoint.Address}", "DisConnected", ConsoleColor.Red);
+            Logger.Log($"{endPoint.Address}", "DisConnected", ConsoleColor.DarkMagenta);
 
             connectedClients.Remove(endPoint);
         }

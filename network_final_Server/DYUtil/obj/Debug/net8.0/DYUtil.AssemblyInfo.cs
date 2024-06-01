@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DYUtil")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+230acfc684cae9c76b4af2d82349802ab9986a8f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d1e6520098b6488a3a36446d283492c029928360")]
 [assembly: System.Reflection.AssemblyProductAttribute("DYUtil")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DYUtil")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
