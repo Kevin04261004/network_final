@@ -8,34 +8,19 @@ using System.Threading.Tasks;
 
 namespace GameLogicServer
 {
-    public class GameLogicPacketHandler : PacketHandler
+    public class GameLogicPacketHandler : PacketHandler<PacketDataInfo.EGameLogicPacketType>
     {
-        private Dictionary<PacketDataInfo.EPacketType, PacketHandlerEvent> packetHandlerEvents =
-            new Dictionary<PacketDataInfo.EPacketType, PacketHandlerEvent>();
-
         public GameLogicPacketHandler()
         {
             // Enum의 각 값에 대해 델리게이트 추가
-            foreach (PacketDataInfo.EPacketType packetType in Enum.GetValues(typeof(PacketDataInfo.EPacketType)))
+            foreach (PacketDataInfo.EGameLogicPacketType packetType in Enum.GetValues(typeof(PacketDataInfo.EGameLogicPacketType)))
             {
                 packetHandlerEvents.Add(packetType, null); // 기본값은 null로 초기화
             }
         }
-        public void SetHandler(PacketDataInfo.EPacketType packetType, PacketHandlerEvent handler)
+        public override void SetHandler(PacketDataInfo.EGameLogicPacketType packetType, PacketHandlerEvent handler)
         {
             packetHandlerEvents[packetType] = handler;
-        }
-        public void ProcessPacket(IPEndPoint clientEndPoint, PacketDataInfo.EPacketType type, byte[] packetBuffer)
-        {
-            Logger.Log($"{clientEndPoint.Address}", $"packetType: {type}", ConsoleColor.Cyan);
-            if (packetHandlerEvents[type] == null)
-            {
-                Logger.LogError("Process Packet", $"No Function for process {type} packet");
-            }
-            else
-            {
-                packetHandlerEvents[type](clientEndPoint, packetBuffer);
-            }
         }
     }
 }

@@ -5,13 +5,11 @@ using DYUtil;
 
 namespace GameLogicServer
 {
-    public class LogicServer : BaseServer
+    public class LogicServer : BaseServer<PacketDataInfo.EGameLogicPacketType>
     {
-        public GameLogicPacketHandler packetHandler;
-
-        public LogicServer(int portNum) : base(portNum)
+        protected Socket? serverSock = null;
+        public LogicServer(int portNum, PacketHandler<PacketDataInfo.EGameLogicPacketType> handler) : base(portNum, handler)
         {
-            packetHandler = new GameLogicPacketHandler();
         }
 
         public override void ServerFunction()
@@ -28,7 +26,7 @@ namespace GameLogicServer
             int partialSize = 0;
 
             Int16 packetSize = 0;
-            PacketDataInfo.EPacketType packetType = PacketDataInfo.EPacketType.None;
+            PacketDataInfo.EGameLogicPacketType packetType = PacketDataInfo.EGameLogicPacketType.None;
             while (true)
             {
                 int recvByteSize = serverSock.ReceiveFrom(recvBuffer, ref clientEndPoint);
@@ -45,7 +43,7 @@ namespace GameLogicServer
                     offset += PacketDataInfo.PacketSizeSize;
                     char packetID = BitConverter.ToChar(recvBuffer, offset);
                     offset += PacketDataInfo.PacketIDSize;
-                    packetType = (PacketDataInfo.EPacketType)BitConverter.ToInt16(recvBuffer, offset);
+                    packetType = (PacketDataInfo.EGameLogicPacketType)BitConverter.ToInt16(recvBuffer, offset);
                     offset += PacketDataInfo.PacketTypeSize;
                     Array.Copy(recvBuffer, offset, partialBuffer, partialSize, recvByteSize);
                     partialSize = recvByteSize;
@@ -59,19 +57,25 @@ namespace GameLogicServer
                 {
                     partialSize = 0;
 
-                    Debug.Assert(packetType != PacketDataInfo.EPacketType.None);
+                    Debug.Assert(packetType != PacketDataInfo.EGameLogicPacketType.None);
                     byte[] data = new byte[packetSize - PacketDataInfo.HeaderSize];
                     Array.Copy(partialBuffer, 0, data, 0, data.Length);
                     packetHandler.ProcessPacket(clientIPEndPoint, packetType, data);
                 }
             }
         }
+
+        protected override void SocketClose()
+        {
+            serverSock?.Close();
+        }
+
         private void InitServer()
         {
             try
             {
                 serverSock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 10000);
+                IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, portNumber);
 
                 serverSock.Bind(endPoint);
             }
@@ -82,8 +86,8 @@ namespace GameLogicServer
         }
         private void SetAllHandlers()
         {
-            packetHandler.SetHandler(PacketDataInfo.EPacketType.Client_TryConnectToServer, ClientConnected);
-            packetHandler.SetHandler(PacketDataInfo.EPacketType.Client_ExitGame, ClientDisConnected);
+            packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_TryConnectToServer, ClientConnected);
+            packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_ExitGame, ClientDisConnected);
         }
 
         #region Delegate PacketHandle Functions
@@ -99,6 +103,7 @@ namespace GameLogicServer
 
             connectedClients.Remove(endPoint);
         }
+
         #endregion
     }
 }

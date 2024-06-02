@@ -2,12 +2,19 @@
 {
     public static class PacketDataInfo
     {
-        public enum EPacketType
+        public enum EGameLogicPacketType
         {
             None = 0,
             Client_TryConnectToServer,
             Client_ExitGame,
         }
+
+        public enum EDataBasePacketType
+        {
+            None = 0,
+
+        }
+
         public static int PacketIDSize = sizeof(char);
         public static int PacketTypeSize = sizeof(Int16);
         public static int PacketSizeSize = sizeof(Int16);

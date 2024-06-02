@@ -24,13 +24,13 @@ namespace GameLogicServer
         }
         // 패킷 타입 (2byte) + 패킷 길이(2byte) + 패킷ID(1byte) + Data 길이(N byte);
         public Int16 PacketSize { get => (Int16)(PacketDataInfo.HeaderSize + ((Data == null) ? 0 : Data.Length)); }
-        public PacketData(PacketDataInfo.EPacketType packetType)
+        public PacketData(PacketDataInfo.EGameLogicPacketType packetType)
         {
             PacketType = (Int16)packetType;
             PacketID = PacketDataInfo.GetID();
             Data = null;
         }
-        public PacketData(PacketDataInfo.EPacketType packetType, byte[] data)
+        public PacketData(PacketDataInfo.EGameLogicPacketType packetType, byte[] data)
         {
             Debug.Assert(data != null);
             PacketID = PacketDataInfo.GetID();

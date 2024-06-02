@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class LogicClient : MonoBehaviour
 {
-    private string serverIP = "127.0.0.1";
+    private readonly string serverIP = "127.0.0.1";
     private static readonly int PORT_NUM = 10000; 
     private EndPoint serverEndPoint;
     private Socket clientSock;
