@@ -17,17 +17,17 @@ namespace GameLogicServer
 
             IPFinder.TryGetMyIPv4(out string myIp);
 
-            gameLogicServer.OpenServer();
+            gameLogicServer.StartServer();
             Logger.Log($"{myIp}:{GAME_LOGIC_PORT_NUM}", "Game Server Started...", ConsoleColor.Green);
-            dataBaseServer.OpenServer();
+            dataBaseServer.StartServer();
             Logger.Log($"{myIp}:{DATABASE_PORT_NUM}", "DB Server Started...", ConsoleColor.Green);
 
             Logger.Log("Info", "Enter To Exit Server", ConsoleColor.Blue);
             Console.ReadLine();
             
-            gameLogicServer.CloseServer();
+            gameLogicServer.StopServer();
             Logger.Log($"{myIp}:{GAME_LOGIC_PORT_NUM}", "Game Server Closed...", ConsoleColor.Red);
-            dataBaseServer.CloseServer();
+            dataBaseServer.StopServer();
             Logger.Log($"{myIp}:{DATABASE_PORT_NUM}", "DB Server Closed...", ConsoleColor.Red);
         
             Console.ResetColor();

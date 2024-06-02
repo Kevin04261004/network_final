@@ -4,7 +4,7 @@ using DYUtil;
 
 namespace GameLogicServer
 {
-    public abstract class BaseServer<PacketType>
+    public abstract class BaseServer<PacketType> : IServer where PacketType : Enum
     {
         protected int portNumber;
         protected static readonly int MAX_BUF_SIZE = 4096;
@@ -20,7 +20,7 @@ namespace GameLogicServer
 
         public abstract void ServerFunction();
         protected abstract void SocketClose();
-        public void OpenServer()
+        public void StartServer()
         {
             Thread thread = new Thread(ServerFunction)
             {
@@ -29,7 +29,7 @@ namespace GameLogicServer
             thread.Start();
         }
 
-        public void CloseServer()
+        public void StopServer()
         {
             SocketClose();
             thread?.Abort();
