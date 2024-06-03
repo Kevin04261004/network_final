@@ -8,10 +8,14 @@ public class LogicClient : MonoBehaviour
 {
     private readonly string serverIP = "127.0.0.1";
     private static readonly int PORT_NUM = 10000; 
-    private EndPoint serverEndPoint;
-    private Socket clientSock;
     private Thread receiveThread;
+    private NetworkManager networkManager;
     private void Awake()
+    {
+        networkManager = FindAnyObjectByType<NetworkManager>();
+    }
+
+    private void Start()
     {
         Init();
         ConnectToServer();
@@ -31,9 +35,9 @@ public class LogicClient : MonoBehaviour
     {
         try
         {
-            clientSock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            networkManager.GameLogicUDPClientSock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             IPAddress ipAddr = IPAddress.Parse(serverIP);
-            serverEndPoint = new IPEndPoint(ipAddr, PORT_NUM);
+            networkManager.GameLogicServerEndPoint = new IPEndPoint(ipAddr, PORT_NUM);
         }
         catch (Exception ex)
         {
@@ -41,23 +45,18 @@ public class LogicClient : MonoBehaviour
             throw;
         }
     }
-
-    public void SendToServer(byte[] packet)
-    {
-        clientSock.SendTo(packet, serverEndPoint);
-    }
     private void ConnectToServer()
     {
         PacketData data = new PacketData(PacketDataInfo.EPacketType.Client_TryConnectToServer);
         Debug.Log("[Client] Try Connect to UDP Server");
-        SendToServer(data.ToPacket());
+        networkManager.SendToServer(ESendServerType.GameLogic, data.ToPacket());
     }
 
     private void ExitGame()
     {
         PacketData data = new PacketData(PacketDataInfo.EPacketType.Client_ExitGame);
         Debug.Log("[Client] Exit UDP Server");
-        SendToServer(data.ToPacket());
+        networkManager.SendToServer(ESendServerType.GameLogic, data.ToPacket());
     }
     private void ReceiveFromServer()
     {
