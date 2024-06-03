@@ -38,6 +38,11 @@ namespace GameLogicServer
 
             connectedClients.Remove(endPoint);
         }
+        public void GetNetworkObjectID(IPEndPoint endPoint, byte[] data)
+        {
+            Logger.Log($"{endPoint.Address}", "Set Network Object ID", ConsoleColor.White);
+
+        }
         #endregion
     }
 }
