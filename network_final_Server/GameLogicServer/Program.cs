@@ -1,4 +1,5 @@
 ﻿using DYUtil;
+using GameLogicServer.Datas;
 
 namespace GameLogicServer
 {

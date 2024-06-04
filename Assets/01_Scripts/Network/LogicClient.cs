@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using GameLogicServer;
 using UnityEngine;
 
 public class LogicClient : MonoBehaviour
@@ -47,14 +48,14 @@ public class LogicClient : MonoBehaviour
     }
     private void ConnectToServer()
     {
-        PacketData data = new PacketData(PacketDataInfo.EPacketType.Client_TryConnectToServer);
+        PacketData data = new PacketData(PacketDataInfo.EGameLogicPacketType.Client_TryConnectToServer);
         Debug.Log("[Client] Try Connect to UDP Server");
         networkManager.SendToServer(ESendServerType.GameLogic, data.ToPacket());
     }
 
     private void ExitGame()
     {
-        PacketData data = new PacketData(PacketDataInfo.EPacketType.Client_ExitGame);
+        PacketData data = new PacketData(PacketDataInfo.EGameLogicPacketType.Client_ExitGame);
         Debug.Log("[Client] Exit UDP Server");
         networkManager.SendToServer(ESendServerType.GameLogic, data.ToPacket());
     }

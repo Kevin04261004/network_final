@@ -1,38 +1,45 @@
-﻿using System.Net.Sockets;
-using System.Net;
-using DYUtil;
+﻿using System.Net;
 
 namespace GameLogicServer
 {
-    public abstract class BaseServer<PacketType> : IServer where PacketType : Enum
+    public abstract class BaseServer<T> : IServer where T : Enum
     {
         protected int portNumber;
         protected static readonly int MAX_BUF_SIZE = 4096;
         public HashSet<IPEndPoint> connectedClients { get; protected set; } = new HashSet<IPEndPoint>();
-        public PacketHandler<PacketType> packetHandler { get; protected set; }
+        public PacketHandler<T> packetHandler { get; protected set; }
 
-        private Thread? thread = null;
-        public BaseServer(int port, PacketHandler<PacketType> handler)
+        private Thread? receiveThread = null;
+        private Thread? sendThread = null;
+        public BaseServer(int port, PacketHandler<T> handler)
         {
             portNumber = port;
             packetHandler = handler;
         }
 
-        public abstract void ServerFunction();
+        protected abstract void ReceiveThreadFunc();
+        protected abstract void SendThreadFunc();
         protected abstract void SocketClose();
         public void StartServer()
         {
-            Thread thread = new Thread(ServerFunction)
+            receiveThread = new Thread(ReceiveThreadFunc)
             {
                 IsBackground = true
             };
-            thread.Start();
-        }
 
+            sendThread = new Thread(SendThreadFunc)
+            {
+                IsBackground = true
+            };
+
+            receiveThread.Start();
+            sendThread.Start();
+        }
         public void StopServer()
         {
             SocketClose();
-            thread?.Abort();
+            receiveThread?.Abort();
+            sendThread?.Abort();
         }
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class TrashCreator : MonoBehaviour
 {
-    [SerializeField] private ObjectPoolSO[] _trashObjectPools;
+    [SerializeField] private ObjectPool[] _trashObjectPools;
     [SerializeField] private MapEdgeData _mapEdgeData;
     
     public void SpawnTrash()

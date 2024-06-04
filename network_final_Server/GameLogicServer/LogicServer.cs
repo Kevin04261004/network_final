@@ -1,17 +1,17 @@
 ﻿using System.Diagnostics;
 using System.Net;
-using System.Net.Sockets;
 using DYUtil;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using GameLogicServer.Datas;
 
 namespace GameLogicServer
 {
     public class LogicServer : SocketUDPServer<PacketDataInfo.EGameLogicPacketType>
     {
+        public NetworkObjectManager networkObjectManager;
         public LogicServer(int portNum, PacketHandler<PacketDataInfo.EGameLogicPacketType> handler) : base(portNum, handler)
         {
+            networkObjectManager = new NetworkObjectManager();
         }
-
 
         protected override void ProcessData(IPEndPoint clientIPEndPoint, PacketDataInfo.EGameLogicPacketType packetType, byte[] buffer)
         {
@@ -38,10 +38,20 @@ namespace GameLogicServer
 
             connectedClients.Remove(endPoint);
         }
-        public void GetNetworkObjectID(IPEndPoint endPoint, byte[] data)
+        public void CreateNetworkObjectRequirement(IPEndPoint endPoint, byte[] data)
         {
-            Logger.Log($"{endPoint.Address}", "Set Network Object ID", ConsoleColor.White);
+            Logger.Log($"{endPoint.Address}", "Create Network Object", ConsoleColor.White);
 
+            CreateNetworkObjectData newObjData = MarshalingTool.ByteToStruct<CreateNetworkObjectData>(data);
+
+            uint startID = networkObjectManager.CreateNetworkObject(newObjData);
+
+            byte[] startIDBytes = BitConverter.GetBytes(startID);
+
+            byte[] sendByte = new byte[data.Length + startIDBytes.Length];
+            int offset = 0;
+            send
+            PacketData packet = new PacketData(PacketDataInfo.EGameLogicPacketType.Server_CreateNetworkObjectSuccess, data);
         }
         #endregion
     }

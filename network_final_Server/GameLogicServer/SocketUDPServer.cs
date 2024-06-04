@@ -1,12 +1,8 @@
 ﻿using DYUtil;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics;
+using GameLogicServer.Datas;
 
 namespace GameLogicServer
 {
@@ -18,7 +14,7 @@ namespace GameLogicServer
         {
         }
 
-        public override void ServerFunction()
+        protected override void ReceiveThreadFunc()
         {
             InitServer();
             Debug.Assert(serverSock != null);
@@ -68,6 +64,25 @@ namespace GameLogicServer
                     ProcessData(clientIPEndPoint, packetType, data);
                 }
             }
+        }
+
+        protected override void SendThreadFunc()
+        {
+
+        }
+
+        protected void Send(byte[] data, HashSet<IPEndPoint> targetClients)
+        {
+            Debug.Assert(serverSock != null);
+            foreach (var client in targetClients)
+            {
+                serverSock.SendTo(data, client);
+            }
+        }
+        protected void Send(byte[] data, IPEndPoint targetClient)
+        {
+            Debug.Assert(serverSock != null);
+            serverSock.SendTo(data, targetClient);
         }
 
         protected abstract void ProcessData(IPEndPoint clientIPEndPoint, PacketType packetType, byte[] buffer);
