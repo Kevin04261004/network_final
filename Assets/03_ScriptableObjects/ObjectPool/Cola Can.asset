@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f88e3740b98be6848a78e6dc6ed4bc9e, type: 3}
+  m_Name: Cola Can
+  m_EditorClassIdentifier: 
+  information: Cola Can Object Pool
+  <_objectPrefab>k__BackingField: {fileID: 5855913472972708555, guid: e1746a3091fa7d541ad728718a47c7c5, type: 3}
+  _defaultCount: 100
+  _addCount: 10
