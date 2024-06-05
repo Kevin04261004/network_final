@@ -233,6 +233,50 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 64c361e79d93bca4ea14d3e190ea8ba7, type: 3}
+--- !u!1 &279047209
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 279047211}
+  - component: {fileID: 279047210}
+  m_Layer: 0
+  m_Name: PacketHandler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &279047210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279047209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ce58642bbe34a5bbe52612666dd53c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &279047211
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279047209}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &353593004
 GameObject:
   m_ObjectHideFlags: 0
@@ -277,10 +321,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f88e3740b98be6848a78e6dc6ed4bc9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <_objectPrefab>k__BackingField: {fileID: 0}
-  _defaultCount: 0
-  _addCount: 0
-  _parent: {fileID: 0}
+  <_objectPrefab>k__BackingField:
+  - {fileID: 5855913472972708555, guid: e1746a3091fa7d541ad728718a47c7c5, type: 3}
+  - {fileID: 2443628686879624366, guid: dff54c6304918b44c94c11cec39af02c, type: 3}
+  - {fileID: 3776825702271156983, guid: 91ae08e5fe0352944a63765cb8ab70d0, type: 3}
+  - {fileID: 1414425775425473797, guid: a8ef66922262b4145acaa083e219a79d, type: 3}
+  - {fileID: 7930642936301198757, guid: f0880aac2ef2b3a41a86a64d3de77826, type: 3}
+  - {fileID: 3265561258841500799, guid: 1bc5bfec45fe6ef428634de145105d2f, type: 3}
+  - {fileID: 3641772608068223082, guid: 2f0ae58bc17bc774587075c69bf69ef0, type: 3}
+  - {fileID: 7074825341026730473, guid: 8601cbf604edca9459fcfe700158c392, type: 3}
+  - {fileID: 1655785892905586105, guid: c0831e86ae3d80845a02f0b264501c9e, type: 3}
+  - {fileID: 4641202891790978828, guid: f97f4f212af779449aeae54352951948, type: 3}
+  - {fileID: 4951372764384316113, guid: b09596e99dcc495448c923e662cdc107, type: 3}
+  _defaultCount: 100
+  _addCount: 10
+  packetHandler: {fileID: 279047210}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -718,6 +773,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40ae0a0f64a84c3c882075013d7cb48b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <packetHandler>k__BackingField: {fileID: 279047210}
 --- !u!4 &1608608874
 Transform:
   m_ObjectHideFlags: 0
@@ -1117,4 +1173,5 @@ SceneRoots:
   - {fileID: 575013582}
   - {fileID: 1608608874}
   - {fileID: 1242113697}
+  - {fileID: 279047211}
   - {fileID: 1280787325}

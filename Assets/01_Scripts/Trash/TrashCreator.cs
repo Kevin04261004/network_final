@@ -9,8 +9,8 @@ public class TrashCreator : MonoBehaviour
     public void SpawnTrash()
     {
         Vector3 spawnPos = new Vector3(_mapEdgeData.leftBottom.y, 0, Random.Range(_mapEdgeData.leftBottom.x, _mapEdgeData.rightTop.x));
-        GameObject spawnObj = _trashObjectPools[Random.Range(0, _trashObjectPools.Length)].Get(spawnPos, Quaternion.identity);
-        spawnObj.GetComponent<MoveToVector>()._moveSpeed = Random.Range(3f, 4f);
+        //GameObject spawnObj = _trashObjectPools[Random.Range(0, _trashObjectPools.Length)].Get(spawnPos, Quaternion.identity);
+        //spawnObj.GetComponent<MoveToVector>()._moveSpeed = Random.Range(3f, 4f);
     }
 
     private float curTime;

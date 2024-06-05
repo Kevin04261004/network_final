@@ -2,7 +2,6 @@
 using System.Net.Sockets;
 using System.Net;
 using System.Diagnostics;
-using GameLogicServer.Datas;
 
 namespace GameLogicServer
 {

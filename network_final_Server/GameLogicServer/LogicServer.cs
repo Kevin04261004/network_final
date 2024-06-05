@@ -23,6 +23,7 @@ namespace GameLogicServer
         {
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_TryConnectToServer, ClientConnected);
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_ExitGame, ClientDisConnected);
+            packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_RequireCreateNetworkObject, CreateNetworkObjectRequirement);
         }
 
         #region Delegate PacketHandle Functions
@@ -46,13 +47,22 @@ namespace GameLogicServer
 
             uint startID = networkObjectManager.CreateNetworkObject(newObjData);
 
+            SendServerCreateNetworkObjectSuccess(data, startID);
+        }
+        #endregion
+        private void SendServerCreateNetworkObjectSuccess(byte[] data, uint startID)
+        {
             byte[] startIDBytes = BitConverter.GetBytes(startID);
 
             byte[] sendByte = new byte[data.Length + startIDBytes.Length];
             int offset = 0;
-            send
-            PacketData packet = new PacketData(PacketDataInfo.EGameLogicPacketType.Server_CreateNetworkObjectSuccess, data);
+            Array.Copy(data, 0, sendByte, offset, data.Length);
+            offset += data.Length;
+            Array.Copy(startIDBytes, 0, sendByte, offset, startIDBytes.Length);
+            offset += data.Length;
+
+            PacketData packet = new PacketData(PacketDataInfo.EGameLogicPacketType.Server_CreateNetworkObjectSuccess, sendByte);
+            Send(packet.ToPacket(), connectedClients);
         }
-        #endregion
     }
 }

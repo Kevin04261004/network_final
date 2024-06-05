@@ -4,7 +4,7 @@ namespace GameLogicServer
 {
     public class NetworkObjectManager
     {
-        private uint networkID = 0;
+        private uint networkID = 1;
         private Dictionary<uint, NetworkObjectData> networkObjects = new Dictionary<uint, NetworkObjectData>();
         
         public uint CreateNetworkObject(CreateNetworkObjectData createNetworkObjectData)

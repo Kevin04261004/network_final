@@ -87,9 +87,11 @@ public class NetworkManager : MonoBehaviour
         switch (serverType)
         {
             case ESendServerType.GameLogic:
+                Debug.Log("Send GameLogic Packet");
                 GameLogicUDPClientSock.SendTo(packet, GameLogicServerEndPoint);
                 break;
             case ESendServerType.Database:
+                Debug.Log("DB GameLogic Packet");
                 DataBaseClientSock.SendTo(packet, DataBaseServerEndPoint);
                 break;
             default:
