@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 2292785001443150375}
   - component: {fileID: 597652002545363124}
   - component: {fileID: 8942048209695832366}
-  - component: {fileID: 7855850572007084709}
   - component: {fileID: 2691822593744841266}
+  - component: {fileID: -2798783229535340691}
+  - component: {fileID: 5323014815137206367}
   m_Layer: 0
   m_Name: 25_Wine Bottle Green with Label 1
   m_TagString: Untagged
@@ -89,7 +90,21 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &7855850572007084709
+--- !u!114 &2691822593744841266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 114144653404471521}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveDir: {x: 1, y: 0, z: 0}
+  <_moveSpeed>k__BackingField: 4
+--- !u!65 &-2798783229535340691
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -108,9 +123,9 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.19077358, y: 0.19082406, z: 0.8190837}
-  m_Center: {x: 0, y: -0.000025276095, z: 0.10761042}
---- !u!114 &2691822593744841266
+  m_Size: {x: 0.38154715, y: 0.38164812, z: 1.6381674}
+  m_Center: {x: 0, y: -0.00005055219, z: 0.21522084}
+--- !u!114 &5323014815137206367
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -119,11 +134,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 114144653404471521}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Script: {fileID: 11500000, guid: f0b0d4e4feb6d3941870f746f0445d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveDir: {x: 1, y: 0, z: 0}
-  <_moveSpeed>k__BackingField: 4
+  <TrashData>k__BackingField: {fileID: 11400000, guid: 61ae3187f7c213e41b29a715470abd62, type: 2}
 --- !u!1 &1865348642558216622
 GameObject:
   m_ObjectHideFlags: 0

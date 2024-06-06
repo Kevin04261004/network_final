@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 6014307646743711448}
   - component: {fileID: 1073442251875940657}
   - component: {fileID: 436559868153123636}
-  - component: {fileID: 4261346165202423270}
   - component: {fileID: 7329945297948027205}
+  - component: {fileID: 3816520350411901791}
+  - component: {fileID: 4063697147108366052}
   m_Layer: 0
   m_Name: 11_Fish Bone
   m_TagString: Untagged
@@ -88,7 +89,21 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4261346165202423270
+--- !u!114 &7329945297948027205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7956965891985983838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveDir: {x: 1, y: 0, z: 0}
+  <_moveSpeed>k__BackingField: 4
+--- !u!65 &3816520350411901791
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -107,9 +122,9 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.62002856, y: 0.06609698, z: 0.18494149}
-  m_Center: {x: -0.016276032, y: -0.000938531, z: 0.0011594817}
---- !u!114 &7329945297948027205
+  m_Size: {x: 1.2400571, y: 0.13219395, z: 0.36988297}
+  m_Center: {x: -0.032552063, y: -0.001877062, z: 0.0023189634}
+--- !u!114 &4063697147108366052
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -118,8 +133,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7956965891985983838}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Script: {fileID: 11500000, guid: f0b0d4e4feb6d3941870f746f0445d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveDir: {x: 1, y: 0, z: 0}
-  <_moveSpeed>k__BackingField: 4
+  <TrashData>k__BackingField: {fileID: 11400000, guid: 61ae3187f7c213e41b29a715470abd62, type: 2}

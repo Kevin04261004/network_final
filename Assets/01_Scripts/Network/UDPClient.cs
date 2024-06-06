@@ -8,16 +8,10 @@ namespace _01_Scripts.Network
 {
     public abstract class UDPClient<T> : MonoBehaviour where T : Enum
     {
-        [field: SerializeField] protected PacketHandler<T> packetHandler { get; set; }
         private readonly string serverIP = "127.0.0.1";
         private static readonly int MAX_BUF_SIZE = 4096;
         private static readonly int PORT_NUM = 10000;
         private Thread receiveThread;
-        protected NetworkManager networkManager;
-        private void Awake()
-        {
-            networkManager = FindAnyObjectByType<NetworkManager>();
-        }
         protected virtual void Start()
         {
             Init();
@@ -34,9 +28,9 @@ namespace _01_Scripts.Network
         {
             try
             {
-                networkManager.GameLogicUDPClientSock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                NetworkManager.Instance.GameLogicUDPClientSock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                 IPAddress ipAddr = IPAddress.Parse(serverIP);
-                networkManager.GameLogicServerEndPoint = new IPEndPoint(ipAddr, PORT_NUM);
+                NetworkManager.Instance.GameLogicServerEndPoint = new IPEndPoint(ipAddr, PORT_NUM);
             }
             catch (Exception ex)
             {
@@ -49,8 +43,8 @@ namespace _01_Scripts.Network
         private void ReceiveFromServer()
         {
             // Init();
-            Debug.Assert(networkManager.GameLogicUDPClientSock != null);
-            Debug.Assert(networkManager.GameLogicServerEndPoint != null);
+            Debug.Assert(NetworkManager.Instance.GameLogicUDPClientSock != null);
+            Debug.Assert(NetworkManager.Instance.GameLogicServerEndPoint != null);
             SetAllHandlers();
 
             byte[] recvBuffer = new byte[MAX_BUF_SIZE];
@@ -63,7 +57,7 @@ namespace _01_Scripts.Network
             while (true)
             {
                 EndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
-                int recvByteSize = networkManager.GameLogicUDPClientSock.ReceiveFrom(recvBuffer, ref remoteEndPoint);
+                int recvByteSize = NetworkManager.Instance.GameLogicUDPClientSock.ReceiveFrom(recvBuffer, ref remoteEndPoint);
 
                 if (partialSize == 0)
                 {

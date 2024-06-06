@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 
 public class GameLogicPacketHandler : PacketHandler<PacketDataInfo.EGameLogicPacketType>
 {

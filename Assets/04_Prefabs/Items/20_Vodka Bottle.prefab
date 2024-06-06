@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 6304136408174661069}
   - component: {fileID: 2248219404274875037}
   - component: {fileID: 5325804151426795453}
-  - component: {fileID: 581826283101710630}
   - component: {fileID: 4231013731363581394}
+  - component: {fileID: 3612621224050360794}
+  - component: {fileID: -9100316078219602642}
   m_Layer: 0
   m_Name: 20_Vodka Bottle
   m_TagString: Untagged
@@ -88,7 +89,21 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &581826283101710630
+--- !u!114 &4231013731363581394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7988583381778160530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveDir: {x: 1, y: 0, z: 0}
+  <_moveSpeed>k__BackingField: 4
+--- !u!65 &3612621224050360794
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -107,9 +122,9 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.095184535, y: 0.27925044, z: 0.5735332}
-  m_Center: {x: 0, y: 0.00005939603, z: 0.0015031844}
---- !u!114 &4231013731363581394
+  m_Size: {x: 0.19036907, y: 0.5585009, z: 1.1470664}
+  m_Center: {x: 0, y: 0.00011879206, z: 0.0030063689}
+--- !u!114 &-9100316078219602642
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -118,8 +133,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7988583381778160530}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Script: {fileID: 11500000, guid: f0b0d4e4feb6d3941870f746f0445d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveDir: {x: 1, y: 0, z: 0}
-  <_moveSpeed>k__BackingField: 4
+  <TrashData>k__BackingField: {fileID: 11400000, guid: 61ae3187f7c213e41b29a715470abd62, type: 2}

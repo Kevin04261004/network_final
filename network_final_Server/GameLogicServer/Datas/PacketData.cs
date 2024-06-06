@@ -19,7 +19,7 @@ namespace GameLogicServer.Datas
                 }
                 int length = value.Length;
                 _data = new byte[length];
-                Array.Copy(_data, value, length);
+                Array.Copy(value, _data, length);
             }
         }
         // 패킷 타입 (2byte) + 패킷 길이(2byte) + 패킷ID(1byte) + Data 길이(N byte);

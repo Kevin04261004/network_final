@@ -5,6 +5,6 @@ namespace Util
 {
     public class NetworkObject : MonoBehaviour
     {
-        [field: SerializeField] public NetworkObjectData NetworkObjectData { get; private set; }
+        public NetworkObjectData NetworkObjectData { get; private set; } = new NetworkObjectData();
     }
 }

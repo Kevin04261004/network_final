@@ -24,5 +24,12 @@ namespace GameLogicServer
             _netObjectType = objType;
             _transform = transform;
         }
+
+        public NetworkObjectData()
+        {
+            _id = 0;
+            _netObjectType = NetworkObjectDataInfo.ENetworkObjectType.Size;
+            _transform = new NetworkObjectDataInfo.STransform();
+        }
     }
 }

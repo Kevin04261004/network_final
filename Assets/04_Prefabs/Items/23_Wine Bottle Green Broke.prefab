@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 7685576353928340462}
   - component: {fileID: 9126980910808945170}
   - component: {fileID: 4267478492736200846}
-  - component: {fileID: 924403746691579525}
   - component: {fileID: 6493478557283077922}
+  - component: {fileID: 5628650199300236889}
+  - component: {fileID: -4779566458611867969}
   m_Layer: 0
   m_Name: 23_Wine Bottle Green Broke
   m_TagString: Untagged
@@ -88,7 +89,21 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &924403746691579525
+--- !u!114 &6493478557283077922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5890469211764079380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveDir: {x: 1, y: 0, z: 0}
+  <_moveSpeed>k__BackingField: 4
+--- !u!65 &5628650199300236889
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -107,9 +122,9 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.19077358, y: 0.19153675, z: 0.41588396}
-  m_Center: {x: -0.0000000037252903, y: 0.00048561767, z: -0.093963295}
---- !u!114 &6493478557283077922
+  m_Size: {x: 0.38154715, y: 0.3830735, z: 0.8317679}
+  m_Center: {x: -0.000000007450581, y: 0.00097123533, z: -0.18792659}
+--- !u!114 &-4779566458611867969
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -118,8 +133,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5890469211764079380}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Script: {fileID: 11500000, guid: f0b0d4e4feb6d3941870f746f0445d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveDir: {x: 1, y: 0, z: 0}
-  <_moveSpeed>k__BackingField: 4
+  <TrashData>k__BackingField: {fileID: 11400000, guid: 61ae3187f7c213e41b29a715470abd62, type: 2}

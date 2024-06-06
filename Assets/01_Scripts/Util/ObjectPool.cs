@@ -13,18 +13,12 @@ public class ObjectPool : MonoBehaviour
     [SerializeField] private int _defaultCount;
     [SerializeField] private int _addCount;
 
-    [SerializeField] private PacketHandler<PacketDataInfo.EGameLogicPacketType> packetHandler;
     private Dictionary<NetworkObjectDataInfo.ENetworkObjectType, Queue<GameObject>> _objectPoolQueue =
         new Dictionary<NetworkObjectDataInfo.ENetworkObjectType, Queue<GameObject>>();
-    private NetworkManager networkManager;
-    private void Awake()
-    {
-        networkManager = FindAnyObjectByType<NetworkManager>();
-        packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Server_CreateNetworkObjectSuccess, CreateNetworkObject);
-    }
 
     private IEnumerator Start()
     {
+        GameLogicPacketHandler.Instance.SetHandler(PacketDataInfo.EGameLogicPacketType.Server_CreateNetworkObjectSuccess, CreateNetworkObject);
         yield return new WaitForSeconds(1);
         InitPool();
     }
@@ -52,39 +46,43 @@ public class ObjectPool : MonoBehaviour
         
         byte[] networkObjBytes = MarshalingTool.StructToByte(networkObjectData);
         PacketData packetData = new PacketData(PacketDataInfo.EGameLogicPacketType.Client_RequireCreateNetworkObject, networkObjBytes);
-        networkManager.SendToServer(ESendServerType.GameLogic, packetData.ToPacket());
+        NetworkManager.Instance.SendToServer(ESendServerType.GameLogic, packetData.ToPacket());
     }
     private void CreateNetworkObject(IPEndPoint endPoint, byte[] data)
     {
-        int structSize = Marshal.SizeOf<CreateNetworkObjectData>();
-        if (data.Length < structSize + sizeof(Int32))
+        MainThreadWorker.Instance.EnqueueJob(() =>
         {
-            Debug.LogError("Data array is too short to contain expected structures.");
-            return;
-        }
-        byte[] createNetworkObjectDataBytes = new byte[structSize];
-        byte[] startIDBytes = new byte[sizeof(UInt32)];
-        int offset = 0;
-        Array.Copy(data, 0, createNetworkObjectDataBytes, offset, createNetworkObjectDataBytes.Length);
-        offset += createNetworkObjectDataBytes.Length;
-        Array.Copy(data, offset, startIDBytes, 0, startIDBytes.Length);
-        offset += startIDBytes.Length;
-
-        uint startID = Convert.ToUInt32(startIDBytes);
-        CreateNetworkObjectData networkObjectData = MarshalingTool.ByteToStruct<CreateNetworkObjectData>(createNetworkObjectDataBytes);
-
-        uint max = (uint)startID + (uint)networkObjectData._count;
-        for (; startID < max; ++startID)
-        {
-            GameObject go = Instantiate(_objectPrefab[(int)networkObjectData.networkObjectType], Vector3.zero,
-                Quaternion.identity);
-            if (go.TryGetComponent(out NetworkObject networkObject))
+            int structSize = Marshal.SizeOf<CreateNetworkObjectData>();
+            if (data.Length < structSize + sizeof(Int32))
             {
-                networkObject.NetworkObjectData._id = (uint)startID;
-                networkObject.NetworkObjectData._netObjectType = networkObjectData.networkObjectType;
+                Debug.LogError("Data array is too short to contain expected structures.");
+                return;
             }
-            _objectPoolQueue[networkObjectData.networkObjectType].Enqueue(go);
-        }
+            byte[] createNetworkObjectDataBytes = new byte[structSize];
+            byte[] startIDBytes = new byte[sizeof(UInt32)];
+            int offset = 0;
+            Array.Copy(data, 0, createNetworkObjectDataBytes, offset, createNetworkObjectDataBytes.Length);
+            offset += createNetworkObjectDataBytes.Length;
+            Array.Copy(data, offset, startIDBytes, 0, startIDBytes.Length);
+            offset += startIDBytes.Length;
+
+            uint startID = BitConverter.ToUInt32(startIDBytes);
+            CreateNetworkObjectData networkObjectData = MarshalingTool.ByteToStruct<CreateNetworkObjectData>(createNetworkObjectDataBytes);
+
+            uint max = (uint)startID + (uint)networkObjectData._count;
+            for (; startID < max; ++startID)
+            {
+                GameObject go = Instantiate(_objectPrefab[(int)networkObjectData.networkObjectType], Vector3.zero,
+                    Quaternion.identity, transform);
+                go.SetActive(false);
+                if (go.TryGetComponent(out NetworkObject networkObject))
+                {
+                    networkObject.NetworkObjectData._id = startID;
+                    networkObject.NetworkObjectData._netObjectType = networkObjectData.networkObjectType;
+                }
+                _objectPoolQueue[networkObjectData.networkObjectType].Enqueue(go);
+            } 
+        });
     }
     public GameObject Get(NetworkObjectDataInfo.ENetworkObjectType objectType, Vector3 pos = default, Quaternion rotation = default, Transform parent = null)
     {

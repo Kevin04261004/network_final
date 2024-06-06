@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 7330826741942531590}
   - component: {fileID: 4212445582929619052}
   - component: {fileID: 7617008953693621631}
-  - component: {fileID: 8206771763037648055}
   - component: {fileID: -5599077970133250261}
+  - component: {fileID: 7567486038104088564}
+  - component: {fileID: 4126384903634182378}
   m_Layer: 0
   m_Name: 01_Beer Bottle Blue with Label
   m_TagString: Untagged
@@ -89,7 +90,21 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &8206771763037648055
+--- !u!114 &-5599077970133250261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2443628686879624366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveDir: {x: 1, y: 0, z: 0}
+  <_moveSpeed>k__BackingField: 4
+--- !u!65 &7567486038104088564
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -108,9 +123,9 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.112412974, y: 0.112412944, z: 0.48414254}
-  m_Center: {x: 0, y: 0.00020546466, z: -0.0026914477}
---- !u!114 &-5599077970133250261
+  m_Size: {x: 0.22482595, y: 0.22482589, z: 0.9682851}
+  m_Center: {x: 0, y: 0.00041092932, z: -0.0053828955}
+--- !u!114 &4126384903634182378
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -119,11 +134,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2443628686879624366}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Script: {fileID: 11500000, guid: f0b0d4e4feb6d3941870f746f0445d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveDir: {x: 1, y: 0, z: 0}
-  <_moveSpeed>k__BackingField: 4
+  <TrashData>k__BackingField: {fileID: 11400000, guid: 61ae3187f7c213e41b29a715470abd62, type: 2}
 --- !u!1 &2958358809541908674
 GameObject:
   m_ObjectHideFlags: 0

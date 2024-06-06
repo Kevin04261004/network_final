@@ -97,8 +97,9 @@ GameObject:
   - component: {fileID: 5726985932125568408}
   - component: {fileID: 3764655816316946320}
   - component: {fileID: 4968432865489363557}
-  - component: {fileID: 4960141888128449353}
   - component: {fileID: 5439556067325913234}
+  - component: {fileID: -2590878454181950135}
+  - component: {fileID: 1661675606588888140}
   m_Layer: 0
   m_Name: 10_Beer Can Red Crushed
   m_TagString: Untagged
@@ -175,7 +176,21 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4960141888128449353
+--- !u!114 &5439556067325913234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4951372764384316113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveDir: {x: 1, y: 0, z: 0}
+  <_moveSpeed>k__BackingField: 4
+--- !u!65 &-2590878454181950135
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -194,9 +209,9 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.19364859, y: 0.17827299, z: 0.3716838}
-  m_Center: {x: -0.020970471, y: -0.006639283, z: -0.11152665}
---- !u!114 &5439556067325913234
+  m_Size: {x: 0.38729718, y: 0.35654598, z: 0.7433676}
+  m_Center: {x: -0.041940942, y: -0.013278566, z: -0.2230533}
+--- !u!114 &1661675606588888140
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -205,8 +220,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4951372764384316113}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Script: {fileID: 11500000, guid: f0b0d4e4feb6d3941870f746f0445d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveDir: {x: 1, y: 0, z: 0}
-  <_moveSpeed>k__BackingField: 4
+  <TrashData>k__BackingField: {fileID: 11400000, guid: 61ae3187f7c213e41b29a715470abd62, type: 2}

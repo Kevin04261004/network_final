@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 7854337697223105892}
   - component: {fileID: 190653895252094363}
   - component: {fileID: 5283570847775681922}
-  - component: {fileID: 8034293234502997024}
   - component: {fileID: 6230636230355370143}
+  - component: {fileID: -7430058647891432429}
+  - component: {fileID: 4670988780350636191}
   m_Layer: 0
   m_Name: 28_Wine Bottle Red Broke 2
   m_TagString: Untagged
@@ -88,7 +89,21 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &8034293234502997024
+--- !u!114 &6230636230355370143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8151226732907442824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveDir: {x: 1, y: 0, z: 0}
+  <_moveSpeed>k__BackingField: 4
+--- !u!65 &-7430058647891432429
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -107,9 +122,9 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.19077358, y: 0.19085386, z: 0.5863651}
-  m_Center: {x: 0, y: -0.00013528392, z: 0.22045833}
---- !u!114 &6230636230355370143
+  m_Size: {x: 0.38154715, y: 0.38170773, z: 1.1727302}
+  m_Center: {x: 0, y: -0.00027056783, z: 0.44091666}
+--- !u!114 &4670988780350636191
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -118,8 +133,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8151226732907442824}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Script: {fileID: 11500000, guid: f0b0d4e4feb6d3941870f746f0445d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveDir: {x: 1, y: 0, z: 0}
-  <_moveSpeed>k__BackingField: 4
+  <TrashData>k__BackingField: {fileID: 11400000, guid: 61ae3187f7c213e41b29a715470abd62, type: 2}

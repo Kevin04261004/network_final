@@ -16,7 +16,7 @@ public class LogicClient : UDPClient<PacketDataInfo.EGameLogicPacketType>
     {
         Debug.Assert(packetType != PacketDataInfo.EGameLogicPacketType.None);
         
-        packetHandler.ProcessPacket(serverIPEndPoint, packetType, buffer);
+        GameLogicPacketHandler.Instance.ProcessPacket(serverIPEndPoint, packetType, buffer);
     }
     private void OnApplicationQuit()
      {
@@ -27,13 +27,13 @@ public class LogicClient : UDPClient<PacketDataInfo.EGameLogicPacketType>
      {
          PacketData data = new PacketData(PacketDataInfo.EGameLogicPacketType.Client_TryConnectToServer);
          Debug.Log("[Client] Try Connect to UDP Server");
-         networkManager.SendToServer(ESendServerType.GameLogic, data.ToPacket());
+         NetworkManager.Instance.SendToServer(ESendServerType.GameLogic, data.ToPacket());
      }
     // Send
     private void ExitGame()
      {
          PacketData data = new PacketData(PacketDataInfo.EGameLogicPacketType.Client_ExitGame);
          Debug.Log("[Client] Exit UDP Server");
-         networkManager.SendToServer(ESendServerType.GameLogic, data.ToPacket());
+         NetworkManager.Instance.SendToServer(ESendServerType.GameLogic, data.ToPacket());
      }
 }

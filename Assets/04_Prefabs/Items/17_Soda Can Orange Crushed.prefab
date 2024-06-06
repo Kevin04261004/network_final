@@ -97,8 +97,9 @@ GameObject:
   - component: {fileID: 3727355632353509813}
   - component: {fileID: 6221086285925567318}
   - component: {fileID: 5740971817951547674}
-  - component: {fileID: 7620622541647604422}
   - component: {fileID: -4581554654593360044}
+  - component: {fileID: 2019613504114577304}
+  - component: {fileID: -87771776219298048}
   m_Layer: 0
   m_Name: 17_Soda Can Orange Crushed
   m_TagString: Untagged
@@ -175,7 +176,21 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &7620622541647604422
+--- !u!114 &-4581554654593360044
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5409840527144161135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveDir: {x: 1, y: 0, z: 0}
+  <_moveSpeed>k__BackingField: 4
+--- !u!65 &2019613504114577304
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -194,9 +209,9 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.18573658, y: 0.24873498, z: 0.2506091}
-  m_Center: {x: 0, y: 0.049830053, z: -0.07703738}
---- !u!114 &-4581554654593360044
+  m_Size: {x: 0.37147316, y: 0.49746996, z: 0.5012182}
+  m_Center: {x: 0, y: 0.099660106, z: -0.15407476}
+--- !u!114 &-87771776219298048
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -205,8 +220,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5409840527144161135}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Script: {fileID: 11500000, guid: f0b0d4e4feb6d3941870f746f0445d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveDir: {x: 1, y: 0, z: 0}
-  <_moveSpeed>k__BackingField: 4
+  <TrashData>k__BackingField: {fileID: 11400000, guid: 61ae3187f7c213e41b29a715470abd62, type: 2}

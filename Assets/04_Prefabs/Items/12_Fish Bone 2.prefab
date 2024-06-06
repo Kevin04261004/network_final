@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 6845723730384624231}
   - component: {fileID: 7667895056207280061}
   - component: {fileID: 3478472813352614485}
-  - component: {fileID: 3773456917772702395}
   - component: {fileID: -2435039689406923496}
+  - component: {fileID: 6143379247852210959}
+  - component: {fileID: -7703860405003355078}
   m_Layer: 0
   m_Name: 12_Fish Bone 2
   m_TagString: Untagged
@@ -88,7 +89,21 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &3773456917772702395
+--- !u!114 &-2435039689406923496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4361556123460932076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveDir: {x: 1, y: 0, z: 0}
+  <_moveSpeed>k__BackingField: 4
+--- !u!65 &6143379247852210959
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -107,9 +122,9 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.40095904, y: 0.06609698, z: 0.18494149}
-  m_Center: {x: -0.12581079, y: -0.000938531, z: 0.0011594817}
---- !u!114 &-2435039689406923496
+  m_Size: {x: 0.8019181, y: 0.13219395, z: 0.36988297}
+  m_Center: {x: -0.25162157, y: -0.001877062, z: 0.0023189634}
+--- !u!114 &-7703860405003355078
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -118,8 +133,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4361556123460932076}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Script: {fileID: 11500000, guid: f0b0d4e4feb6d3941870f746f0445d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveDir: {x: 1, y: 0, z: 0}
-  <_moveSpeed>k__BackingField: 4
+  <TrashData>k__BackingField: {fileID: 11400000, guid: 61ae3187f7c213e41b29a715470abd62, type: 2}

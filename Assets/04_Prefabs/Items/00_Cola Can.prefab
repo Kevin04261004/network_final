@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 2554901191172178441}
   - component: {fileID: 2499027294676021897}
   - component: {fileID: 176391770683915052}
-  - component: {fileID: 5815371803305428605}
-  - component: {fileID: 4099872961559371302}
   - component: {fileID: -1068008081632736697}
+  - component: {fileID: -5646378625325325425}
+  - component: {fileID: 4010856630927652386}
   m_Layer: 7
   m_Name: 00_Cola Can
   m_TagString: Trash
@@ -89,7 +89,21 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5815371803305428605
+--- !u!114 &-1068008081632736697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5855913472972708555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveDir: {x: 1, y: 0, z: 0}
+  <_moveSpeed>k__BackingField: 4
+--- !u!65 &-5646378625325325425
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -108,9 +122,9 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.09494366, y: 0.15346396, z: 0.09029679}
-  m_Center: {x: 0.000000007450581, y: 0.07673198, z: -0.000000007450581}
---- !u!114 &4099872961559371302
+  m_Size: {x: 0.37977463, y: 0.61385584, z: 0.36118716}
+  m_Center: {x: 0.000000029802322, y: 0.30692792, z: -0.000000029802322}
+--- !u!114 &4010856630927652386
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -122,18 +136,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0b0d4e4feb6d3941870f746f0445d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Data>k__BackingField: {fileID: 11400000, guid: 61ae3187f7c213e41b29a715470abd62, type: 2}
---- !u!114 &-1068008081632736697
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5855913472972708555}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveDir: {x: 1, y: 0, z: 0}
-  <_moveSpeed>k__BackingField: 4
+  <TrashData>k__BackingField: {fileID: 11400000, guid: 61ae3187f7c213e41b29a715470abd62, type: 2}

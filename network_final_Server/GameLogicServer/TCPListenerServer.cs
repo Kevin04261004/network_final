@@ -6,11 +6,11 @@ using System.Net.Sockets;
 
 namespace GameLogicServer
 {
-    public abstract class TCPListenerServer<PacketType> : BaseServer<PacketType> where PacketType : Enum
+    public abstract class TCPListenerServer<T> : BaseServer<T> where T : Enum
     {
         TcpListener? listener = null;
 
-        protected TCPListenerServer(int port, PacketHandler<PacketType> handler) : base(port, handler)
+        protected TCPListenerServer(int port, PacketHandler<T> handler) : base(port, handler)
         {
 
         }
@@ -23,7 +23,7 @@ namespace GameLogicServer
             EndPoint clientEndPoint = new IPEndPoint(IPAddress.Any, portNumber);
             Debug.Assert(clientEndPoint != null);
 
-            PacketType packetType = (PacketType)Enum.ToObject(typeof(PacketType), 0);
+            T packetType = (T)Enum.ToObject(typeof(T), 0);
 
             byte[] recvBuffer = new byte[MAX_BUF_SIZE];
 
@@ -50,7 +50,7 @@ namespace GameLogicServer
                     offset += PacketDataInfo.PacketSizeSize;
                     packetID = BitConverter.ToChar(recvBuffer, offset);
                     offset += PacketDataInfo.PacketIDSize;
-                    packetType = (PacketType)Enum.ToObject(typeof(PacketType), BitConverter.ToInt16(recvBuffer, offset));
+                    packetType = (T)Enum.ToObject(typeof(T), BitConverter.ToInt16(recvBuffer, offset));
                 }
                 while (packetSize > 0)
                 {
@@ -66,7 +66,7 @@ namespace GameLogicServer
             return;
         }
 
-        protected abstract void ProcessData(IPEndPoint clientIPEndPoint, PacketType packetType, byte[] buffer);
+        protected abstract void ProcessData(IPEndPoint clientIPEndPoint, T packetType, byte[] buffer);
 
         private void InitServer()
         {

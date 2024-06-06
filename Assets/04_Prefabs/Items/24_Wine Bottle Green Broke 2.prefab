@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 3116074423875968706}
   - component: {fileID: 7794330504740047025}
   - component: {fileID: 1895306059057844180}
-  - component: {fileID: 1325364679833151194}
   - component: {fileID: -4703731741966486215}
+  - component: {fileID: -7814505459454264903}
+  - component: {fileID: 851105314871254329}
   m_Layer: 0
   m_Name: 24_Wine Bottle Green Broke 2
   m_TagString: Untagged
@@ -88,7 +89,21 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &1325364679833151194
+--- !u!114 &-4703731741966486215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1947798968480330860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveDir: {x: 1, y: 0, z: 0}
+  <_moveSpeed>k__BackingField: 4
+--- !u!65 &-7814505459454264903
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -107,9 +122,9 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.19077358, y: 0.19085386, z: 0.5863651}
-  m_Center: {x: 0, y: -0.00013528392, z: 0.22045833}
---- !u!114 &-4703731741966486215
+  m_Size: {x: 0.38154715, y: 0.38170773, z: 1.1727302}
+  m_Center: {x: 0, y: -0.00027056783, z: 0.44091666}
+--- !u!114 &851105314871254329
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -118,8 +133,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1947798968480330860}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Script: {fileID: 11500000, guid: f0b0d4e4feb6d3941870f746f0445d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveDir: {x: 1, y: 0, z: 0}
-  <_moveSpeed>k__BackingField: 4
+  <TrashData>k__BackingField: {fileID: 11400000, guid: 61ae3187f7c213e41b29a715470abd62, type: 2}

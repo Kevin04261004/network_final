@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 5217303783981375235}
   - component: {fileID: 3457592796213112671}
   - component: {fileID: 5195210415534816415}
-  - component: {fileID: 460666056231508818}
   - component: {fileID: 4022873434571004689}
+  - component: {fileID: 3714218460194269391}
+  - component: {fileID: -8779829003174678554}
   m_Layer: 0
   m_Name: 15_Soda Can Green Crushed
   m_TagString: Untagged
@@ -89,7 +90,21 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &460666056231508818
+--- !u!114 &4022873434571004689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2045570554339763979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveDir: {x: 1, y: 0, z: 0}
+  <_moveSpeed>k__BackingField: 4
+--- !u!65 &3714218460194269391
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -108,9 +123,9 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.18573658, y: 0.24873498, z: 0.2506091}
-  m_Center: {x: 0, y: 0.049830053, z: -0.07703738}
---- !u!114 &4022873434571004689
+  m_Size: {x: 0.37147316, y: 0.49746996, z: 0.5012182}
+  m_Center: {x: 0, y: 0.099660106, z: -0.15407476}
+--- !u!114 &-8779829003174678554
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -119,11 +134,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2045570554339763979}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 521210cb582324744b09abd2ceefa1fe, type: 3}
+  m_Script: {fileID: 11500000, guid: f0b0d4e4feb6d3941870f746f0445d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveDir: {x: 1, y: 0, z: 0}
-  <_moveSpeed>k__BackingField: 4
+  <TrashData>k__BackingField: {fileID: 11400000, guid: 61ae3187f7c213e41b29a715470abd62, type: 2}
 --- !u!1 &6996716862037009426
 GameObject:
   m_ObjectHideFlags: 0

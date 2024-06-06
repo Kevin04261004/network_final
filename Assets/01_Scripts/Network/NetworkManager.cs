@@ -11,74 +11,26 @@ public enum ESendServerType
 
 public class NetworkManager : MonoBehaviour
 {
+    public static NetworkManager Instance { get; private set; }
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     private EndPoint gameLogicServerEndPoint = null;
-    public EndPoint GameLogicServerEndPoint
-    {
-        get => gameLogicServerEndPoint;
-        set
-        {
-            if (value != null)
-            {
-                gameLogicServerEndPoint = value;
-            }
+    public EndPoint GameLogicServerEndPoint { get; set; } = null;
 
-            if (value == null)
-            {
-                gameLogicServerEndPoint = null;
-            }
-        }
-    }
-    private Socket gameLogicUDPClientSock = null;
-    public Socket GameLogicUDPClientSock
-    {
-        get => gameLogicUDPClientSock;
-        set
-        {
-            if (value != null)
-            {
-                gameLogicUDPClientSock = value;
-            }
+    public Socket GameLogicUDPClientSock { get; set; } = null;
 
-            if (value == null)
-            {
-                gameLogicUDPClientSock = null;
-            }
-        }
-    }
-    private EndPoint dataBaseServerEndPoint = null;
-    public EndPoint DataBaseServerEndPoint
-    {
-        get => dataBaseServerEndPoint;
-        set
-        {
-            if (dataBaseServerEndPoint != null)
-            {
-                dataBaseServerEndPoint = value;
-            }
+    public TcpClient DatabaseTcpClient { get; set; } = null;
+    public NetworkStream NetworkStream { get; set; } = null;
 
-            if (value == null)
-            {
-                dataBaseServerEndPoint = null;
-            }
-        }
-    }
-    private Socket dataBaseClientSock = null;
-    public Socket DataBaseClientSock
-    {
-        get => dataBaseClientSock;
-        set
-        {
-            if (dataBaseClientSock != null)
-            {
-                dataBaseClientSock = value;
-            }
-
-            if (value == null)
-            {
-                dataBaseClientSock = null;
-            }
-        }
-    }
     private static readonly int GAME_LOGIC_SERVER_PORT_NUM = 10000;
     private static readonly int DATA_BASE_SERVER_PORT_NUM = 10001;
     public void SendToServer(ESendServerType serverType, byte[] packet)
@@ -87,12 +39,16 @@ public class NetworkManager : MonoBehaviour
         switch (serverType)
         {
             case ESendServerType.GameLogic:
+                Debug.Assert(GameLogicUDPClientSock != null);
+                Debug.Assert(GameLogicServerEndPoint != null);
                 Debug.Log("Send GameLogic Packet");
                 GameLogicUDPClientSock.SendTo(packet, GameLogicServerEndPoint);
                 break;
             case ESendServerType.Database:
+                Debug.Assert(DatabaseTcpClient != null);
+                Debug.Assert(DatabaseTcpClient != null);
                 Debug.Log("DB GameLogic Packet");
-                DataBaseClientSock.SendTo(packet, DataBaseServerEndPoint);
+                //..SendTo(packet, DataBaseServerEndPoint);
                 break;
             default:
                 Debug.Assert(false, "Add Case!!!");
