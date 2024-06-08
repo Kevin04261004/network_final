@@ -42,7 +42,7 @@ public class ObjectPool : MonoBehaviour
     {
         CreateNetworkObjectData networkObjectData;
         networkObjectData._count = count;
-        networkObjectData.networkObjectType = objectType;
+        networkObjectData._networkObjectType = objectType;
         
         byte[] networkObjBytes = MarshalingTool.StructToByte(networkObjectData);
         PacketData packetData = new PacketData(PacketDataInfo.EGameLogicPacketType.Client_RequireCreateNetworkObject, networkObjBytes);
@@ -72,15 +72,15 @@ public class ObjectPool : MonoBehaviour
             uint max = (uint)startID + (uint)networkObjectData._count;
             for (; startID < max; ++startID)
             {
-                GameObject go = Instantiate(_objectPrefab[(int)networkObjectData.networkObjectType], Vector3.zero,
+                GameObject go = Instantiate(_objectPrefab[(int)networkObjectData._networkObjectType], Vector3.zero,
                     Quaternion.identity, transform);
                 go.SetActive(false);
                 if (go.TryGetComponent(out NetworkObject networkObject))
                 {
                     networkObject.NetworkObjectData._id = startID;
-                    networkObject.NetworkObjectData._netObjectType = networkObjectData.networkObjectType;
+                    networkObject.NetworkObjectData._netObjectType = networkObjectData._networkObjectType;
                 }
-                _objectPoolQueue[networkObjectData.networkObjectType].Enqueue(go);
+                _objectPoolQueue[networkObjectData._networkObjectType].Enqueue(go);
             } 
         });
     }

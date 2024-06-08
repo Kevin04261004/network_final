@@ -45,10 +45,21 @@ public class NetworkManager : MonoBehaviour
                 GameLogicUDPClientSock.SendTo(packet, GameLogicServerEndPoint);
                 break;
             case ESendServerType.Database:
-                Debug.Assert(DatabaseTcpClient != null);
-                Debug.Assert(DatabaseTcpClient != null);
-                Debug.Log("DB GameLogic Packet");
-                //..SendTo(packet, DataBaseServerEndPoint);
+                Debug.Assert(DatabaseTcpClient != null, "DatabaseTcpClient is not initialized.");
+                Debug.Assert(NetworkStream != null, "NetworkStream is not initialized.");
+                Debug.Log("Sending Database packet");
+                try
+                {
+                    lock (NetworkStream)
+                    {
+                        NetworkStream.Write(packet, 0, packet.Length);
+                        NetworkStream.Flush();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"SendToServer Error: {ex.Message}");
+                }
                 break;
             default:
                 Debug.Assert(false, "Add Case!!!");

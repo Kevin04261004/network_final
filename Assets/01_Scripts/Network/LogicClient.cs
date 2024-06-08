@@ -4,23 +4,16 @@ using UnityEngine;
 
 public class LogicClient : UDPClient<PacketDataInfo.EGameLogicPacketType>
 {
-    protected override void Start()
-    {
-        base.Start();
-    }
-    protected override void SetAllHandlers()
-    {
-        
-    }
     protected override void ProcessData(IPEndPoint serverIPEndPoint, PacketDataInfo.EGameLogicPacketType packetType, byte[] buffer)
     {
         Debug.Assert(packetType != PacketDataInfo.EGameLogicPacketType.None);
         
         GameLogicPacketHandler.Instance.ProcessPacket(serverIPEndPoint, packetType, buffer);
     }
-    private void OnApplicationQuit()
+     protected override void OnApplicationQuit()
      {
          ExitGame();
+         CloseServer();
      }
     // Send
     protected override void ConnectToServer()

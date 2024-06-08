@@ -38,14 +38,12 @@ namespace _01_Scripts.Network
                 throw;
             }
         }
-        protected abstract void SetAllHandlers();
         protected abstract void ProcessData(IPEndPoint serverIPEndPoint, T packetType, byte[] buffer);
         private void ReceiveFromServer()
         {
             // Init();
             Debug.Assert(NetworkManager.Instance.GameLogicUDPClientSock != null);
             Debug.Assert(NetworkManager.Instance.GameLogicServerEndPoint != null);
-            SetAllHandlers();
 
             byte[] recvBuffer = new byte[MAX_BUF_SIZE];
             byte[] partialBuffer = new byte[MAX_BUF_SIZE];
@@ -91,6 +89,14 @@ namespace _01_Scripts.Network
                     ProcessData((IPEndPoint)remoteEndPoint, packetType, data);
                 } 
             }
+        }
+
+        protected abstract void OnApplicationQuit();
+
+        protected void CloseServer()
+        {
+            NetworkManager.Instance.GameLogicUDPClientSock?.Close();
+            NetworkManager.Instance.GameLogicServerEndPoint = null;
         }
     }
 }
