@@ -8,7 +8,7 @@ namespace GameLogicServer
     public class LogicServer : SocketUDPServer<PacketDataInfo.EGameLogicPacketType>
     {
         public NetworkObjectManager networkObjectManager;
-        public LogicServer(int portNum, PacketHandler<PacketDataInfo.EGameLogicPacketType> handler) : base(portNum, handler)
+        public LogicServer(int portNum, PacketHandler<PacketDataInfo.EGameLogicPacketType, IPEndPoint> handler) : base(portNum, handler)
         {
             networkObjectManager = new NetworkObjectManager();
         }

@@ -18,14 +18,14 @@ public class LogicClient : UDPClient<PacketDataInfo.EGameLogicPacketType>
     // Send
     protected override void ConnectToServer()
      {
-         PacketData data = new PacketData(PacketDataInfo.EGameLogicPacketType.Client_TryConnectToServer);
+         var data = new PacketData<PacketDataInfo.EGameLogicPacketType>(PacketDataInfo.EGameLogicPacketType.Client_TryConnectToServer);
          Debug.Log("[Client] Try Connect to UDP Server");
          NetworkManager.Instance.SendToServer(ESendServerType.GameLogic, data.ToPacket());
      }
     // Send
     private void ExitGame()
      {
-         PacketData data = new PacketData(PacketDataInfo.EGameLogicPacketType.Client_ExitGame);
+         var data = new PacketData<PacketDataInfo.EGameLogicPacketType>(PacketDataInfo.EGameLogicPacketType.Client_ExitGame);
          Debug.Log("[Client] Exit UDP Server");
          NetworkManager.Instance.SendToServer(ESendServerType.GameLogic, data.ToPacket());
      }

@@ -1,5 +1,6 @@
 ﻿using DYUtil;
 using GameLogicServer.Datas;
+using GameLogicServer.Datas.Database;
 
 namespace GameLogicServer
 {
@@ -24,6 +25,8 @@ namespace GameLogicServer
             Logger.Log($"{myIp}:{DATABASE_PORT_NUM}", "DB Server Started...", ConsoleColor.Green);
 
             Logger.Log("Info", "Enter To Exit Server", ConsoleColor.Blue);
+
+            DatabaseConnector.SetMySqlConnection();
             Console.ReadLine();
             
             gameLogicServer.StopServer();

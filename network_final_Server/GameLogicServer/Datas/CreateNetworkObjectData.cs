@@ -13,6 +13,6 @@ namespace GameLogicServer
         [MarshalAs(UnmanagedType.I4)]
         public Int32 _count;
         [MarshalAs(UnmanagedType.I4)]
-        public NetworkObjectInfoData.ENetworkObjectType networkObjectType;
+        public NetworkObjectDataInfo.ENetworkObjectType networkObjectType;
     }
 }

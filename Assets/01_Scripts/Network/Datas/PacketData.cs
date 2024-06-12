@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-public class PacketData
+public class PacketData<T> where T : Enum
 {
     public Int16 PacketType { get; private set; }
     public char PacketID { get; private set; } // 절대로 0이 될 수 없어야함.
@@ -23,17 +23,17 @@ public class PacketData
     }
     // 패킷 타입 (2byte) + 패킷 길이(2byte) + 패킷ID(1byte) + Data 길이(N byte);
     public Int16 PacketSize { get => (Int16)(PacketDataInfo.HeaderSize + ((Data == null) ? 0 : Data.Length)); }
-    public PacketData(PacketDataInfo.EGameLogicPacketType gameLogicPacketType)
+    public PacketData(T packetTypeEnum)
     {
-        PacketType = (Int16)gameLogicPacketType;
+        PacketType = Convert.ToInt16(packetTypeEnum);
         PacketID = PacketDataInfo.GetID();
         Data = null;
     }
-    public PacketData(PacketDataInfo.EGameLogicPacketType gameLogicPacketType, byte[] data)
+    public PacketData(T packetTypeEnum, byte[] data)
     {
         Debug.Assert(data != null);
         PacketID = PacketDataInfo.GetID();
-        PacketType = (Int16)gameLogicPacketType;
+        PacketType = Convert.ToInt16(packetTypeEnum);
         Data = data;
     }
     public byte[] ToPacket()

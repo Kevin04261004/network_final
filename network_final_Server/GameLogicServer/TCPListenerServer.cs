@@ -6,11 +6,11 @@ using System.Net.Sockets;
 
 namespace GameLogicServer
 {
-    public abstract class TCPListenerServer<T> : BaseServer<T> where T : Enum
+    public abstract class TCPListenerServer<T> : BaseServer<T, TcpClient> where T : Enum
     {
-        TcpListener? listener = null;
+        protected TcpListener? listener = null;
 
-        protected TCPListenerServer(int port, PacketHandler<T> handler) : base(port, handler)
+        protected TCPListenerServer(int port, PacketHandler<T, TcpClient> handler) : base(port, handler)
         {
 
         }
@@ -30,7 +30,6 @@ namespace GameLogicServer
             while (true)
             {
                 using TcpClient client = listener.AcceptTcpClient();
-                IPEndPoint clientIPEndPoint = (IPEndPoint)clientEndPoint;
 
                 NetworkStream stream = client.GetStream();
 
@@ -57,7 +56,7 @@ namespace GameLogicServer
                     packetSize -= (Int16)stream.Read(recvBuffer, 0, packetSize);
                 }
 
-                ProcessData(clientIPEndPoint, packetType, recvBuffer);
+                ProcessData(client, packetType, recvBuffer);
             }
         }
 
@@ -66,7 +65,7 @@ namespace GameLogicServer
             return;
         }
 
-        protected abstract void ProcessData(IPEndPoint clientIPEndPoint, T packetType, byte[] buffer);
+        protected abstract void ProcessData(TcpClient client, T packetType, byte[] buffer);
 
         private void InitServer()
         {

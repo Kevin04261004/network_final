@@ -37,6 +37,19 @@ namespace GameLogicServer.Datas
             PacketType = (short)packetType;
             Data = data;
         }
+        public PacketData(PacketDataInfo.EDataBasePacketType packetType)
+        {
+            PacketType = (short)packetType;
+            PacketID = PacketDataInfo.GetID();
+            Data = null;
+        }
+        public PacketData(PacketDataInfo.EDataBasePacketType packetType, byte[] data)
+        {
+            Debug.Assert(data != null);
+            PacketID = PacketDataInfo.GetID();
+            PacketType = (short)packetType;
+            Data = data;
+        }
         public byte[] ToPacket()
         {
             byte[] dataSizeBytes = BitConverter.GetBytes(PacketSize);

@@ -13,7 +13,9 @@ public static class PacketDataInfo
     public enum EDataBasePacketType
     {
         None = 0,
-
+        Client_TryLogin,
+        Server_LoginFail,
+        Server_LoginSuccess,
     }
 
     public static int PacketIDSize = sizeof(char);

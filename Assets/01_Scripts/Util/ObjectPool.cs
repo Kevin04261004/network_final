@@ -45,7 +45,7 @@ public class ObjectPool : MonoBehaviour
         networkObjectData._networkObjectType = objectType;
         
         byte[] networkObjBytes = MarshalingTool.StructToByte(networkObjectData);
-        PacketData packetData = new PacketData(PacketDataInfo.EGameLogicPacketType.Client_RequireCreateNetworkObject, networkObjBytes);
+        var packetData = new PacketData<PacketDataInfo.EGameLogicPacketType>(PacketDataInfo.EGameLogicPacketType.Client_RequireCreateNetworkObject, networkObjBytes);
         NetworkManager.Instance.SendToServer(ESendServerType.GameLogic, packetData.ToPacket());
     }
     private void CreateNetworkObject(IPEndPoint endPoint, byte[] data)

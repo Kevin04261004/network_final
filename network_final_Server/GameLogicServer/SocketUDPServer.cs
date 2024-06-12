@@ -5,11 +5,11 @@ using System.Diagnostics;
 
 namespace GameLogicServer
 {
-    public abstract class SocketUDPServer<PacketType> : BaseServer<PacketType> where PacketType : Enum
+    public abstract class SocketUDPServer<PacketType> : BaseServer<PacketType, IPEndPoint> where PacketType : Enum
     {
         protected Socket? serverSock = null;
 
-        protected SocketUDPServer(int port, PacketHandler<PacketType> handler) : base(port, handler)
+        protected SocketUDPServer(int port, PacketHandler<PacketType, IPEndPoint> handler) : base(port, handler)
         {
         }
 
