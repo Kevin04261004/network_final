@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
 
 namespace GameLogicServer
 {
@@ -35,6 +36,8 @@ namespace GameLogicServer
             receiveThread.Start();
             sendThread.Start();
         }
+        protected abstract void Send(byte[] data, HashSet<R> targetClients);
+        protected abstract void Send(byte[] data, R targetClient);
         public void StopServer()
         {
             SocketClose();

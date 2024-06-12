@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public abstract class TCPClient<T> : MonoBehaviour where T : Enum
@@ -19,6 +20,14 @@ public abstract class TCPClient<T> : MonoBehaviour where T : Enum
             IsBackground = true
         };
         receiveThread.Start();
+        if (NetworkManager.Instance.DatabaseTcpClient != null && NetworkManager.Instance.DatabaseTcpClient.Connected)
+        {
+            Debug.Log("Connected to Database server.");
+        }
+        else
+        {
+            Debug.LogError("Failed to connect to Database server.");
+        }
     }
 
     private void Init()
@@ -41,60 +50,37 @@ public abstract class TCPClient<T> : MonoBehaviour where T : Enum
     protected abstract void ProcessData(IPEndPoint serverIPEndPoint, T packetType, byte[] buffer);
     private void ReceiveFromServer()
     {
-        byte[] recvBuffer = new byte[MAX_BUF_SIZE];
-        byte[] partialBuffer = new byte[MAX_BUF_SIZE];
-        int partialSize = 0;
-
-        Int16 packetSize = 0;
-        T packetType = (T)Enum.ToObject(typeof(T), 0);
-
-        try
+        byte[] receiveData = new byte[MAX_BUF_SIZE];
+        byte[] partialData = new byte[MAX_BUF_SIZE];
+        int partialLength = 0;
+        while (NetworkManager.Instance.DatabaseTcpClient.Connected)
         {
-            while (NetworkManager.Instance.DatabaseTcpClient.Connected)
+            Int32 receiveLength = NetworkManager.Instance.NetworkStream.Read(receiveData, 0, receiveData.Length);
+
+            Array.Copy(receiveData, 0, partialData, partialLength, receiveLength);
+            partialLength += receiveLength;
+            if (partialLength >= PacketDataInfo.HeaderSize)
             {
-                int recvByteSize = NetworkManager.Instance.NetworkStream.Read(recvBuffer, 0, recvBuffer.Length);
+                int offset = 0;
+                int packetSize = BitConverter.ToInt16(partialData, offset);
+                offset += PacketDataInfo.PacketSizeSize;
+                char packetID = BitConverter.ToChar(partialData, offset);
+                offset += PacketDataInfo.PacketIDSize;
+                T type = (T)Enum.ToObject(typeof(T), BitConverter.ToInt16(partialData, offset));
+                offset += PacketDataInfo.PacketTypeSize;
 
-                if (partialSize == 0)
+                if (partialLength < packetSize)
                 {
-                    if (recvByteSize < PacketDataInfo.HeaderSize)
-                    {
-                        continue;
-                    }
-
-                    int offset = 0;
-                    packetSize = BitConverter.ToInt16(recvBuffer, offset);
-                    offset += PacketDataInfo.PacketSizeSize;
-                    char packetID = BitConverter.ToChar(recvBuffer, offset);
-                    offset += PacketDataInfo.PacketIDSize;
-                    packetType = (T)Enum.ToObject(typeof(T), BitConverter.ToInt16(recvBuffer, offset));
-                    offset += PacketDataInfo.PacketTypeSize;
-                    Array.Copy(recvBuffer, offset, partialBuffer, partialSize, recvByteSize - offset);
-                    partialSize = recvByteSize - offset;
+                    continue;
                 }
-                else
-                {
-                    Array.Copy(recvBuffer, 0, partialBuffer, partialSize, recvByteSize);
-                    partialSize += recvByteSize;
-                }
-
-                if (partialSize >= packetSize)
-                {
-                    partialSize = 0;
-
-                    byte[] data = new byte[packetSize - PacketDataInfo.HeaderSize];
-                    Array.Copy(partialBuffer, 0, data, 0, data.Length);
-                    ProcessData(serverEndPoint, packetType, data);
-                }
+                
+                byte[] data = new byte[packetSize - PacketDataInfo.HeaderSize];
+                Array.Copy(partialData, PacketDataInfo.HeaderSize, data, 0, data.Length);
+                ProcessData(serverEndPoint, type, data);
+                
+                partialLength -= packetSize;
             }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"ReceiveFromServer Error: {ex.Message}");
-        }
-        finally
-        {
-            NetworkManager.Instance.NetworkStream?.Close();
-            NetworkManager.Instance.DatabaseTcpClient?.Close();
+
         }
     }
 

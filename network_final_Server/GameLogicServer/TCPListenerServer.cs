@@ -20,43 +20,56 @@ namespace GameLogicServer
             Debug.Assert(listener != null);
             SetAllHandlers();
 
-            EndPoint clientEndPoint = new IPEndPoint(IPAddress.Any, portNumber);
-            Debug.Assert(clientEndPoint != null);
-
             T packetType = (T)Enum.ToObject(typeof(T), 0);
-
-            byte[] recvBuffer = new byte[MAX_BUF_SIZE];
 
             while (true)
             {
-                using TcpClient client = listener.AcceptTcpClient();
-
-                NetworkStream stream = client.GetStream();
-
-                Int16 packetSize = 0;
-                char packetID;
-
-                int offset = 0;
-
-                if (stream.Length < PacketDataInfo.HeaderSize)
+                try
                 {
-                    continue;
-                }
-                if (stream.Read(recvBuffer, 0, PacketDataInfo.PacketSizeSize) == PacketDataInfo.PacketSizeSize)
-                {
-                    offset = 0;
-                    packetSize = (Int16)((int)BitConverter.ToInt16(recvBuffer, offset) - PacketDataInfo.HeaderSize); // 여기서 패킷 사이즈를 Data만으로 자름.
+                    using TcpClient client = listener.AcceptTcpClient();
+                    NetworkStream stream = client.GetStream();
+
+                    byte[] headerBuffer = new byte[PacketDataInfo.HeaderSize];
+                    int totalBytesRead = 0;
+
+                    // Read header first
+                    while (totalBytesRead < headerBuffer.Length)
+                    {
+                        int bytesRead = stream.Read(headerBuffer, totalBytesRead, headerBuffer.Length - totalBytesRead);
+                        if (bytesRead == 0)
+                        {
+                            throw new Exception("Connection closed unexpectedly.");
+                        }
+                        totalBytesRead += bytesRead;
+                    }
+
+                    int offset = 0;
+                    Int16 packetSize = BitConverter.ToInt16(headerBuffer, offset);
                     offset += PacketDataInfo.PacketSizeSize;
-                    packetID = BitConverter.ToChar(recvBuffer, offset);
+                    char packetID = BitConverter.ToChar(headerBuffer, offset);
                     offset += PacketDataInfo.PacketIDSize;
-                    packetType = (T)Enum.ToObject(typeof(T), BitConverter.ToInt16(recvBuffer, offset));
-                }
-                while (packetSize > 0)
-                {
-                    packetSize -= (Int16)stream.Read(recvBuffer, 0, packetSize);
-                }
+                    packetType = (T)Enum.ToObject(typeof(T), BitConverter.ToInt16(headerBuffer, offset));
 
-                ProcessData(client, packetType, recvBuffer);
+                    // Read data part
+                    byte[] dataBuffer = new byte[packetSize - PacketDataInfo.HeaderSize];
+                    totalBytesRead = 0;
+
+                    while (totalBytesRead < dataBuffer.Length)
+                    {
+                        int bytesRead = stream.Read(dataBuffer, totalBytesRead, dataBuffer.Length - totalBytesRead);
+                        if (bytesRead == 0)
+                        {
+                            throw new Exception("Connection closed unexpectedly.");
+                        }
+                        totalBytesRead += bytesRead;
+                    }
+
+                    ProcessData(client, packetType, dataBuffer);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("ReceiveThreadFunc Error", ex.Message, true);
+                }
             }
         }
 

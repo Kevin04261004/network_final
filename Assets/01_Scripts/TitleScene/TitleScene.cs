@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Net;
 using GameLogicServer.Datas.Database;
 using TMPro;
 using UnityEngine;
@@ -18,6 +20,13 @@ public class TitleScene : MonoBehaviour
     [SerializeField] private TMP_InputField pwInputField;
     
     private Coroutine fadeInCoroutine;
+
+    private void Awake()
+    {
+        DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_LoginSuccess, LoginSuccess);
+        DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_LoginFail, LoginFail);
+    }
+
     public void TryLogin()
     {
         string id = idInputField.text;
@@ -38,17 +47,26 @@ public class TitleScene : MonoBehaviour
         byte[] data = DB_UserLoginInfoInfo.Serialize(userLoginInfo);
         var packetData = new PacketData<PacketDataInfo.EDataBasePacketType>(PacketDataInfo.EDataBasePacketType.Client_TryLogin, data);
         NetworkManager.Instance.SendToServer(ESendServerType.Database, packetData.ToPacket());
-        _bufferingImage.AddCount();
+        MainThreadWorker.Instance.EnqueueJob(() =>
+        {
+            _bufferingImage.AddCount();
+        });
     }
     
-    public void LoginSuccess()
+    public void LoginSuccess(IPEndPoint endPoint, byte[] data)
     {
-        _bufferingImage.MinusCount();
+        MainThreadWorker.Instance.EnqueueJob(() =>
+        {
+            _bufferingImage.MinusCount();
+        });
     }
 
-    public void LoginFail()
+    public void LoginFail(IPEndPoint endPoint, byte[] data)
     {
-        _bufferingImage.MinusCount();
+        MainThreadWorker.Instance.EnqueueJob(() =>
+        {
+            _bufferingImage.MinusCount();
+        });
     }
 
 
@@ -66,6 +84,7 @@ public class TitleScene : MonoBehaviour
     }
     private void SetErrorCode(string str, float time = 3, Color color = default(Color))
     {
+        _loginLogTMP.gameObject.SetActive(true);
         _loginLogTMP.text = str;
         _loginLogTMP.color = (color == default(Color)) ? Color.red : color;
         if (fadeInCoroutine != null)

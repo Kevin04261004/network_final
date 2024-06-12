@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace GameLogicServer
 {
-    public class GameLogicPacketHandler : PacketHandler<PacketDataInfo.EGameLogicPacketType>
+    public class GameLogicPacketHandler : PacketHandler<PacketDataInfo.EGameLogicPacketType, IPEndPoint>
     {
         public GameLogicPacketHandler()
         {

@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using GameLogicServer.Datas;
 
 namespace GameLogicServer
 {
-    public class DatabasePacketHandler : PacketHandler<PacketDataInfo.EDataBasePacketType>
+    public class DatabasePacketHandler : PacketHandler<PacketDataInfo.EDataBasePacketType, TcpClient>
     {
         public DatabasePacketHandler()
         {

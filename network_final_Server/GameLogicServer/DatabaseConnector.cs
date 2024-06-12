@@ -51,6 +51,7 @@ namespace GameLogicServer
                 MySqlCommand cmd = new MySqlCommand(query, connection);
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.Parameters.AddWithValue("@pw", pw);
+                Logger.Log("MySQL", query);
 
                 using (var reader = cmd.ExecuteReader())
                 {

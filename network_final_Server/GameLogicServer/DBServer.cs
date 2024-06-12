@@ -4,6 +4,7 @@ using GameLogicServer.Datas;
 using GameLogicServer.Datas.Database;
 using System.Net.Sockets;
 using System.Text;
+using DYUtil;
 
 namespace GameLogicServer
 {
@@ -19,7 +20,7 @@ namespace GameLogicServer
 
         protected override void ProcessData(TcpClient client, PacketDataInfo.EDataBasePacketType packetType, byte[] buffer)
         {
-            Debug.Assert(packetType == PacketDataInfo.EDataBasePacketType.None);
+            Debug.Assert(packetType != PacketDataInfo.EDataBasePacketType.None);
             packetHandler.ProcessPacket(client, packetType, buffer);
         }
 
@@ -49,13 +50,13 @@ namespace GameLogicServer
 
         private void ClientLoginSuccess(TcpClient client, string nickName)
         {
-            client.
+            clients.Add(client, nickName);
             using (NetworkStream stream = client.GetStream())
             {
                 byte[] nickNameBytes = Encoding.UTF8.GetBytes(nickName);
                 PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_LoginSuccess, nickNameBytes);
                 byte[] packet = data.ToPacket();
-                stream.Write(packet, 0, packet.Length);
+                Send(packet, client);
             }
         }
 
@@ -65,7 +66,35 @@ namespace GameLogicServer
             {
                 PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_LoginFail);
                 byte[] packet = data.ToPacket();
-                stream.Write(packet, 0, packet.Length);
+                Send(packet, client);
+            }
+        }
+
+        protected override void Send(byte[] data, HashSet<TcpClient> targetClients)
+        {
+            foreach (var client in targetClients)
+            {
+                Send(data, client);
+            }
+        }
+
+        protected override void Send(byte[] data, TcpClient targetClient)
+        {
+            try
+            {
+                if (targetClient == null || !targetClient.Connected)
+                {
+                    // 클라이언트가 null이거나 연결되지 않았을 경우 처리
+                    Logger.LogError("ERROR", "Trying to send data to a null or disconnected client.");
+                    return;
+                }
+                NetworkStream stream = targetClient.GetStream();
+                stream.Write(data, 0, data.Length);
+                stream.Flush();
+            }
+            catch (SocketException ex)
+            {
+                Logger.LogError("Send Error", ex.Message);
             }
         }
     }

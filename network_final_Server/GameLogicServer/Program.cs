@@ -1,6 +1,8 @@
 ﻿using DYUtil;
 using GameLogicServer.Datas;
 using GameLogicServer.Datas.Database;
+using System.Net;
+using System.Net.Sockets;
 
 namespace GameLogicServer
 {
@@ -11,11 +13,11 @@ namespace GameLogicServer
 
         static void Main(string[] args)
         {
-            PacketHandler<PacketDataInfo.EGameLogicPacketType> gameLogicPacketHandler = new GameLogicPacketHandler();
-            BaseServer<PacketDataInfo.EGameLogicPacketType> gameLogicServer = new LogicServer(GAME_LOGIC_PORT_NUM, gameLogicPacketHandler);
+            PacketHandler<PacketDataInfo.EGameLogicPacketType, IPEndPoint> gameLogicPacketHandler = new GameLogicPacketHandler();
+            BaseServer<PacketDataInfo.EGameLogicPacketType, IPEndPoint> gameLogicServer = new LogicServer(GAME_LOGIC_PORT_NUM, gameLogicPacketHandler);
 
-            PacketHandler<PacketDataInfo.EDataBasePacketType> dataBasePacketHandler = new DatabasePacketHandler();
-            BaseServer<PacketDataInfo.EDataBasePacketType> dataBaseServer = new DBServer(DATABASE_PORT_NUM, dataBasePacketHandler);
+            PacketHandler<PacketDataInfo.EDataBasePacketType, TcpClient> dataBasePacketHandler = new DatabasePacketHandler();
+            BaseServer<PacketDataInfo.EDataBasePacketType, TcpClient> dataBaseServer = new DBServer(DATABASE_PORT_NUM, dataBasePacketHandler);
 
             IPFinder.TryGetMyIPv4(out string myIp);
 
