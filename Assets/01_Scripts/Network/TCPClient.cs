@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -55,8 +56,25 @@ public abstract class TCPClient<T> : MonoBehaviour where T : Enum
         int partialLength = 0;
         while (NetworkManager.Instance.DatabaseTcpClient.Connected)
         {
-            Int32 receiveLength = NetworkManager.Instance.NetworkStream.Read(receiveData, 0, receiveData.Length);
+            Int32 receiveLength = 0;
+            MemoryStream ms = new MemoryStream();
+            try
+            {
+                if (!NetworkManager.Instance.NetworkStream.CanRead) continue;
 
+                MainThreadWorker.Instance.EnqueueJob(() =>
+                {
+                    receiveLength = NetworkManager.Instance.NetworkStream.Read(receiveData, 0, receiveData.Length);
+                });
+                if (receiveLength <= 0) break;
+                
+                ms.Write(receiveData, 0, receiveLength);
+            }
+            catch (Exception err)
+            {
+                Debug.Log(err.Message);
+            }
+            
             Array.Copy(receiveData, 0, partialData, partialLength, receiveLength);
             partialLength += receiveLength;
             if (partialLength >= PacketDataInfo.HeaderSize)

@@ -51,23 +51,17 @@ namespace GameLogicServer
         private void ClientLoginSuccess(TcpClient client, string nickName)
         {
             clients.Add(client, nickName);
-            using (NetworkStream stream = client.GetStream())
-            {
-                byte[] nickNameBytes = Encoding.UTF8.GetBytes(nickName);
-                PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_LoginSuccess, nickNameBytes);
-                byte[] packet = data.ToPacket();
-                Send(packet, client);
-            }
+            byte[] nickNameBytes = Encoding.UTF8.GetBytes(nickName);
+            PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_LoginSuccess, nickNameBytes);
+            byte[] packet = data.ToPacket();
+            Send(packet, client);
         }
 
         private void ClientLoginFail(TcpClient client)
         {
-            using (NetworkStream stream = client.GetStream())
-            {
-                PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_LoginFail);
-                byte[] packet = data.ToPacket();
-                Send(packet, client);
-            }
+            PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_LoginFail);
+            byte[] packet = data.ToPacket();
+            Send(packet, client);
         }
 
         protected override void Send(byte[] data, HashSet<TcpClient> targetClients)

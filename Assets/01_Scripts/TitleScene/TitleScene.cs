@@ -13,16 +13,18 @@ public class TitleScene : MonoBehaviour
     private static readonly string ERROR_ACCOUNT_CANT_EXIST = "아이디나 비밀번호가 존재하지 않습니다.";
     private static readonly Color redFadeInColor = new Color(1, 0, 0, 0);
 
-
     [SerializeField] private BufferingImage _bufferingImage;
     [SerializeField] private TextMeshProUGUI _loginLogTMP;
     [SerializeField] private TMP_InputField idInputField;
     [SerializeField] private TMP_InputField pwInputField;
     
     private Coroutine fadeInCoroutine;
+    private TitleSceneTimeLine _titleSceneTimeLine;
 
     private void Awake()
     {
+        _titleSceneTimeLine = FindAnyObjectByType<TitleSceneTimeLine>();
+        
         DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_LoginSuccess, LoginSuccess);
         DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_LoginFail, LoginFail);
     }
@@ -58,6 +60,7 @@ public class TitleScene : MonoBehaviour
         MainThreadWorker.Instance.EnqueueJob(() =>
         {
             _bufferingImage.MinusCount();
+            _titleSceneTimeLine.LoginToLobby();
         });
     }
 
@@ -66,6 +69,7 @@ public class TitleScene : MonoBehaviour
         MainThreadWorker.Instance.EnqueueJob(() =>
         {
             _bufferingImage.MinusCount();
+            SetErrorCode(ERROR_ACCOUNT_CANT_EXIST);
         });
     }
 
