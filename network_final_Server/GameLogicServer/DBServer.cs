@@ -39,6 +39,7 @@ namespace GameLogicServer
             if (DatabaseConnector.TryCheckAccountExist(id, password, out var nickName))
             {
                 ClientLoginSuccess(client, nickName);
+                SendClientGameData(client, id);
             }
             else
             {
@@ -51,10 +52,15 @@ namespace GameLogicServer
         private void ClientLoginSuccess(TcpClient client, string nickName)
         {
             clients.Add(client, nickName);
+            Logger.Log($"{clients[client]}", "님이 로그인에 성공하였습니다.", ConsoleColor.Green);
             byte[] nickNameBytes = Encoding.UTF8.GetBytes(nickName);
             PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_LoginSuccess, nickNameBytes);
             byte[] packet = data.ToPacket();
             Send(packet, client);
+        }
+        private void SendClientGameData(TcpClient client, string id)
+        {
+            
         }
 
         private void ClientLoginFail(TcpClient client)

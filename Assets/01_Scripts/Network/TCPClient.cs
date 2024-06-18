@@ -3,7 +3,6 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 public abstract class TCPClient<T> : MonoBehaviour where T : Enum
@@ -62,10 +61,7 @@ public abstract class TCPClient<T> : MonoBehaviour where T : Enum
             {
                 if (!NetworkManager.Instance.NetworkStream.CanRead) continue;
 
-                MainThreadWorker.Instance.EnqueueJob(() =>
-                {
-                    receiveLength = NetworkManager.Instance.NetworkStream.Read(receiveData, 0, receiveData.Length);
-                });
+                receiveLength = NetworkManager.Instance.NetworkStream.Read(receiveData, 0, receiveData.Length);
                 if (receiveLength <= 0) break;
                 
                 ms.Write(receiveData, 0, receiveLength);

@@ -37,19 +37,26 @@ namespace GameLogicServer
 
         private async Task AsyncAcceptServer()
         {
-            while(true)
+            Debug.Assert(listener != null, "Listener should be initialized before accepting connections.");
+            while (true)
             {
                 TcpClient connectedTCPClient = await listener.AcceptTcpClientAsync().ConfigureAwait(false);
-                Console.WriteLine(connectedTCPClient.Client.RemoteEndPoint.ToString());
-
+                
+                if (connectedTCPClient == null || !connectedTCPClient.Connected)
+                {
+                    Logger.LogError("TCPListener", "Failed to accept TcpClient or client not connected.");
+                    continue;
+                }
+                
                 Task.Factory.StartNew(AsyncTCPProcess, connectedTCPClient);
+                Logger.Log($"{connectedTCPClient.Client.RemoteEndPoint}", "님과 TCP 통신에 성공하였습니다.");
             }
         }
 
         private async void AsyncTCPProcess(object connectedSock)
         {
             TcpClient tc = (TcpClient)connectedSock;
-            NetworkStream stream = tc.GetStream();
+            NetworkStream? stream;
             byte[] receiveBuffer = new byte[MAX_BUF_SIZE];
             try
             {
@@ -61,6 +68,7 @@ namespace GameLogicServer
                         return;
                     }
 
+                    stream = tc.GetStream();
                     Debug.Assert(stream != null, "STREAM이 NULL입니다.");
 
                     int byteRead = stream.Read(receiveBuffer, 0, receiveBuffer.Length);
@@ -83,40 +91,6 @@ namespace GameLogicServer
                     T packetType = (T)Enum.ToObject(typeof(T), BitConverter.ToInt16(headerBuffer, offset));
 
                     ProcessData(tc, packetType, dataBuffer);
-
-                    /*// Read header first
-                    while (totalBytesRead < headerBuffer.Length)
-                    {
-                        int bytesRead = stream.Read(headerBuffer, totalBytesRead, headerBuffer.Length - totalBytesRead);
-                        if (bytesRead == 0)
-                        {
-                            throw new Exception("Connection closed unexpectedly.");
-                        }
-                        totalBytesRead += bytesRead;
-                    }
-
-                    int offset = 0;
-                    Int16 packetSize = BitConverter.ToInt16(headerBuffer, offset);
-                    offset += PacketDataInfo.PacketSizeSize;
-                    char packetID = BitConverter.ToChar(headerBuffer, offset);
-                    offset += PacketDataInfo.PacketIDSize;
-                    T packetType = (T)Enum.ToObject(typeof(T), BitConverter.ToInt16(headerBuffer, offset));
-
-                    // Read data part
-                    byte[] dataBuffer = new byte[packetSize - PacketDataInfo.HeaderSize];
-                    totalBytesRead = 0;
-
-                    while (totalBytesRead < dataBuffer.Length)
-                    {
-                        int bytesRead = stream.Read(dataBuffer, totalBytesRead, dataBuffer.Length - totalBytesRead);
-                        if (bytesRead == 0)
-                        {
-                            throw new Exception("Connection closed unexpectedly.");
-                        }
-                        totalBytesRead += bytesRead;
-                    }
-                    totalBytesRead = 0;
-                    ProcessData(tc, packetType, dataBuffer);*/
                 }
             }
             catch(Exception ex)
@@ -138,6 +112,7 @@ namespace GameLogicServer
             {
                 listener = new TcpListener(IPAddress.Any, portNumber);
                 listener.Start(10);
+                Logger.Log("TCPListener", "TcpListener started successfully.");
             }
             catch (Exception ex)
             {

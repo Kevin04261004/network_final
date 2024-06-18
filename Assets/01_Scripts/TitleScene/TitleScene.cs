@@ -45,7 +45,7 @@ public class TitleScene : MonoBehaviour
             return;
         }
         
-        DB_UserLoginInfo userLoginInfo = new DB_UserLoginInfo("TryLogin", id, pw);
+        DB_UserLoginInfo userLoginInfo = new DB_UserLoginInfo(id, pw, "TryLogin");
         byte[] data = DB_UserLoginInfoInfo.Serialize(userLoginInfo);
         var packetData = new PacketData<PacketDataInfo.EDataBasePacketType>(PacketDataInfo.EDataBasePacketType.Client_TryLogin, data);
         NetworkManager.Instance.SendToServer(ESendServerType.Database, packetData.ToPacket());
@@ -72,8 +72,6 @@ public class TitleScene : MonoBehaviour
             SetErrorCode(ERROR_ACCOUNT_CANT_EXIST);
         });
     }
-
-
     private bool IsValidInput(string input)
     {
         foreach (var c in input)

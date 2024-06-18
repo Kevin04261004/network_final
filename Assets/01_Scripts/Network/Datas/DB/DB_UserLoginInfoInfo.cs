@@ -21,9 +21,10 @@ namespace GameLogicServer.Datas.Database
     */
     public static class DB_UserLoginInfoInfo
     {
-        public static readonly int NICKNAME_SIZE = 16;
         public static readonly int ID_SIZE = 16;
         public static readonly int PASSWORD_SIZE = 16;
+        public static readonly int NICKNAME_SIZE = 16;
+
         public static int GetByteSize()
         {
             int size = NICKNAME_SIZE + ID_SIZE + PASSWORD_SIZE;
@@ -39,12 +40,12 @@ namespace GameLogicServer.Datas.Database
             byte[] data = new byte[size];
 
             int offset = 0;
-            Encoding.UTF8.GetBytes(userLoginInfo.NickName, 0, Math.Min(NICKNAME_SIZE, userLoginInfo.NickName.Length), data, offset);
-            offset += NICKNAME_SIZE;
             Encoding.UTF8.GetBytes(userLoginInfo.Id, 0, Math.Min(ID_SIZE, userLoginInfo.Id.Length), data, offset);
             offset += ID_SIZE;
             Encoding.UTF8.GetBytes(userLoginInfo.Password, 0, Math.Min(PASSWORD_SIZE, userLoginInfo.Password.Length), data, offset);
             offset += PASSWORD_SIZE;
+            Encoding.UTF8.GetBytes(userLoginInfo.NickName, 0, Math.Min(NICKNAME_SIZE, userLoginInfo.NickName.Length), data, offset);
+            offset += NICKNAME_SIZE;
 
             return data;
         }
@@ -58,18 +59,18 @@ namespace GameLogicServer.Datas.Database
             byte[] passwordBytes = new byte[PASSWORD_SIZE];
 
             int offset = 0;
-            Array.Copy(data, offset, nickNameBytes, 0, NICKNAME_SIZE);
-            offset += NICKNAME_SIZE;
             Array.Copy(data, offset, idBytes, 0, ID_SIZE);
             offset += ID_SIZE;
             Array.Copy(data, offset, passwordBytes, 0, PASSWORD_SIZE);
             offset += PASSWORD_SIZE;
+            Array.Copy(data, offset, nickNameBytes, 0, NICKNAME_SIZE);
+            offset += NICKNAME_SIZE;
 
-            string nickName = Encoding.UTF8.GetString(nickNameBytes);
             string id = Encoding.UTF8.GetString(idBytes);
             string password = Encoding.UTF8.GetString(passwordBytes);
+            string nickName = Encoding.UTF8.GetString(nickNameBytes);
 
-            return new DB_UserLoginInfo(nickName, id, password);
+            return new DB_UserLoginInfo(id, password, nickName);
         }
     }
 }
