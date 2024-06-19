@@ -64,7 +64,7 @@ namespace GameLogicServer
                 {
                     if (!tc.Connected)
                     {
-                        Console.WriteLine($"연결 끊김");
+                        Logger.Log("TCP", "연결이 끊겼습니다.");
                         return;
                     }
 

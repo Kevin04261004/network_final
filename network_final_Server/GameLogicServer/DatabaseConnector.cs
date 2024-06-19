@@ -1,9 +1,11 @@
 ﻿using DYUtil;
+using GameLogicServer.Datas.Database;
 using MySql.Data.MySqlClient;
 using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text;
+using static Mysqlx.Expect.Open.Types;
 
 namespace GameLogicServer
 {
@@ -80,6 +82,49 @@ namespace GameLogicServer
             return false;
         }
 
+        public static DB_UserGameData GetUserGameData<T>(string id)
+        {
+            Debug.Assert(string.IsNullOrEmpty(id));
+            if (HasData<DB_UserGameData>($"Id = {id}"))
+            {
+                return 
+            }
+            else
+            {
+                DB_UserGameData data = new DB_UserGameData(id, 0, 0);
+                InsertData<DB_UserGameData>(data);
+                return data;
+            }
+        }
+
+        private static bool HasData<T>(string condition)
+        {
+            Debug.Assert(string.IsNullOrEmpty(condition));
+            try
+            {
+                connection.Open();
+                string sql = $"SELECT COUNT(*) FROM playerData WHERE {condition}";
+                MySqlCommand cmd = new MySqlCommand(sql, connection);
+
+                int count = Convert.ToInt32(cmd.ExecuteScalar());
+
+                connection.Close();
+
+                return count > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+            finally
+            {
+                if (connection != null)
+                {
+                    connection.Close();
+                }
+            }
+        }
         private static void InsertData<T>(T table)
         {
             Debug.Assert(connection != null);
