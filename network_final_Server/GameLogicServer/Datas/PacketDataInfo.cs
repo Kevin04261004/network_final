@@ -18,6 +18,9 @@
             Server_LoginFail,
             Server_LoginSuccess,
             Server_SendUserGameData,
+            Client_RequireCheckHasID,
+            Server_CanCreateAccount,
+            Server_CantCreateAccount,
         }
 
         public static int PacketIDSize = sizeof(char);

@@ -4,6 +4,8 @@ public class TitleSceneTimeLine : MonoBehaviour
 {
     [SerializeField] private PlayableDirector lobbyToLogin; 
     [SerializeField] private PlayableDirector loginToLobby; 
+    [SerializeField] private PlayableDirector loginToNickName; 
+    [SerializeField] private PlayableDirector nickNameToLogin; 
 
     [ContextMenu("Lobby To Login")]
     public void LobbyToLogin()
@@ -15,5 +17,15 @@ public class TitleSceneTimeLine : MonoBehaviour
     public void LoginToLobby()
     {
         loginToLobby.Play();
+    }
+    [ContextMenu("Login To NickName")]
+    public void LoginToNickName()
+    {
+        loginToNickName.Play();
+    }
+    [ContextMenu("NickName To Login")]
+    public void NickNameToLogin()
+    {
+        nickNameToLogin.Play();
     }
 }

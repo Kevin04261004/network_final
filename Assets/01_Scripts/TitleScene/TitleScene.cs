@@ -12,17 +12,25 @@ public class TitleScene : MonoBehaviour
     private static readonly string ERROR_TOO_LONG_OR_SHORT_INPUT = "2-16자의 영문 소문자";
     private static readonly string ERROR_INVALIDATE_INPUT = "숫자와 특수기호(_)만 사용이 가능합니다.";
     private static readonly string ERROR_ACCOUNT_CANT_EXIST = "아이디나 비밀번호가 존재하지 않습니다.";
+    private static readonly string ERROR_ID_ALREADY_HAS = "아이디가 이미 존재합니다.";
     private static readonly Color redFadeInColor = new Color(1, 0, 0, 0);
 
+    [Header("Other")]
     [SerializeField] private BufferingImage _bufferingImage;
+    
+    [Header("LoginPanel")]
     [SerializeField] private TextMeshProUGUI _loginLogTMP;
     [SerializeField] private TMP_InputField idInputField;
     [SerializeField] private TMP_InputField pwInputField;
 
+    [Header("LobbyPanel")]
     [SerializeField] private TextMeshProUGUI _lobbyNickNameTMP;
     [SerializeField] private TextMeshProUGUI _lobbyMyRanking;
     [SerializeField] private TextMeshProUGUI _lobbyMaxPoint;
     [SerializeField] private TextMeshProUGUI _lobbySumPoint;
+
+    [Header("NickNamePanel")] 
+    [SerializeField] private TMP_InputField nickNameInputField;
     
     private Coroutine fadeInCoroutine;
     private TitleSceneTimeLine _titleSceneTimeLine;
@@ -34,6 +42,8 @@ public class TitleScene : MonoBehaviour
         DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_LoginSuccess, LoginSuccess);
         DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_LoginFail, LoginFail);
         DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_SendUserGameData, SetLobbyPanel);
+        DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_CanCreateAccount, CanCreateAccount);
+        DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_CantCreateAccount, CantCreateAccount);
     }
 
     public void TryLogin()
@@ -61,7 +71,35 @@ public class TitleScene : MonoBehaviour
             _bufferingImage.AddCount();
         });
     }
-    
+    public void TryCreateAccount()
+    {
+        string id = idInputField.text;
+        string pw = pwInputField.text;
+        
+        if (id.Length <= 2 || id.Length > 16 || pw.Length <= 2 || pw.Length > 16)
+        {
+            SetErrorCode(ERROR_TOO_LONG_OR_SHORT_INPUT);
+            return;
+        }
+        if (!IsValidInput(id) || !IsValidInput(pw))
+        {
+            SetErrorCode(ERROR_INVALIDATE_INPUT);
+            return;
+        }
+        DB_UserLoginInfo userLoginInfo = new DB_UserLoginInfo(id, pw, "TryLogin");
+        byte[] data = DB_UserLoginInfoInfo.Serialize(userLoginInfo);
+        var packetData = new PacketData<PacketDataInfo.EDataBasePacketType>(PacketDataInfo.EDataBasePacketType.Client_RequireCheckHasID, data);
+        NetworkManager.Instance.SendToServer(ESendServerType.Database, packetData.ToPacket());
+        MainThreadWorker.Instance.EnqueueJob(() =>
+        {
+            _bufferingImage.AddCount();
+        });
+    }
+
+    public void CreateAccount()
+    {
+        
+    }
     public void LoginSuccess(IPEndPoint endPoint, byte[] data)
     {
         MainThreadWorker.Instance.EnqueueJob(() =>
@@ -76,7 +114,6 @@ public class TitleScene : MonoBehaviour
             _lobbyNickNameTMP.text = nickName;
         });
     }
-
     public void LoginFail(IPEndPoint endPoint, byte[] data)
     {
         MainThreadWorker.Instance.EnqueueJob(() =>
@@ -85,7 +122,6 @@ public class TitleScene : MonoBehaviour
             SetErrorCode(ERROR_ACCOUNT_CANT_EXIST);
         });
     }
-
     public void SetLobbyPanel(IPEndPoint endPoint, byte[] data)
     {
         DB_UserGameData userGameData = DB_UserGameDataInfo.Deserialize(data);
@@ -97,6 +133,25 @@ public class TitleScene : MonoBehaviour
             UserGameData.Instance.Id = userGameData.Id;
             UserGameData.Instance.SumPoint = userGameData.SumPoint;
             UserGameData.Instance.MaxPoint = userGameData.MaxPoint;
+        });
+    }
+
+    public void CanCreateAccount(IPEndPoint endPoint, byte[] data)
+    {
+        MainThreadWorker.Instance.EnqueueJob(() =>
+        {
+            _bufferingImage.MinusCount();
+            // 이름 
+            _titleSceneTimeLine.LoginToNickName();
+        });
+    }
+
+    public void CantCreateAccount(IPEndPoint endPoint, byte[] data)
+    {
+        MainThreadWorker.Instance.EnqueueJob(() =>
+        {
+            _bufferingImage.MinusCount();
+            SetErrorCode(ERROR_ID_ALREADY_HAS);
         });
     }
     private bool IsValidInput(string input)

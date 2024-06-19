@@ -27,6 +27,7 @@ namespace GameLogicServer
         protected override void SetAllHandlers()
         {
             packetHandler.SetHandler(PacketDataInfo.EDataBasePacketType.Client_TryLogin, ClientTryLogin);
+            packetHandler.SetHandler(PacketDataInfo.EDataBasePacketType.Client_RequireCheckHasID, ClientCheckHasID);
         }
         #region Delegate PacketHandle Functions
         public void ClientTryLogin(TcpClient client, byte[] data)
@@ -46,7 +47,24 @@ namespace GameLogicServer
                 ClientLoginFail(client);
             }
         }
+        public void ClientCheckHasID(TcpClient client, byte[] data)
+        {
+            DB_UserLoginInfo info = DB_UserLoginInfoInfo.Deserialize(data);
 
+            string id = info.Id;
+            string password = info.Password;
+
+            if (DatabaseConnector.HasUserId(id))
+            {
+                // UserID가 존재함.
+                ClientCantCreateAccount(client);
+            }
+            else
+            {
+                // UserID가 존재하지 않음.
+                ClientCanCreateAccount(client);
+            }
+        }
         #endregion
 
         private void ClientLoginSuccess(TcpClient client, string nickName)
@@ -74,7 +92,18 @@ namespace GameLogicServer
             byte[] packet = data.ToPacket();
             Send(packet, client);
         }
-
+        private void ClientCantCreateAccount(TcpClient client)
+        {
+            PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_CantCreateAccount);
+            byte[] packet = data.ToPacket();
+            Send(packet, client);
+        }
+        private void ClientCanCreateAccount(TcpClient client)
+        {
+            PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_CanCreateAccount);
+            byte[] packet = data.ToPacket();
+            Send(packet, client);
+        }
         protected override void Send(byte[] data, HashSet<TcpClient> targetClients)
         {
             foreach (var client in targetClients)

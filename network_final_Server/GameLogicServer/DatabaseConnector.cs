@@ -5,7 +5,6 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text;
-using static Mysqlx.Expect.Open.Types;
 
 namespace GameLogicServer
 {
@@ -79,6 +78,10 @@ namespace GameLogicServer
             }
             
             return false;
+        }
+        public static bool HasUserId(string id)
+        {
+            return HasData<DB_UserGameData>($"Id = \'{id}\'");
         }
         public static DB_UserGameData GetUserGameData(string id)
         {
