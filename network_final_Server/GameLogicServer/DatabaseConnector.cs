@@ -38,7 +38,6 @@ namespace GameLogicServer
                 Logger.Log("SetMySQL", "Set SQL Connection Success", ConsoleColor.Green);
             }
         }
-
         public static bool TryCheckAccountExist(string id, string pw, out string nickName)
         {
             Debug.Assert(!string.IsNullOrEmpty(id));
@@ -50,10 +49,10 @@ namespace GameLogicServer
                 connection?.Open();
                 /* Ex: SELECT nickName FROM UserLoginInfo WHERE id = 'kdy0426' && password = '0426' */
                 string query = $"SELECT nickName FROM {USER_LOGIN_INFO_TABLE} WHERE id = @id && password = @pw";
+                Logger.Log("MySQL", query);
                 MySqlCommand cmd = new MySqlCommand(query, connection);
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.Parameters.AddWithValue("@pw", pw);
-                Logger.Log("MySQL", query);
 
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -81,13 +80,40 @@ namespace GameLogicServer
             
             return false;
         }
-
-        public static DB_UserGameData GetUserGameData<T>(string id)
+        public static DB_UserGameData GetUserGameData(string id)
         {
-            Debug.Assert(string.IsNullOrEmpty(id));
-            if (HasData<DB_UserGameData>($"Id = {id}"))
+            Debug.Assert(!string.IsNullOrEmpty(id));
+            if (HasData<DB_UserGameData>($"Id = \'{id}\'"))
             {
-                return 
+                Debug.Assert(connection != null);
+                try
+                {
+                    connection.Open();
+                    string sql = $"SELECT * FROM {GetTableName<DB_UserGameData>()} WHERE Id = @id";
+                    Logger.Log("MySQL", sql);
+                    MySqlCommand cmd = new MySqlCommand(sql, connection);
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            string userId = reader.GetString("Id");
+                            long sumPoint = reader.GetInt64("SumPoint");
+                            int maxPoint = reader.GetInt32("MaxPoint");
+                            return new DB_UserGameData(userId, sumPoint, maxPoint);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return null;
+                }
+                finally
+                {
+                    connection.Close();
+                }
             }
             else
             {
@@ -95,15 +121,17 @@ namespace GameLogicServer
                 InsertData<DB_UserGameData>(data);
                 return data;
             }
+            return null;
         }
-
         private static bool HasData<T>(string condition)
         {
-            Debug.Assert(string.IsNullOrEmpty(condition));
+            Debug.Assert(!string.IsNullOrEmpty(condition));
+            Debug.Assert(connection != null);
             try
             {
                 connection.Open();
-                string sql = $"SELECT COUNT(*) FROM playerData WHERE {condition}";
+                string sql = $"SELECT COUNT(*) FROM {GetTableName<T>()} WHERE {condition}";
+                Logger.Log("MySQL", sql);
                 MySqlCommand cmd = new MySqlCommand(sql, connection);
 
                 int count = Convert.ToInt32(cmd.ExecuteScalar());
@@ -165,7 +193,7 @@ namespace GameLogicServer
                 columnsBuilder.Length -= 2;
                 valuesBuilder.Length -= 2;
                 string sql = $"INSERT INTO {tableName}({columnsBuilder.ToString()}) VALUES({valuesBuilder.ToString()})";
-                Console.WriteLine($"[INPUT] {sql}");
+                Logger.Log("MySQL", sql);
                 MySqlCommand cmd = new MySqlCommand(sql, connection);
                 cmd.ExecuteNonQuery();
                 connection.Close();
@@ -187,7 +215,7 @@ namespace GameLogicServer
                 connection?.Open();
                 string tableName = GetTableName<T>();
                 string sql = $"SELECT * FROM {tableName} WHERE {condition}";
-                Console.WriteLine($"[INPUT] {sql}");
+                Logger.Log("MySQL", sql);
                 MySqlCommand cmd = new MySqlCommand(sql, connection);
                 using (var reader = cmd.ExecuteReader())
                 {

@@ -17,6 +17,7 @@
             Client_TryLogin,
             Server_LoginFail,
             Server_LoginSuccess,
+            Server_SendUserGameData,
         }
 
         public static int PacketIDSize = sizeof(char);

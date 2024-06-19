@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Net;
+using System.Text;
 using GameLogicServer.Datas.Database;
 using TMPro;
 using UnityEngine;
@@ -17,6 +18,11 @@ public class TitleScene : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _loginLogTMP;
     [SerializeField] private TMP_InputField idInputField;
     [SerializeField] private TMP_InputField pwInputField;
+
+    [SerializeField] private TextMeshProUGUI _lobbyNickNameTMP;
+    [SerializeField] private TextMeshProUGUI _lobbyMyRanking;
+    [SerializeField] private TextMeshProUGUI _lobbyMaxPoint;
+    [SerializeField] private TextMeshProUGUI _lobbySumPoint;
     
     private Coroutine fadeInCoroutine;
     private TitleSceneTimeLine _titleSceneTimeLine;
@@ -27,6 +33,7 @@ public class TitleScene : MonoBehaviour
         
         DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_LoginSuccess, LoginSuccess);
         DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_LoginFail, LoginFail);
+        DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_SendUserGameData, SetLobbyPanel);
     }
 
     public void TryLogin()
@@ -62,6 +69,12 @@ public class TitleScene : MonoBehaviour
             _bufferingImage.MinusCount();
             _titleSceneTimeLine.LoginToLobby();
         });
+        string nickName = Encoding.UTF8.GetString(data);
+        UserGameData.Instance.NickName = nickName;
+        MainThreadWorker.Instance.EnqueueJob(() =>
+        {
+            _lobbyNickNameTMP.text = nickName;
+        });
     }
 
     public void LoginFail(IPEndPoint endPoint, byte[] data)
@@ -70,6 +83,20 @@ public class TitleScene : MonoBehaviour
         {
             _bufferingImage.MinusCount();
             SetErrorCode(ERROR_ACCOUNT_CANT_EXIST);
+        });
+    }
+
+    public void SetLobbyPanel(IPEndPoint endPoint, byte[] data)
+    {
+        DB_UserGameData userGameData = DB_UserGameDataInfo.Deserialize(data);
+        MainThreadWorker.Instance.EnqueueJob(() =>
+        {
+            _lobbyMyRanking.text = "현재 랭킹: 업데이트 필요";
+            _lobbySumPoint.text = $"합산 점수: {userGameData.SumPoint}";
+            _lobbyMaxPoint.text = $"최대 점수: {userGameData.MaxPoint}";
+            UserGameData.Instance.Id = userGameData.Id;
+            UserGameData.Instance.SumPoint = userGameData.SumPoint;
+            UserGameData.Instance.MaxPoint = userGameData.MaxPoint;
         });
     }
     private bool IsValidInput(string input)

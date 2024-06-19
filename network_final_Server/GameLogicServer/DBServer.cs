@@ -60,7 +60,12 @@ namespace GameLogicServer
         }
         private void SendClientGameData(TcpClient client, string id)
         {
-            
+            DB_UserGameData data = DatabaseConnector.GetUserGameData(id);
+            Logger.Log($"{clients[client]}", $"Id: {data.Id}, sumPoint: {data.SumPoint}, maxPoint: {data.MaxPoint}");
+
+            byte[] userGameData = DB_UserGameDataInfo.Serialize(data);
+            PacketData packetData = new PacketData(PacketDataInfo.EDataBasePacketType.Server_SendUserGameData, userGameData);
+            Send(packetData.ToPacket(), client);
         }
 
         private void ClientLoginFail(TcpClient client)
