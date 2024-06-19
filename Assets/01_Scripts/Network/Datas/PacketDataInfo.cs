@@ -20,6 +20,9 @@ public static class PacketDataInfo
         Client_RequireCheckHasID,
         Server_CanCreateAccount,
         Server_CantCreateAccount,
+        Client_CreateAccount,
+        Server_CreateAccountFail,
+        Server_CreateAccountSuccess,
     }
 
     public static int PacketIDSize = sizeof(char);

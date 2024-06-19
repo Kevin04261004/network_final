@@ -28,6 +28,7 @@ namespace GameLogicServer
         {
             packetHandler.SetHandler(PacketDataInfo.EDataBasePacketType.Client_TryLogin, ClientTryLogin);
             packetHandler.SetHandler(PacketDataInfo.EDataBasePacketType.Client_RequireCheckHasID, ClientCheckHasID);
+            packetHandler.SetHandler(PacketDataInfo.EDataBasePacketType.Client_CreateAccount, CreateAccount);  
         }
         #region Delegate PacketHandle Functions
         public void ClientTryLogin(TcpClient client, byte[] data)
@@ -65,6 +66,27 @@ namespace GameLogicServer
                 ClientCanCreateAccount(client);
             }
         }
+        public void CreateAccount(TcpClient client, byte[] data)
+        {
+            DB_UserLoginInfo info = DB_UserLoginInfoInfo.Deserialize(data);
+
+            string id = info.Id;
+
+            if (DatabaseConnector.HasUserId(id))
+            {
+                CreateAccountFail(client);
+                return;
+            }
+
+            if (DatabaseConnector.TryCreateAccount(info))
+            {
+                CreateAccountSuccess(client);
+            }
+            else
+            {
+                CreateAccountFail(client);
+            }
+        }
         #endregion
 
         private void ClientLoginSuccess(TcpClient client, string nickName)
@@ -85,7 +107,6 @@ namespace GameLogicServer
             PacketData packetData = new PacketData(PacketDataInfo.EDataBasePacketType.Server_SendUserGameData, userGameData);
             Send(packetData.ToPacket(), client);
         }
-
         private void ClientLoginFail(TcpClient client)
         {
             PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_LoginFail);
@@ -104,6 +125,19 @@ namespace GameLogicServer
             byte[] packet = data.ToPacket();
             Send(packet, client);
         }
+        private void CreateAccountFail(TcpClient client)
+        {
+            PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_CreateAccountFail);
+            byte[] packet = data.ToPacket();
+            Send(packet, client);
+        }
+        private void CreateAccountSuccess(TcpClient client)
+        {
+            PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_CreateAccountSuccess);
+            byte[] packet = data.ToPacket();
+            Send(packet, client);
+        }
+
         protected override void Send(byte[] data, HashSet<TcpClient> targetClients)
         {
             foreach (var client in targetClients)
@@ -111,7 +145,6 @@ namespace GameLogicServer
                 Send(data, client);
             }
         }
-
         protected override void Send(byte[] data, TcpClient targetClient)
         {
             try

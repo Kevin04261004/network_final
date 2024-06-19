@@ -83,6 +83,19 @@ namespace GameLogicServer
         {
             return HasData<DB_UserGameData>($"Id = \'{id}\'");
         }
+        public static bool TryCreateAccount(DB_UserLoginInfo info)
+        {
+            try
+            {
+                InsertData<DB_UserLoginInfo>(info);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("CreateAccount", ex.Message);
+                return false;
+            }
+        }
         public static DB_UserGameData GetUserGameData(string id)
         {
             Debug.Assert(!string.IsNullOrEmpty(id));
