@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using DYUtil;
 using GameLogicServer.Datas;
 using GameLogicServer.Datas.Database;
@@ -14,7 +15,7 @@ namespace GameLogicServer
         public LogicServer(int portNum, PacketHandler<PacketDataInfo.EGameLogicPacketType, IPEndPoint> handler) : base(portNum, handler)
         {
             networkObjectManager = new NetworkObjectManager();
-            roomManaager = new RoomManager();
+            roomManaager = new RoomManager(this);
         }
 
         protected override void ProcessData(IPEndPoint clientIPEndPoint, PacketDataInfo.EGameLogicPacketType packetType, byte[] buffer)
@@ -61,7 +62,8 @@ namespace GameLogicServer
         }
         public void ClientCreateRoom(IPEndPoint endPoint, byte[] data)
         {
-            CreateRoom(endPoint);
+            string roomName = Encoding.UTF8.GetString(data);
+            roomManaager.CreateRoom(endPoint, roomName);
         }
         #endregion
         private void SendServerCreateNetworkObjectSuccess(byte[] data, uint startID)
@@ -77,17 +79,6 @@ namespace GameLogicServer
 
             PacketData packet = new PacketData(PacketDataInfo.EGameLogicPacketType.Server_CreateNetworkObjectSuccess, sendByte);
             Send(packet.ToPacket(), connectedClients);
-        }
-        private void CreateRoom(IPEndPoint endPoint)
-        {
-            DB_GameRoom room = new DB_GameRoom();
-            DatabaseConnector.CraeteRoom(room);
-            Logger.Log($"{endPoint.Address}", "방을 생성하였습니다.", ConsoleColor.DarkYellow);
-        }
-        private void EnterRandomRoom(IPEndPoint endPoint)
-        {
-            Logger.Log($"{endPoint.Address}", "랜덤 방에 참가하였습니다.", ConsoleColor.DarkYellow);
-
         }
     }
 }

@@ -139,14 +139,14 @@ namespace GameLogicServer
             byte[] packet = data.ToPacket();
             Send(packet, client);
         }
-        protected override void Send(byte[] data, HashSet<TcpClient> targetClients)
+        public override void Send(byte[] data, HashSet<TcpClient> targetClients)
         {
             foreach (var client in targetClients)
             {
                 Send(data, client);
             }
         }
-        protected override void Send(byte[] data, TcpClient targetClient)
+        public override void Send(byte[] data, TcpClient targetClient)
         {
             try
             {

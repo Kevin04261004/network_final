@@ -36,8 +36,8 @@ namespace GameLogicServer
             receiveThread.Start();
             sendThread.Start();
         }
-        protected abstract void Send(byte[] data, HashSet<R> targetClients);
-        protected abstract void Send(byte[] data, R targetClient);
+        public abstract void Send(byte[] data, HashSet<R> targetClients);
+        public abstract void Send(byte[] data, R targetClient);
         public void StopServer()
         {
             SocketClose();

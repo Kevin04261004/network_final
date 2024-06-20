@@ -9,19 +9,30 @@ namespace GameLogicServer.Datas.Database
 {
     public class DB_GameRoom
     {
-        public int RoomId { get; set; }
-        public char MaxPlayer { get; set; }
+        public uint RoomId { get; set; }
+        public string RoomName { get; set; }
+        public byte MaxPlayer { get; set; }
         public bool IsPublic { get; set; }
         public string? RoomPassword { get; set; }
         public bool IsPlaying { get; set; }
 
-        public DB_GameRoom(char maxPlayer = (char)4, bool isPublic = true, string? roomPW = null, bool isPlaying = false)
+        public DB_GameRoom()
+        {
+            RoomId = 0;
+            RoomName = string.Empty;
+            MaxPlayer = 0;
+            IsPublic = false;
+            RoomPassword = string.Empty;
+            IsPlaying = false;
+        }
+        public DB_GameRoom(string roomName, byte maxPlayer = 4, bool isPublic = true, string? roomPW = null, bool isPlaying = false)
         {
             if (!isPublic)
             {
                 if (roomPW == null)
                 {
                     RoomId = 0;
+                    RoomName = roomName;
                     MaxPlayer = maxPlayer;
                     IsPublic = true;
                     RoomPassword = null;
@@ -30,18 +41,20 @@ namespace GameLogicServer.Datas.Database
                 }
             }
             RoomId = 0;
+            RoomName = roomName;
             MaxPlayer = maxPlayer;
             IsPublic = isPublic;
             RoomPassword = roomPW;
             IsPlaying = false;
         }
-        public DB_GameRoom(int roomId, char maxPlayer = (char)4, bool isPublic = true, string? roomPW = null, bool isPlaying = false)
+        public DB_GameRoom(string roomName, uint roomId, byte maxPlayer = 4, bool isPublic = true, string? roomPW = null, bool isPlaying = false)
         {
             if (!isPublic)
             {
                 if (roomPW == null)
                 {
                     RoomId = 0;
+                    RoomName = roomName;
                     MaxPlayer = maxPlayer;
                     IsPublic = true;
                     RoomPassword = null;
@@ -50,6 +63,7 @@ namespace GameLogicServer.Datas.Database
                 }
             }
             RoomId = roomId;
+            RoomName = roomName;
             MaxPlayer = maxPlayer;
             IsPublic = isPublic;
             RoomPassword = roomPW;

@@ -13,6 +13,7 @@ namespace GameLogicServer.Datas.Database
     | Field        | Type             | Null | Key | Default | Extra          |
     +--------------+------------------+------+-----+---------+----------------+
     | roomId       | int unsigned     | NO   | PRI | NULL    | auto_increment |
+    | roomName     | varchar(16)      | YES  |     | NULL    |                |
     | maxPlayer    | tinyint unsigned | NO   |     | NULL    |                |
     | isPublic     | tinyint(1)       | NO   |     | NULL    |                |
     | roomPassword | varchar(16)      | YES  |     | NULL    |                |
@@ -22,7 +23,8 @@ namespace GameLogicServer.Datas.Database
     public static class DB_GameRoomInfo
     {
         public static readonly int ROOM_ID_SIZE = sizeof(int);
-        public static readonly int MAX_PLAYER_SIZE = sizeof(char);
+        public static readonly int MAX_PLAYER_SIZE = sizeof(byte);
+        public static readonly int ROOM_NAME_SIZE = 16;
         public static readonly int IS_PUBLIC_SIZE = sizeof(bool);
         public static readonly int ROOM_PW_SIZE = 16;
         public static readonly int IS_PLAYING_SIZE = sizeof(bool);
@@ -38,16 +40,21 @@ namespace GameLogicServer.Datas.Database
             int size = GetByteSize();
             byte[] data = new byte[size];
             byte[] roomIdBytes = BitConverter.GetBytes(room.RoomId);
-            byte[] maxPlayerBytes = BitConverter.GetBytes(room.MaxPlayer);
+            byte[] roomNameBytes = new byte[ROOM_NAME_SIZE];
+            byte[] maxPlayerBytes = new byte[1];
             byte[] isPublicBytes = BitConverter.GetBytes(room.IsPublic);
             byte[] roomPWBytes = new byte[ROOM_PW_SIZE];
             byte[] isPlayingBytes = BitConverter.GetBytes(room.IsPlaying);
 
-            MyEncoder.Encode(room.RoomPassword, data, 0, 16);
+            MyEncoder.Encode(room.RoomPassword, roomPWBytes, 0, roomPWBytes.Length);
+            MyEncoder.Encode(room.RoomName, roomNameBytes, 0, roomNameBytes.Length);
+            maxPlayerBytes[0] = room.MaxPlayer;
 
             int offset = 0;
             Array.Copy(roomIdBytes, 0, data, offset, roomIdBytes.Length);
             offset += roomIdBytes.Length;
+            Array.Copy(roomNameBytes, 0, data, offset, roomNameBytes.Length);
+            offset += roomNameBytes.Length;
             Array.Copy(maxPlayerBytes, 0, data, offset, maxPlayerBytes.Length);
             offset += maxPlayerBytes.Length;
             Array.Copy(isPublicBytes, 0, data, offset, isPublicBytes.Length);
@@ -62,6 +69,7 @@ namespace GameLogicServer.Datas.Database
         public static DB_GameRoom DeSerialize(byte[] data)
         {
             byte[] roomIdBytes = new byte[ROOM_ID_SIZE];
+            byte[] roomNameBytes = new byte[ROOM_NAME_SIZE];
             byte[] maxPlayerBytes = new byte[MAX_PLAYER_SIZE];
             byte[] isPublicBytes = new byte[IS_PUBLIC_SIZE];
             byte[] roomPWBytes = new byte[ROOM_PW_SIZE];
@@ -70,6 +78,8 @@ namespace GameLogicServer.Datas.Database
             int offset = 0;
             Array.Copy(data, offset, roomIdBytes, 0, roomIdBytes.Length);
             offset += roomIdBytes.Length;
+            Array.Copy(data, offset, roomNameBytes, 0, roomNameBytes.Length);
+            offset += roomNameBytes.Length;
             Array.Copy(data, offset, maxPlayerBytes, 0, maxPlayerBytes.Length);
             offset += maxPlayerBytes.Length;
             Array.Copy(data, offset, isPublicBytes, 0, isPublicBytes.Length);
@@ -79,13 +89,13 @@ namespace GameLogicServer.Datas.Database
             Array.Copy(data, offset, isPlayingBytes, 0, isPlayingBytes.Length);
             offset += isPlayingBytes.Length;
 
-            int roomId = BitConverter.ToInt32(roomIdBytes);
-            char maxPlayer = BitConverter.ToChar(maxPlayerBytes);
+            uint roomId = BitConverter.ToUInt32(roomIdBytes);
+            string roomName = Encoding.UTF8.GetString(roomNameBytes);
             bool isPublic = BitConverter.ToBoolean(isPublicBytes);
             string roomPW = Encoding.UTF8.GetString(roomPWBytes);
             bool isPlaying = BitConverter.ToBoolean(isPlayingBytes);
 
-            return new DB_GameRoom(roomId, maxPlayer, isPublic, roomPW, isPlaying);
+            return new DB_GameRoom(roomName, roomId, maxPlayerBytes[0], isPublic, roomPW, isPlaying);
         }
     }
 }

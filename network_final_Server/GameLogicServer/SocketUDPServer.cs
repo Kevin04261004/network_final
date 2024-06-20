@@ -70,7 +70,7 @@ namespace GameLogicServer
 
         }
 
-        protected override void Send(byte[] data, HashSet<IPEndPoint> targetClients)
+        public override void Send(byte[] data, HashSet<IPEndPoint> targetClients)
         {
             Debug.Assert(serverSock != null);
             foreach (var client in targetClients)
@@ -78,7 +78,7 @@ namespace GameLogicServer
                 Send(data, client);
             }
         }
-        protected override void Send(byte[] data, IPEndPoint targetClient)
+        public override void Send(byte[] data, IPEndPoint targetClient)
         {
             Debug.Assert(serverSock != null);
             serverSock.SendTo(data, targetClient);

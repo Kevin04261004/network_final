@@ -1,6 +1,7 @@
 ﻿using DYUtil;
 using GameLogicServer.Datas.Database;
 using MySql.Data.MySqlClient;
+using Org.BouncyCastle.Tls;
 using System;
 using System.Diagnostics;
 using System.Reflection;
@@ -143,7 +144,10 @@ namespace GameLogicServer
         {
             try
             {
-                InsertData<DB_GameRoom>(room);
+                if (!InsertData<DB_GameRoom>(room))
+                {
+                    throw new Exception("SQL Query 문제!!!");
+                }
                 return true;
             }
             catch (Exception ex)
@@ -152,9 +156,31 @@ namespace GameLogicServer
                 return false;
             }
         }
+        public static bool HasRoomName(string roomName)
+        {
+            return HasData<DB_GameRoom>($"RoomName = \'{roomName}\'");
+        }
         public static List<DB_GameRoom> GetAllGameRoom()
         {
-
+            return GetData<DB_GameRoom>("1");
+        }
+        public static DB_GameRoom GetGameRoom(string roomName)
+        {
+            if (!HasRoomName(roomName))
+            {
+                return null;
+            }
+            List<DB_GameRoom> roomList = GetData<DB_GameRoom>($"RoomName = \'{roomName}\'");
+            if (roomList.Count > 0)
+            {
+                return roomList[0];
+            }
+            return null;
+        }
+        public static bool TryJoinRoom(uint roomId)
+        {
+            // TODO: 방 입장
+            return false;
         }
         private static bool HasData<T>(string condition)
         {
@@ -186,7 +212,51 @@ namespace GameLogicServer
                 }
             }
         }
-        private static void InsertData<T>(T table)
+        private static List<T> GetData<T>(string condition) where T : new()
+        {
+            Debug.Assert(!string.IsNullOrEmpty(condition));
+            Debug.Assert(connection != null);
+
+            List<T> results = new List<T>();
+
+            try
+            {
+                connection.Open();
+                string tableName = GetTableName<T>();
+                string sql = $"SELECT * FROM {tableName} WHERE {condition}";
+                Logger.Log("MySQL", sql);
+                MySqlCommand cmd = new MySqlCommand(sql, connection);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        T instance = new T();
+                        BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public;
+                        foreach (var property in typeof(T).GetProperties(bindingFlags))
+                        {
+                            if (!reader.IsDBNull(reader.GetOrdinal(property.Name)))
+                            {
+                                var value = reader.GetValue(reader.GetOrdinal(property.Name));
+                                property.SetValue(instance, value);
+                            }
+                        }
+                        results.Add(instance);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                connection?.Close();
+            }
+
+            return results;
+        }
+        private static bool InsertData<T>(T table)
         {
             Debug.Assert(connection != null);
             try
@@ -237,11 +307,13 @@ namespace GameLogicServer
             catch (Exception ex)
             {
                 Console.WriteLine(ex.StackTrace);
+                return false;
             }
             finally
             {
                 connection?.Close();
             }
+            return true;
         }
         private static void SelectData<T>(string condition)
         {

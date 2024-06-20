@@ -3,6 +3,7 @@ using GameLogicServer.Datas;
 using GameLogicServer.Datas.Database;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 namespace GameLogicServer
 {
