@@ -10,11 +10,11 @@ namespace GameLogicServer
 {
     public class DBServer : TCPListenerServer<PacketDataInfo.EDataBasePacketType>
     {
-        private Dictionary<TcpClient, string> clients;
+        private Dictionary<TcpClient, DB_UserLoginInfo> clients;
 
         public DBServer(int port, PacketHandler<PacketDataInfo.EDataBasePacketType, TcpClient> handler) : base(port, handler)
         {
-            clients = new Dictionary<TcpClient, string>();
+            clients = new Dictionary<TcpClient, DB_UserLoginInfo>();
 
         }
 
@@ -28,7 +28,8 @@ namespace GameLogicServer
         {
             packetHandler.SetHandler(PacketDataInfo.EDataBasePacketType.Client_TryLogin, ClientTryLogin);
             packetHandler.SetHandler(PacketDataInfo.EDataBasePacketType.Client_RequireCheckHasID, ClientCheckHasID);
-            packetHandler.SetHandler(PacketDataInfo.EDataBasePacketType.Client_CreateAccount, CreateAccount);  
+            packetHandler.SetHandler(PacketDataInfo.EDataBasePacketType.Client_CreateAccount, CreateAccount);
+            
         }
         #region Delegate PacketHandle Functions
         public void ClientTryLogin(TcpClient client, byte[] data)
@@ -40,7 +41,8 @@ namespace GameLogicServer
 
             if (DatabaseConnector.TryCheckAccountExist(id, password, out var nickName))
             {
-                ClientLoginSuccess(client, nickName);
+                info.NickName = nickName;
+                ClientLoginSuccess(client, info);
                 SendClientGameData(client, id);
             }
             else
@@ -89,11 +91,11 @@ namespace GameLogicServer
         }
         #endregion
 
-        private void ClientLoginSuccess(TcpClient client, string nickName)
+        private void ClientLoginSuccess(TcpClient client, DB_UserLoginInfo info)
         {
-            clients.Add(client, nickName);
-            Logger.Log($"{clients[client]}", "님이 로그인에 성공하였습니다.", ConsoleColor.Green);
-            byte[] nickNameBytes = Encoding.UTF8.GetBytes(nickName);
+            clients.Add(client, info);
+            Logger.Log($"{clients[client].NickName}", "님이 로그인에 성공하였습니다.", ConsoleColor.Green);
+            byte[] nickNameBytes = Encoding.UTF8.GetBytes(clients[client].NickName);
             PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_LoginSuccess, nickNameBytes);
             byte[] packet = data.ToPacket();
             Send(packet, client);
@@ -101,7 +103,7 @@ namespace GameLogicServer
         private void SendClientGameData(TcpClient client, string id)
         {
             DB_UserGameData data = DatabaseConnector.GetUserGameData(id);
-            Logger.Log($"{clients[client]}", $"Id: {data.Id}, sumPoint: {data.SumPoint}, maxPoint: {data.MaxPoint}");
+            Logger.Log($"{clients[client].NickName}", $"Id: {data.Id}, sumPoint: {data.SumPoint}, maxPoint: {data.MaxPoint}");
 
             byte[] userGameData = DB_UserGameDataInfo.Serialize(data);
             PacketData packetData = new PacketData(PacketDataInfo.EDataBasePacketType.Server_SendUserGameData, userGameData);
@@ -137,7 +139,6 @@ namespace GameLogicServer
             byte[] packet = data.ToPacket();
             Send(packet, client);
         }
-
         protected override void Send(byte[] data, HashSet<TcpClient> targetClients)
         {
             foreach (var client in targetClients)

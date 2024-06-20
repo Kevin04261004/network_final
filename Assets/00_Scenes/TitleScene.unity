@@ -941,7 +941,7 @@ GameObject:
   - component: {fileID: 381206765}
   - component: {fileID: 381206764}
   m_Layer: 5
-  m_Name: CreateAccount_Button
+  m_Name: CrateRoom_Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1010,7 +1010,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 381206765}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 27143052}
+        m_TargetAssemblyTypeName: TitleScene, Assembly-CSharp
+        m_MethodName: CreateRoom
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &381206765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3544,7 +3556,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1159619875
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3745,7 +3757,7 @@ GameObject:
   - component: {fileID: 1259019659}
   - component: {fileID: 1259019658}
   m_Layer: 5
-  m_Name: Login_Button
+  m_Name: EnterRandomRoom_Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3814,7 +3826,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1259019659}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 27143052}
+        m_TargetAssemblyTypeName: TitleScene, Assembly-CSharp
+        m_MethodName: EnterRandomRoom
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1259019659
 MonoBehaviour:
   m_ObjectHideFlags: 0

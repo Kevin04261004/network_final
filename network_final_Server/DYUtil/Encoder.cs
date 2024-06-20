@@ -4,13 +4,21 @@ namespace DYUtil
 {
     public static class MyEncoder
     {
-        public static void Encode(string str, byte[] data, int offset)
+        public static void Encode(string? str, byte[] data, int offset)
         {
+            if (string.IsNullOrEmpty(str))
+            {
+                return;
+            }
             Encoding.UTF8.GetBytes(str, 0, str.Length, data, offset);
         }
 
-        public static void Encode(string str, byte[] data, int offset, int maxSize)
+        public static void Encode(string? str, byte[] data, int offset, int maxSize)
         {
+            if (string.IsNullOrEmpty(str))
+            {
+                return;
+            }
             Encoding.UTF8.GetBytes(str, 0, Math.Min(maxSize, str.Length), data, offset);
         }
         public static void Encode(int i, byte[] data, int offset)

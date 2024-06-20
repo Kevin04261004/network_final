@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Net;
+using System.Net.Sockets;
 using DYUtil;
 using GameLogicServer.Datas;
+using GameLogicServer.Datas.Database;
 
 namespace GameLogicServer
 {
@@ -24,6 +26,8 @@ namespace GameLogicServer
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_TryConnectToServer, ClientConnected);
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_ExitGame, ClientDisConnected);
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_RequireCreateNetworkObject, CreateNetworkObjectRequirement);
+            packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_EnterRandomRoom, ClientEnterRandomRoom);
+            packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_CreateRoom, ClientCreateRoom);
         }
 
         #region Delegate PacketHandle Functions
@@ -49,6 +53,14 @@ namespace GameLogicServer
 
             SendServerCreateNetworkObjectSuccess(data, startID);
         }
+        public void ClientEnterRandomRoom(IPEndPoint endPoint, byte[] data)
+        {
+            
+        }
+        public void ClientCreateRoom(IPEndPoint endPoint, byte[] data)
+        {
+            CreateRoom(endPoint);
+        }
         #endregion
         private void SendServerCreateNetworkObjectSuccess(byte[] data, uint startID)
         {
@@ -63,6 +75,12 @@ namespace GameLogicServer
 
             PacketData packet = new PacketData(PacketDataInfo.EGameLogicPacketType.Server_CreateNetworkObjectSuccess, sendByte);
             Send(packet.ToPacket(), connectedClients);
+        }
+        private void CreateRoom(IPEndPoint endPoint)
+        {
+            Logger.Log("Create Room", "방을 생성하였습니다.", ConsoleColor.DarkYellow);
+            DB_GameRoom room = new DB_GameRoom();
+            DatabaseConnector.CraeteRoom(room);
         }
     }
 }

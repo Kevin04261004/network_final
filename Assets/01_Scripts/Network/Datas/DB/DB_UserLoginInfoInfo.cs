@@ -71,6 +71,8 @@ namespace GameLogicServer.Datas.Database
             string nickName = Encoding.UTF8.GetString(nickNameBytes);
 
             return new DB_UserLoginInfo(id, password, nickName);
+            
+            //
         }
     }
 }

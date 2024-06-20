@@ -26,12 +26,9 @@ public class NetworkManager : MonoBehaviour
     }
 
     public EndPoint GameLogicServerEndPoint { get; set; } = null;
-
     public Socket GameLogicUDPClientSock { get; set; } = null;
-
     public TcpClient DatabaseTcpClient { get; set; } = null;
     public NetworkStream NetworkStream { get; set; } = null;
-
     public void SendToServer(ESendServerType serverType, byte[] packet)
     {
         Debug.Assert(packet != null, "들어온 Packet이 NULL입니다.");

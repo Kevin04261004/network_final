@@ -8,6 +8,9 @@ public static class PacketDataInfo
         Client_ExitGame,
         Client_RequireCreateNetworkObject,
         Server_CreateNetworkObjectSuccess,
+        Client_EnterRandomRoom,
+        Client_CreateRoom,
+        
     }
 
     public enum EDataBasePacketType

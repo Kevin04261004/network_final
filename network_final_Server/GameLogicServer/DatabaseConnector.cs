@@ -139,6 +139,19 @@ namespace GameLogicServer
             }
             return null;
         }
+        public static bool CraeteRoom(DB_GameRoom room)
+        {
+            try
+            {
+                InsertData<DB_GameRoom>(room);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Create Room", ex.Message);
+                return false;
+            }
+        }
         private static bool HasData<T>(string condition)
         {
             Debug.Assert(!string.IsNullOrEmpty(condition));
@@ -187,17 +200,20 @@ namespace GameLogicServer
                     var value = property.GetValue(table);
                     if (value != null)
                     {
-                        valuesBuilder.Append("\'");
                         switch (property.PropertyType.ToString())
                         {
                             case "System.DateTime":
                                 valuesBuilder.Append(((DateTime)value).ToString("yyyy-MM-dd HH:mm:ss"));
                                 break;
+                            case "System.String":
+                                valuesBuilder.Append("\'");
+                                valuesBuilder.Append(value.ToString());
+                                valuesBuilder.Append("\'");
+                                break;
                             default:
                                 valuesBuilder.Append(value.ToString());
                                 break;
                         }
-                        valuesBuilder.Append("\'");
                     }
                     else
                     {

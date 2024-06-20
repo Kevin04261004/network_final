@@ -101,6 +101,28 @@ public class TitleScene : MonoBehaviour
         });
     }
 
+    public void EnterRandomRoom()
+    {
+        var packetData =
+            new PacketData<PacketDataInfo.EGameLogicPacketType>(
+                PacketDataInfo.EGameLogicPacketType.Client_EnterRandomRoom);
+        NetworkManager.Instance.SendToServer(ESendServerType.GameLogic, packetData.ToPacket());
+        MainThreadWorker.Instance.EnqueueJob(() =>
+        {
+            _bufferingImage.AddCount();
+        });
+    }
+
+    public void CreateRoom()
+    {
+        var packetData =
+            new PacketData<PacketDataInfo.EGameLogicPacketType>(PacketDataInfo.EGameLogicPacketType.Client_CreateRoom);
+        NetworkManager.Instance.SendToServer(ESendServerType.GameLogic, packetData.ToPacket());
+        MainThreadWorker.Instance.EnqueueJob(() =>
+        {
+            _bufferingImage.AddCount();
+        });
+    }
     public void CreateAccount()
     {
         string id = idInputField.text;
