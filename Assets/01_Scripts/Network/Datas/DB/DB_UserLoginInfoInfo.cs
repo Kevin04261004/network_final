@@ -72,7 +72,19 @@ namespace GameLogicServer.Datas.Database
 
             return new DB_UserLoginInfo(id, password, nickName);
             
-            //
+            // 하고 싶은 일 모두
+            // 할 수 있음 좋겠네
+            // 하늘만큼 땅만큼
+            // 너무나 많은 꿈들
+            // 모두모두 모두 다
+            // 이루게 해 준다네
+            // 신비한 주머니로
+            // 이루게 해 준다네
+            // 하늘을 마음껏
+            // 날고 싶어라
+            // 좋아!!
+            // 대나무 헬리콥터!!
+            // BY. 지나가던 똥
         }
     }
 }

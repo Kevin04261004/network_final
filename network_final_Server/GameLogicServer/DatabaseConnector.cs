@@ -139,7 +139,7 @@ namespace GameLogicServer
             }
             return null;
         }
-        public static bool CraeteRoom(DB_GameRoom room)
+        public static bool TryCraeteRoom(DB_GameRoom room)
         {
             try
             {
@@ -151,6 +151,10 @@ namespace GameLogicServer
                 Logger.LogError("Create Room", ex.Message);
                 return false;
             }
+        }
+        public static List<DB_GameRoom> GetAllGameRoom()
+        {
+
         }
         private static bool HasData<T>(string condition)
         {

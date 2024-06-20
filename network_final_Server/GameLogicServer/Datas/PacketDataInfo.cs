@@ -11,6 +11,8 @@
             Server_CreateNetworkObjectSuccess,
             Client_EnterRandomRoom,
             Client_CreateRoom,
+            Server_CreateRoomFail,
+            Server_CreateRoomSuccess,
 
         }
         public enum EDataBasePacketType

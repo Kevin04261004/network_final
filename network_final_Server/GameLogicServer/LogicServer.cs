@@ -10,9 +10,11 @@ namespace GameLogicServer
     public class LogicServer : SocketUDPServer<PacketDataInfo.EGameLogicPacketType>
     {
         public NetworkObjectManager networkObjectManager;
+        public RoomManager roomManaager;
         public LogicServer(int portNum, PacketHandler<PacketDataInfo.EGameLogicPacketType, IPEndPoint> handler) : base(portNum, handler)
         {
             networkObjectManager = new NetworkObjectManager();
+            roomManaager = new RoomManager();
         }
 
         protected override void ProcessData(IPEndPoint clientIPEndPoint, PacketDataInfo.EGameLogicPacketType packetType, byte[] buffer)
@@ -78,9 +80,14 @@ namespace GameLogicServer
         }
         private void CreateRoom(IPEndPoint endPoint)
         {
-            Logger.Log("Create Room", "방을 생성하였습니다.", ConsoleColor.DarkYellow);
             DB_GameRoom room = new DB_GameRoom();
             DatabaseConnector.CraeteRoom(room);
+            Logger.Log($"{endPoint.Address}", "방을 생성하였습니다.", ConsoleColor.DarkYellow);
+        }
+        private void EnterRandomRoom(IPEndPoint endPoint)
+        {
+            Logger.Log($"{endPoint.Address}", "랜덤 방에 참가하였습니다.", ConsoleColor.DarkYellow);
+
         }
     }
 }
