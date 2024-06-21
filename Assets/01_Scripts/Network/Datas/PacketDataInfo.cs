@@ -15,8 +15,7 @@ public static class PacketDataInfo
     {
         None = 0,
         Client_TryLogin,
-        Server_LoginFail,
-        Server_LoginSuccess,
+         Server_LoginSuccess,
         Server_SendUserGameData,
         Client_RequireCheckHasID,
         Server_CanCreateAccount,
@@ -26,9 +25,14 @@ public static class PacketDataInfo
         Server_CreateAccountSuccess,
         Client_EnterRandomRoom,
         Client_CreateRoom,
-        Server_CreateRoomFail,
+              Server_LoginFail,
+           Server_CreateRoomFail,
         Server_CreateRoomSuccess,
+        Server_ClientEnterRoomSuccess,
+        Server_ClientEnterRoomFail,
+
     }
+
 
     public static int PacketIDSize = sizeof(char);
     public static int PacketTypeSize = sizeof(Int16);

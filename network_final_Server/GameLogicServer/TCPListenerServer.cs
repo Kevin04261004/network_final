@@ -10,7 +10,6 @@ namespace GameLogicServer
     public abstract class TCPListenerServer<T> : BaseServer<T, TcpClient> where T : Enum
     {
         protected TcpListener? listener = null;
-
         protected TCPListenerServer(int port, PacketHandler<T, TcpClient> handler) : base(port, handler)
         {
         }
@@ -34,7 +33,6 @@ namespace GameLogicServer
                 }
             }
         }
-
         private async Task AsyncAcceptServer()
         {
             Debug.Assert(listener != null, "Listener should be initialized before accepting connections.");
@@ -52,7 +50,6 @@ namespace GameLogicServer
                 Logger.Log($"{connectedTCPClient.Client.RemoteEndPoint}", "님과 TCP 통신에 성공하였습니다.");
             }
         }
-
         private async void AsyncTCPProcess(object connectedSock)
         {
             TcpClient tc = (TcpClient)connectedSock;
@@ -103,9 +100,7 @@ namespace GameLogicServer
         {
             return;
         }
-
         protected abstract void ProcessData(TcpClient client, T packetType, byte[] buffer);
-
         private void InitServer()
         {
             try

@@ -9,7 +9,6 @@ namespace GameLogicServer
         protected static readonly int MAX_BUF_SIZE = 4096;
         public HashSet<IPEndPoint> connectedClients { get; protected set; } = new HashSet<IPEndPoint>();
         public PacketHandler<T, R> packetHandler { get; protected set; }
-
         private Thread? receiveThread = null;
         private Thread? sendThread = null;
         public BaseServer(int port, PacketHandler<T, R> handler)
@@ -17,7 +16,6 @@ namespace GameLogicServer
             portNumber = port;
             packetHandler = handler;
         }
-
         protected abstract void ReceiveThreadFunc();
         protected abstract void SendThreadFunc();
         protected abstract void SocketClose();
@@ -32,7 +30,6 @@ namespace GameLogicServer
             {
                 IsBackground = true
             };
-
             receiveThread.Start();
             sendThread.Start();
         }

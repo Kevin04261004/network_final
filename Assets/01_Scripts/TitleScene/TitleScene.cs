@@ -58,6 +58,8 @@ public class TitleScene : MonoBehaviour
         DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_CreateAccountSuccess, CreateAccountSuccess);
         DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_CreateRoomFail, CreateRoomFail);
         DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_CreateRoomSuccess, CreateRoomSuccess);
+        DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_ClientEnterRoomSuccess, EnterRoomSuccess);
+        DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_ClientEnterRoomFail, EnterRoomFail);
     }
 
     /* for Debug */
@@ -188,12 +190,22 @@ public class TitleScene : MonoBehaviour
     }
     private void CreateRoomSuccess(IPEndPoint endPoint, byte[] data)
     {
-        string roomname = Encoding.UTF8.GetString(data);
+        string roomName = Encoding.UTF8.GetString(data);
         MainThreadWorker.Instance.EnqueueJob(() =>
         {
             _bufferingImage.MinusCount();
-            SetErrorCode(_roomNameLogTMP, $"{roomname} {LOG_CREATE_ROOM_SUCCESS}", 3f, Color.green);
+            SetErrorCode(_roomNameLogTMP, $"{roomName} {LOG_CREATE_ROOM_SUCCESS}", 3f, Color.green);
         });
+    }
+
+    private void EnterRoomSuccess(IPEndPoint endPoint, byte[] data)
+    {
+        
+    }
+
+    private void EnterRoomFail(IPEndPoint endPoint, byte[] data)
+    {
+        
     }
     private void LoginSuccess(IPEndPoint endPoint, byte[] data)
     {

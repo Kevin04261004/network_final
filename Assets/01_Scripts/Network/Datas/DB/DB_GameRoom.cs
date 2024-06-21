@@ -1,5 +1,4 @@
-﻿
-public class DB_GameRoom
+﻿public class DB_GameRoom
 {
     public int RoomId { get; set; }
     public string RoomName { get; set; }

@@ -48,12 +48,23 @@ namespace GameLogicServer
             DB_GameRoom gameRoom = DatabaseConnector.GetGameRoom(roomName);
             uint roomId = gameRoom.RoomId;
             DB_RoomUserInfo roomUser = new DB_RoomUserInfo(roomId, dbServer.clients[client].Id, 0);
-            DatabaseConnector.TryJoinRoom(roomUser);
+            if (DatabaseConnector.TryJoinRoom(roomUser))
+            {
+                Logger.Log($"{client.Client.RemoteEndPoint}", "방 생성에 실패하였습니다.", ConsoleColor.Red);
+                PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_ClientEnterRoomSuccess);
+                dbServer.Send(data.ToPacket(), client);
+            }
+            else
+            {
+                Logger.Log($"{client.Client.RemoteEndPoint}", "방 생성에 실패하였습니다.", ConsoleColor.Red);
+                PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_ClientEnterRoomFail);
+                dbServer.Send(data.ToPacket(), client);
+            }
         }
         public void EnterRandomRoom(IPEndPoint endPoint)
         {
             Logger.Log($"{endPoint.Address}", "랜덤 방에 참가하였습니다.", ConsoleColor.DarkYellow);
-
+            
         }
     }
 }

@@ -27,6 +27,9 @@
             Client_CreateRoom,
             Server_CreateRoomFail,
             Server_CreateRoomSuccess,
+            Server_ClientEnterRoomSuccess,
+            Server_ClientEnterRoomFail,
+
         }
 
         public static int PacketIDSize = sizeof(char);

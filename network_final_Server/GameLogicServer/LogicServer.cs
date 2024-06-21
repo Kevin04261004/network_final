@@ -15,25 +15,21 @@ namespace GameLogicServer
         {
             networkObjectManager = new NetworkObjectManager();
         }
-
         protected override void ProcessData(IPEndPoint clientIPEndPoint, PacketDataInfo.EGameLogicPacketType packetType, byte[] buffer)
         {
             Debug.Assert(packetType != PacketDataInfo.EGameLogicPacketType.None);
             packetHandler.ProcessPacket(clientIPEndPoint, packetType, buffer);
         }
-
         protected override void SetAllHandlers()
         {
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_TryConnectToServer, ClientConnected);
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_ExitGame, ClientDisConnected);
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_RequireCreateNetworkObject, CreateNetworkObjectRequirement);
         }
-
         #region Delegate PacketHandle Functions
         public void ClientConnected(IPEndPoint endPoint, byte[] data)
         {
             Logger.Log($"{endPoint.Address}", "Success Connect Server", ConsoleColor.Green);
-
             connectedClients.Add(endPoint);
         }
         public void ClientDisConnected(IPEndPoint endPoint, byte[] data)
