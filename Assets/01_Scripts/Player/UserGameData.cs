@@ -14,10 +14,10 @@ public class UserGameData : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        GameData = new DB_UserGameData("",0,0);
     }
     
     public string NickName { get; set; }
-    public string Id { get; set; }
-    public long SumPoint { get; set; }
-    public int MaxPoint { get; set; }
+    public DB_UserGameData GameData { get; set; }
 }

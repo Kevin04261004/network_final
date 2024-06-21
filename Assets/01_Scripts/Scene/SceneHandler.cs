@@ -6,23 +6,42 @@ using UnityEngine.UI;
 
 public class SceneHandler : MonoBehaviour
 {
+    public static SceneHandler Instance { get; private set; }
+    public readonly static string TitleScene = "TitleScene";
+    public readonly static string RoomScene = "RoomScene";
+    public readonly static string InGameScene = "InGameScene";
+    public readonly static string ServerManagerScene = "ServerManagerScene";
     public Dictionary<string, LoadSceneMode> loadScenes = new Dictionary<string, LoadSceneMode>();
     public Image fadeImage;
     public float fadeDuration = 1.0f;
-
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     private void Start()
     {
         InitSceneInfo();
-        LoadScene("ServerManagerScene");
-        LoadSceneWithFade("TitleScene");
+        if (SceneManager.sceneCount != 1)
+        {
+            return;
+        }
+        LoadScene(ServerManagerScene);
+        LoadSceneWithFade(TitleScene);
     }
     
     private void InitSceneInfo()
     {
-        loadScenes.Add("TitleScene", LoadSceneMode.Additive);
-        loadScenes.Add("RoomScene", LoadSceneMode.Additive);
-        loadScenes.Add("InGameScene", LoadSceneMode.Additive);
-        loadScenes.Add("ServerManagerScene", LoadSceneMode.Additive);
+        loadScenes.Add(TitleScene, LoadSceneMode.Additive);
+        loadScenes.Add(RoomScene, LoadSceneMode.Additive);
+        loadScenes.Add(InGameScene, LoadSceneMode.Additive);
+        loadScenes.Add(ServerManagerScene, LoadSceneMode.Additive);
     }
 
     public void LoadSceneWithFade(string sceneName)
@@ -59,13 +78,13 @@ public class SceneHandler : MonoBehaviour
 
     private IEnumerator LoadSceneRoutine(string sceneName, LoadSceneMode mode)
     {
-        if (sceneName == "RoomScene")
+        if (sceneName == RoomScene)
         {
-            yield return SceneManager.UnloadSceneAsync("TitleScene");
+            yield return SceneManager.UnloadSceneAsync(TitleScene);
         }
-        else if (sceneName == "InGameScene")
+        else if (sceneName == InGameScene)
         {
-            yield return SceneManager.UnloadSceneAsync("RoomScene");
+            yield return SceneManager.UnloadSceneAsync(RoomScene);
         }
 
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName, mode);

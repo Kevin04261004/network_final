@@ -178,6 +178,7 @@ public class TitleScene : MonoBehaviour
         MainThreadWorker.Instance.EnqueueJob(() =>
         {
             _bufferingImage.AddCount();
+            _bufferingImage.AddCount();
         });
     }
     private void CreateRoomFail(IPEndPoint endPoint, byte[] data)
@@ -194,18 +195,30 @@ public class TitleScene : MonoBehaviour
         MainThreadWorker.Instance.EnqueueJob(() =>
         {
             _bufferingImage.MinusCount();
-            SetErrorCode(_roomNameLogTMP, $"{roomName} {LOG_CREATE_ROOM_SUCCESS}", 3f, Color.green);
+            SetErrorCode(_roomNameLogTMP, $"{LOG_CREATE_ROOM_SUCCESS} => {roomName}", 3f, Color.green);
         });
     }
 
     private void EnterRoomSuccess(IPEndPoint endPoint, byte[] data)
     {
+        DB_GameRoom curGameRoom = DB_GameRoomInfo.DeSerialize(data);
+        MainThreadWorker.Instance.EnqueueJob(() =>
+        {
+            _bufferingImage.MinusCount();
+            CurrentGameRoomData.Instance.GameRoom = curGameRoom;
+            SceneHandler.Instance.LoadScene(SceneHandler.RoomScene);
+        });
         
     }
 
     private void EnterRoomFail(IPEndPoint endPoint, byte[] data)
     {
-        
+        DB_GameRoom curGameRoom = DB_GameRoomInfo.DeSerialize(data);
+        MainThreadWorker.Instance.EnqueueJob(() =>
+        {
+            _bufferingImage.MinusCount();
+            SetErrorCode(_roomNameLogTMP, $"{LOG_CREATE_ROOM_SUCCESS} => {curGameRoom.RoomName}", 3f, Color.green);
+        });
     }
     private void LoginSuccess(IPEndPoint endPoint, byte[] data)
     {
@@ -237,9 +250,9 @@ public class TitleScene : MonoBehaviour
             _lobbyMyRanking.text = "현재 랭킹: 업데이트 필요";
             _lobbySumPoint.text = $"합산 점수: {userGameData.SumPoint}";
             _lobbyMaxPoint.text = $"최대 점수: {userGameData.MaxPoint}";
-            UserGameData.Instance.Id = userGameData.Id;
-            UserGameData.Instance.SumPoint = userGameData.SumPoint;
-            UserGameData.Instance.MaxPoint = userGameData.MaxPoint;
+            UserGameData.Instance.GameData.Id = userGameData.Id;
+            UserGameData.Instance.GameData.SumPoint = userGameData.SumPoint;
+            UserGameData.Instance.GameData.MaxPoint = userGameData.MaxPoint;
         });
     }
     private void CanCreateAccount(IPEndPoint endPoint, byte[] data)

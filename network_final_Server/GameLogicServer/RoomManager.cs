@@ -31,7 +31,6 @@ namespace GameLogicServer
                 byte[] roomNameByte = new byte[DB_GameRoomInfo.ROOM_NAME_SIZE];
                 
                 MyEncoder.Encode(roomName, roomNameByte, 0, roomNameByte.Length);
-
                 PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_CreateRoomSuccess, roomNameByte);
                 dbServer.Send(data.ToPacket(), client);
                 EnterRoom(client, roomName);
@@ -48,16 +47,17 @@ namespace GameLogicServer
             DB_GameRoom gameRoom = DatabaseConnector.GetGameRoom(roomName);
             uint roomId = gameRoom.RoomId;
             DB_RoomUserInfo roomUser = new DB_RoomUserInfo(roomId, dbServer.clients[client].Id, 0);
+            byte[] gameRoomBytes = DB_GameRoomInfo.Serialize(gameRoom);
             if (DatabaseConnector.TryJoinRoom(roomUser))
             {
-                Logger.Log($"{client.Client.RemoteEndPoint}", "방 생성에 실패하였습니다.", ConsoleColor.Red);
-                PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_ClientEnterRoomSuccess);
+                Logger.Log($"{client.Client.RemoteEndPoint}", "방 입장에 성공하였습니다.", ConsoleColor.Green);
+                PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_ClientEnterRoomSuccess, gameRoomBytes);
                 dbServer.Send(data.ToPacket(), client);
             }
             else
             {
-                Logger.Log($"{client.Client.RemoteEndPoint}", "방 생성에 실패하였습니다.", ConsoleColor.Red);
-                PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_ClientEnterRoomFail);
+                Logger.Log($"{client.Client.RemoteEndPoint}", "방 입장에 실패하였습니다.", ConsoleColor.Red);
+                PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_ClientEnterRoomFail, gameRoomBytes);
                 dbServer.Send(data.ToPacket(), client);
             }
         }

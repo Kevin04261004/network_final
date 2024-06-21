@@ -1,13 +1,13 @@
 ﻿public class DB_GameRoom
 {
-    public int RoomId { get; set; }
+    public uint RoomId { get; set; }
     public string RoomName { get; set; }
-    public char MaxPlayer { get; set; }
+    public byte MaxPlayer { get; set; }
     public bool IsPublic { get; set; }
     public string? RoomPassword { get; set; }
     public bool IsPlaying { get; set; }
 
-    public DB_GameRoom(string roomName, char maxPlayer = (char)4, bool isPublic = true, string? roomPW = null, bool isPlaying = false)
+    public DB_GameRoom(string roomName, byte maxPlayer = 4, bool isPublic = true, string? roomPW = null, bool isPlaying = false)
     {
         if (!isPublic)
         {
@@ -29,7 +29,7 @@
         RoomPassword = roomPW;
         IsPlaying = false;
     }
-    public DB_GameRoom(string roomName, int roomId, char maxPlayer = (char)4, bool isPublic = true, string? roomPW = null, bool isPlaying = false)
+    public DB_GameRoom(string roomName, uint roomId, byte maxPlayer = 4, bool isPublic = true, string? roomPW = null, bool isPlaying = false)
     {
         if (!isPublic)
         {

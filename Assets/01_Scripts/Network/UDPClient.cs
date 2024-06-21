@@ -12,7 +12,7 @@ namespace _01_Scripts.Network
         private static readonly int MAX_BUF_SIZE = 4096;
         private static readonly int PORT_NUM = 10000;
         private Thread receiveThread;
-        protected virtual void Start()
+        protected virtual void Awake()
         {
             Init();
             ConnectToServer();

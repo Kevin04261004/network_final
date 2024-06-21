@@ -31,7 +31,7 @@ namespace GameLogicServer.Datas.Database
 
         public static int GetByteSize()
         {
-            return ROOM_ID_SIZE + MAX_PLAYER_SIZE + IS_PUBLIC_SIZE + ROOM_PW_SIZE + IS_PLAYING_SIZE;
+            return ROOM_ID_SIZE + MAX_PLAYER_SIZE + ROOM_NAME_SIZE + IS_PUBLIC_SIZE + ROOM_PW_SIZE + IS_PLAYING_SIZE;
         }
         public static byte[] Serialize(DB_GameRoom room)
         {

@@ -14,16 +14,16 @@ namespace GameLogicServer
 
         static void Main(string[] args)
         {
-            //PacketHandler<PacketDataInfo.EGameLogicPacketType, IPEndPoint> gameLogicPacketHandler = new GameLogicPacketHandler();
-            //BaseServer<PacketDataInfo.EGameLogicPacketType, IPEndPoint> gameLogicServer = new LogicServer(GAME_LOGIC_PORT_NUM, gameLogicPacketHandler);
+            PacketHandler<PacketDataInfo.EGameLogicPacketType, IPEndPoint> gameLogicPacketHandler = new GameLogicPacketHandler();
+            BaseServer<PacketDataInfo.EGameLogicPacketType, IPEndPoint> gameLogicServer = new LogicServer(GAME_LOGIC_PORT_NUM, gameLogicPacketHandler);
 
             PacketHandler<PacketDataInfo.EDataBasePacketType, TcpClient> dataBasePacketHandler = new DatabasePacketHandler();
             BaseServer<PacketDataInfo.EDataBasePacketType, TcpClient> dataBaseServer = new DBServer(DATABASE_PORT_NUM, dataBasePacketHandler);
 
             IPFinder.TryGetMyIPv4(out string myIp);
 
-            //gameLogicServer.StartServer();
-            //Logger.Log($"{myIp}:{GAME_LOGIC_PORT_NUM}", "Game Server Started...", ConsoleColor.Green);
+            gameLogicServer.StartServer();
+            Logger.Log($"{myIp}:{GAME_LOGIC_PORT_NUM}", "Game Server Started...", ConsoleColor.Green);
             dataBaseServer.StartServer();
             Logger.Log($"{myIp}:{DATABASE_PORT_NUM}", "DB Server Started...", ConsoleColor.Green);
 
