@@ -2,50 +2,53 @@
 using GameLogicServer.Datas;
 using GameLogicServer.Datas.Database;
 using System.Net;
+using System.Net.Sockets;
 
 namespace GameLogicServer
 {
     public class RoomManager
     {
-        public LogicServer logicServer;
+        public DBServer dbServer;
 
-        public RoomManager(LogicServer logicServer)
+        public RoomManager(DBServer logicServer)
         {
-            this.logicServer = logicServer;
+            this.dbServer = logicServer;
         }
 
-        public void CreateRoom(IPEndPoint endPoint, string roomName)
+        public void CreateRoom(TcpClient client, string roomName)
         {
             if (DatabaseConnector.HasRoomName(roomName))
             {
-                Logger.Log($"{endPoint.Address}", "방 생성에 실패하였습니다.", ConsoleColor.Red);
-                PacketData data = new PacketData(PacketDataInfo.EGameLogicPacketType.Server_CreateRoomFail);
-                logicServer.Send(data.ToPacket(), endPoint);
+                Logger.Log($"{client.Client.RemoteEndPoint}", "방 생성에 실패하였습니다.", ConsoleColor.Red);
+                PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_CreateRoomFail);
+                dbServer.Send(data.ToPacket(), client);
                 return;
             }
             DB_GameRoom room = new DB_GameRoom(roomName);
             if (DatabaseConnector.TryCraeteRoom(room))
             {
-                Logger.Log($"{endPoint.Address}", "방을 생성하였습니다.", ConsoleColor.DarkYellow);
+                Logger.Log($"{client.Client.RemoteEndPoint}", "방을 생성하였습니다.", ConsoleColor.DarkYellow);
                 byte[] roomNameByte = new byte[DB_GameRoomInfo.ROOM_NAME_SIZE];
                 
                 MyEncoder.Encode(roomName, roomNameByte, 0, roomNameByte.Length);
 
-                PacketData data = new PacketData(PacketDataInfo.EGameLogicPacketType.Server_CreateRoomSuccess, roomNameByte);
-                logicServer.Send(data.ToPacket(), endPoint);
-                EnterRoom(endPoint, roomName);
+                PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_CreateRoomSuccess, roomNameByte);
+                dbServer.Send(data.ToPacket(), client);
+                EnterRoom(client, roomName);
             }
             else
             {
-                Logger.Log($"{endPoint.Address}", "방 생성에 실패하였습니다.", ConsoleColor.Red);
-                PacketData data = new PacketData(PacketDataInfo.EGameLogicPacketType.Server_CreateRoomFail);
-                logicServer.Send(data.ToPacket(), endPoint);
+                Logger.Log($"{client.Client.RemoteEndPoint}", "방 생성에 실패하였습니다.", ConsoleColor.Red);
+                PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_CreateRoomFail);
+                dbServer.Send(data.ToPacket(), client);
             }
         }
-        public void EnterRoom(IPEndPoint endPoint, string roomName)
+        public void EnterRoom(TcpClient client, string roomName)
         {
             DB_GameRoom gameRoom = DatabaseConnector.GetGameRoom(roomName);
             uint roomId = gameRoom.RoomId;
+            DB_RoomUserInfo roomUser = new DB_RoomUserInfo(roomId, dbServer.clients[client].Id, 0);
+            DatabaseConnector.TryJoinRoom(roomUser);
         }
         public void EnterRandomRoom(IPEndPoint endPoint)
         {

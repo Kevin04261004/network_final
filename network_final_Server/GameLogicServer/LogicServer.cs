@@ -11,11 +11,9 @@ namespace GameLogicServer
     public class LogicServer : SocketUDPServer<PacketDataInfo.EGameLogicPacketType>
     {
         public NetworkObjectManager networkObjectManager;
-        public RoomManager roomManaager;
         public LogicServer(int portNum, PacketHandler<PacketDataInfo.EGameLogicPacketType, IPEndPoint> handler) : base(portNum, handler)
         {
             networkObjectManager = new NetworkObjectManager();
-            roomManaager = new RoomManager(this);
         }
 
         protected override void ProcessData(IPEndPoint clientIPEndPoint, PacketDataInfo.EGameLogicPacketType packetType, byte[] buffer)
@@ -29,8 +27,6 @@ namespace GameLogicServer
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_TryConnectToServer, ClientConnected);
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_ExitGame, ClientDisConnected);
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_RequireCreateNetworkObject, CreateNetworkObjectRequirement);
-            packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_EnterRandomRoom, ClientEnterRandomRoom);
-            packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_CreateRoom, ClientCreateRoom);
         }
 
         #region Delegate PacketHandle Functions
@@ -55,15 +51,6 @@ namespace GameLogicServer
             uint startID = networkObjectManager.CreateNetworkObject(newObjData);
 
             SendServerCreateNetworkObjectSuccess(data, startID);
-        }
-        public void ClientEnterRandomRoom(IPEndPoint endPoint, byte[] data)
-        {
-            
-        }
-        public void ClientCreateRoom(IPEndPoint endPoint, byte[] data)
-        {
-            string roomName = Encoding.UTF8.GetString(data);
-            roomManaager.CreateRoom(endPoint, roomName);
         }
         #endregion
         private void SendServerCreateNetworkObjectSuccess(byte[] data, uint startID)

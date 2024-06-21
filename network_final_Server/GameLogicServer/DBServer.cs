@@ -10,11 +10,13 @@ namespace GameLogicServer
 {
     public class DBServer : TCPListenerServer<PacketDataInfo.EDataBasePacketType>
     {
-        private Dictionary<TcpClient, DB_UserLoginInfo> clients;
+        public Dictionary<TcpClient, DB_UserLoginInfo> clients { get; set; }
+        public RoomManager roomManager;
 
         public DBServer(int port, PacketHandler<PacketDataInfo.EDataBasePacketType, TcpClient> handler) : base(port, handler)
         {
             clients = new Dictionary<TcpClient, DB_UserLoginInfo>();
+            roomManager = new RoomManager(this);
 
         }
 
@@ -29,7 +31,9 @@ namespace GameLogicServer
             packetHandler.SetHandler(PacketDataInfo.EDataBasePacketType.Client_TryLogin, ClientTryLogin);
             packetHandler.SetHandler(PacketDataInfo.EDataBasePacketType.Client_RequireCheckHasID, ClientCheckHasID);
             packetHandler.SetHandler(PacketDataInfo.EDataBasePacketType.Client_CreateAccount, CreateAccount);
-            
+            packetHandler.SetHandler(PacketDataInfo.EDataBasePacketType.Client_EnterRandomRoom, ClientEnterRandomRoom);
+            packetHandler.SetHandler(PacketDataInfo.EDataBasePacketType.Client_CreateRoom, ClientCreateRoom);
+
         }
         #region Delegate PacketHandle Functions
         public void ClientTryLogin(TcpClient client, byte[] data)
@@ -88,6 +92,15 @@ namespace GameLogicServer
             {
                 CreateAccountFail(client);
             }
+        }
+        public void ClientEnterRandomRoom(TcpClient client, byte[] data)
+        {
+
+        }
+        public void ClientCreateRoom(TcpClient client, byte[] data)
+        {
+            string roomName = Encoding.UTF8.GetString(data);
+            roomManager.CreateRoom(client, roomName);
         }
         #endregion
 

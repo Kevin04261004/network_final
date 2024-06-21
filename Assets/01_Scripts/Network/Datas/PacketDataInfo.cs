@@ -8,10 +8,6 @@ public static class PacketDataInfo
         Client_ExitGame,
         Client_RequireCreateNetworkObject,
         Server_CreateNetworkObjectSuccess,
-        Client_EnterRandomRoom,
-        Client_CreateRoom,
-        Server_CreateRoomFail,
-        Server_CreateRoomSuccess,
 
     }
 
@@ -28,6 +24,10 @@ public static class PacketDataInfo
         Client_CreateAccount,
         Server_CreateAccountFail,
         Server_CreateAccountSuccess,
+        Client_EnterRandomRoom,
+        Client_CreateRoom,
+        Server_CreateRoomFail,
+        Server_CreateRoomSuccess,
     }
 
     public static int PacketIDSize = sizeof(char);

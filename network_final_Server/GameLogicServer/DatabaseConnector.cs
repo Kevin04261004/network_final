@@ -177,9 +177,9 @@ namespace GameLogicServer
             }
             return null;
         }
-        public static bool TryJoinRoom(uint roomId)
+        public static bool TryJoinRoom(DB_RoomUserInfo roomUserInfo)
         {
-            // TODO: 방 입장
+            InsertData<DB_RoomUserInfo>(roomUserInfo);
             return false;
         }
         private static bool HasData<T>(string condition)

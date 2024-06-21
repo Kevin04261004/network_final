@@ -56,8 +56,8 @@ public class TitleScene : MonoBehaviour
         DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_CantCreateAccount, CantCreateAccount);
         DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_CreateAccountFail, CreateAccountFail);
         DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_CreateAccountSuccess, CreateAccountSuccess);
-        GameLogicPacketHandler.Instance.SetHandler(PacketDataInfo.EGameLogicPacketType.Server_CreateRoomFail, CreateRoomFail);
-        GameLogicPacketHandler.Instance.SetHandler(PacketDataInfo.EGameLogicPacketType.Server_CreateRoomSuccess, CreateRoomSuccess);
+        DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_CreateRoomFail, CreateRoomFail);
+        DatabasePacketHandler.Instance.SetHandler(PacketDataInfo.EDataBasePacketType.Server_CreateRoomSuccess, CreateRoomSuccess);
     }
 
     /* for Debug */
@@ -120,9 +120,9 @@ public class TitleScene : MonoBehaviour
     public void EnterRandomRoom()
     {
         var packetData =
-            new PacketData<PacketDataInfo.EGameLogicPacketType>(
-                PacketDataInfo.EGameLogicPacketType.Client_EnterRandomRoom);
-        NetworkManager.Instance.SendToServer(ESendServerType.GameLogic, packetData.ToPacket());
+            new PacketData<PacketDataInfo.EDataBasePacketType>(
+                PacketDataInfo.EDataBasePacketType.Client_EnterRandomRoom);
+        NetworkManager.Instance.SendToServer(ESendServerType.Database, packetData.ToPacket());
         MainThreadWorker.Instance.EnqueueJob(() =>
         {
             _bufferingImage.AddCount();
@@ -146,8 +146,8 @@ public class TitleScene : MonoBehaviour
         byte[] roomNameBytes = new byte[DB_GameRoomInfo.ROOM_NAME_SIZE];
         MyEncoder.Encode(roomName, roomNameBytes, 0, roomNameBytes.Length);
         var packetData =
-            new PacketData<PacketDataInfo.EGameLogicPacketType>(PacketDataInfo.EGameLogicPacketType.Client_CreateRoom, roomNameBytes);
-        NetworkManager.Instance.SendToServer(ESendServerType.GameLogic, packetData.ToPacket());
+            new PacketData<PacketDataInfo.EDataBasePacketType>(PacketDataInfo.EDataBasePacketType.Client_CreateRoom, roomNameBytes);
+        NetworkManager.Instance.SendToServer(ESendServerType.Database, packetData.ToPacket());
         MainThreadWorker.Instance.EnqueueJob(() =>
         {
             _bufferingImage.AddCount();
