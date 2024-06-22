@@ -15,25 +15,25 @@ namespace GameLogicServer
             this.dbServer = logicServer;
         }
 
-        public void CreateRoom(TcpClient client, string roomName)
+        public void CreateRoom(TcpClient client, DB_GameRoom gameRoom)
         {
-            if (DatabaseConnector.HasRoomName(roomName))
+            if (DatabaseConnector.HasRoomName(gameRoom.RoomName))
             {
                 Logger.Log($"{client.Client.RemoteEndPoint}", "방 생성에 실패하였습니다.", ConsoleColor.Red);
                 PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_CreateRoomFail);
                 dbServer.Send(data.ToPacket(), client);
                 return;
             }
-            DB_GameRoom room = new DB_GameRoom(roomName);
-            if (DatabaseConnector.TryCraeteRoom(room))
+            if (DatabaseConnector.TryCreateRoom(gameRoom))
             {
                 Logger.Log($"{client.Client.RemoteEndPoint}", "방을 생성하였습니다.", ConsoleColor.DarkYellow);
                 byte[] roomNameByte = new byte[DB_GameRoomInfo.ROOM_NAME_SIZE];
                 
-                MyEncoder.Encode(roomName, roomNameByte, 0, roomNameByte.Length);
+                MyEncoder.Encode(gameRoom.RoomName, roomNameByte, 0, roomNameByte.Length);
                 PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_CreateRoomSuccess, roomNameByte);
                 dbServer.Send(data.ToPacket(), client);
-                EnterRoom(client, roomName);
+                DB_GameRoom curRoom = DatabaseConnector.GetGameRoom(gameRoom.RoomName);
+                EnterRoom(client, curRoom);
             }
             else
             {
@@ -42,11 +42,10 @@ namespace GameLogicServer
                 dbServer.Send(data.ToPacket(), client);
             }
         }
-        public void EnterRoom(TcpClient client, string roomName)
+        public void EnterRoom(TcpClient client, DB_GameRoom gameRoom)
         {
-            DB_GameRoom gameRoom = DatabaseConnector.GetGameRoom(roomName);
             uint roomId = gameRoom.RoomId;
-            DB_RoomUserInfo roomUser = new DB_RoomUserInfo(roomId, dbServer.clients[client].Id, 0);
+            DB_RoomUserInfo roomUser = new DB_RoomUserInfo(roomId, dbServer.clients[client].Id, ((IPEndPoint)client.Client.RemoteEndPoint).ToString());
             byte[] gameRoomBytes = DB_GameRoomInfo.Serialize(gameRoom);
             if (DatabaseConnector.TryJoinRoom(roomUser))
             {

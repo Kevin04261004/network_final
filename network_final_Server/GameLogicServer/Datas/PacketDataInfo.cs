@@ -9,7 +9,9 @@
             Client_ExitGame,
             Client_RequireCreateNetworkObject,
             Server_CreateNetworkObjectSuccess,
+            Client_EnterRoom,
         }
+
         public enum EDataBasePacketType
         {
             None = 0,

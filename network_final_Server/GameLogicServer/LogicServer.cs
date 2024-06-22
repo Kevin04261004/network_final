@@ -25,31 +25,41 @@ namespace GameLogicServer
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_TryConnectToServer, ClientConnected);
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_ExitGame, ClientDisConnected);
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_RequireCreateNetworkObject, CreateNetworkObjectRequirement);
+            packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_EnterRoom, ClientEnterRoom);
+        
         }
         #region Delegate PacketHandle Functions
-        public void ClientConnected(IPEndPoint endPoint, byte[] data)
+        private void ClientConnected(IPEndPoint endPoint, byte[] data)
         {
             Logger.Log($"{endPoint.Address}", "Success Connect Server", ConsoleColor.Green);
             connectedClients.Add(endPoint);
         }
-        public void ClientDisConnected(IPEndPoint endPoint, byte[] data)
+        private void ClientDisConnected(IPEndPoint endPoint, byte[] data)
         {
             Logger.Log($"{endPoint.Address}", "DisConnected", ConsoleColor.DarkMagenta);
 
             connectedClients.Remove(endPoint);
         }
-        public void CreateNetworkObjectRequirement(IPEndPoint endPoint, byte[] data)
+        private void CreateNetworkObjectRequirement(IPEndPoint endPoint, byte[] data)
         {
             Logger.Log($"{endPoint.Address}", "Create Network Object", ConsoleColor.White);
-
             CreateNetworkObjectData newObjData = MarshalingTool.ByteToStruct<CreateNetworkObjectData>(data);
-
             uint startID = networkObjectManager.CreateNetworkObject(newObjData);
 
-            SendServerCreateNetworkObjectSuccess(data, startID);
+            SendServerCreateNetworkObjectSuccess(data, startID, endPoint);
+        }
+        private void ClientEnterRoom(IPEndPoint endPoint, byte[] data)
+        {
+            Logger.Log($"{endPoint.Address}", "Enter Room", ConsoleColor.White);
+
+            DB_RoomUserInfo roomUserInfo = DB_RoomUserInfoInfo.DeSerialize(data);
+            roomUserInfo.IPEndPoint = endPoint.ToString();
+            DatabaseConnector.TryJoinRoom(roomUserInfo);
+
+
         }
         #endregion
-        private void SendServerCreateNetworkObjectSuccess(byte[] data, uint startID)
+        private void SendServerCreateNetworkObjectSuccess(byte[] data, uint startID, IPEndPoint endPoint)
         {
             byte[] startIDBytes = BitConverter.GetBytes(startID);
 
@@ -61,7 +71,7 @@ namespace GameLogicServer
             offset += data.Length;
 
             PacketData packet = new PacketData(PacketDataInfo.EGameLogicPacketType.Server_CreateNetworkObjectSuccess, sendByte);
-            Send(packet.ToPacket(), connectedClients);
+            Send(packet.ToPacket(), endPoint);
         }
     }
 }

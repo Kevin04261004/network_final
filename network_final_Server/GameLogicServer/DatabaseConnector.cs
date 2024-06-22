@@ -140,7 +140,7 @@ namespace GameLogicServer
             }
             return null;
         }
-        public static bool TryCraeteRoom(DB_GameRoom room)
+        public static bool TryCreateRoom(DB_GameRoom room)
         {
             try
             {
@@ -179,8 +179,39 @@ namespace GameLogicServer
         }
         public static bool TryJoinRoom(DB_RoomUserInfo roomUserInfo)
         {
+            string compareRoomUserInfoQuery = $"id = \'{roomUserInfo.Id}\'";
+            if (HasData<DB_RoomUserInfo>(compareRoomUserInfoQuery))
+            {
+                DeleteData<DB_RoomUserInfo>(compareRoomUserInfoQuery);
+            }
             return InsertData<DB_RoomUserInfo>(roomUserInfo);
         }
+        private static bool DeleteData<T>(string condition)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(condition));
+            Debug.Assert(connection != null);
+            try
+            {
+                connection.Open();
+                string tableName = GetTableName<T>();
+                string sql = $"DELETE FROM {tableName} WHERE {condition}";
+                Logger.Log("MySQL", sql);
+                MySqlCommand cmd = new MySqlCommand(sql, connection);
+                cmd.ExecuteNonQuery();
+                connection?.Close();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+            finally
+            {
+                connection?.Close();
+            }
+        }
+
         private static bool HasData<T>(string condition)
         {
             Debug.Assert(!string.IsNullOrEmpty(condition));

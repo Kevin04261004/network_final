@@ -145,11 +145,12 @@ public class TitleScene : MonoBehaviour
             return;
         }
 
-        byte[] roomNameBytes = new byte[DB_GameRoomInfo.ROOM_NAME_SIZE];
-        MyEncoder.Encode(roomName, roomNameBytes, 0, roomNameBytes.Length);
+        DB_GameRoom gameRoom = new DB_GameRoom(roomName);
+        byte[] data = DB_GameRoomInfo.Serialize(gameRoom);
         var packetData =
-            new PacketData<PacketDataInfo.EDataBasePacketType>(PacketDataInfo.EDataBasePacketType.Client_CreateRoom, roomNameBytes);
+            new PacketData<PacketDataInfo.EDataBasePacketType>(PacketDataInfo.EDataBasePacketType.Client_CreateRoom, data);
         NetworkManager.Instance.SendToServer(ESendServerType.Database, packetData.ToPacket());
+
         MainThreadWorker.Instance.EnqueueJob(() =>
         {
             _bufferingImage.AddCount();

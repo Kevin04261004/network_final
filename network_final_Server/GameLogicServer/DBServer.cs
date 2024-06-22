@@ -95,12 +95,12 @@ namespace GameLogicServer
         }
         public void ClientEnterRandomRoom(TcpClient client, byte[] data)
         {
-
+            
         }
         public void ClientCreateRoom(TcpClient client, byte[] data)
         {
-            string roomName = Encoding.UTF8.GetString(data);
-            roomManager.CreateRoom(client, roomName);
+            DB_GameRoom gameRoom = DB_GameRoomInfo.DeSerialize(data);
+            roomManager.CreateRoom(client, gameRoom);
         }
         #endregion
 

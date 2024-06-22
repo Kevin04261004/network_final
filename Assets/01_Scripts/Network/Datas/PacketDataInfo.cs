@@ -8,7 +8,7 @@ public static class PacketDataInfo
         Client_ExitGame,
         Client_RequireCreateNetworkObject,
         Server_CreateNetworkObjectSuccess,
-
+        Client_EnterRoom,
     }
 
     public enum EDataBasePacketType
@@ -30,7 +30,6 @@ public static class PacketDataInfo
         Server_CreateRoomSuccess,
         Server_ClientEnterRoomSuccess,
         Server_ClientEnterRoomFail,
-
     }
 
     public static int PacketIDSize = sizeof(char);

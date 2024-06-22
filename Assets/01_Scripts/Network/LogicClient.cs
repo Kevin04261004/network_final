@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections;
+using System.Net;
 using _01_Scripts.Network;
 using UnityEngine;
 
@@ -10,23 +11,45 @@ public class LogicClient : UDPClient<PacketDataInfo.EGameLogicPacketType>
         
         GameLogicPacketHandler.Instance.ProcessPacket(serverIPEndPoint, packetType, buffer);
     }
+    
+    private void Start()
+    {
+        UDPConnectToRoom();
+    }
+
      protected override void OnApplicationQuit()
      {
          ExitGame();
          CloseServer();
      }
-    // Send
-    protected override void ConnectToServer()
+     protected override void ConnectToServer() 
      {
-         var data = new PacketData<PacketDataInfo.EGameLogicPacketType>(PacketDataInfo.EGameLogicPacketType.Client_TryConnectToServer);
+         var packetData = new PacketData<PacketDataInfo.EGameLogicPacketType>(PacketDataInfo.EGameLogicPacketType.Client_TryConnectToServer);
          Debug.Log("[Client] Try Connect to UDP Server");
-         NetworkManager.Instance.SendToServer(ESendServerType.GameLogic, data.ToPacket());
+         NetworkManager.Instance.SendToServer(ESendServerType.GameLogic, packetData.ToPacket());
+
+         if (CurrentGameRoomData.Instance.GameRoom == null)
+         {
+             return;
+         }
      }
-    // Send
-    private void ExitGame()
+
+     private void UDPConnectToRoom()
      {
+         DB_GameRoom curGameRoom = CurrentGameRoomData.Instance.GameRoom;
+         Debug.Assert(NetworkManager.Instance.GameLogicUDPClientSock != null);
+         DB_RoomUserInfo roomUserInfo =
+             new DB_RoomUserInfo(curGameRoom.RoomId, UserGameData.Instance.GameData.Id, "clientIPEndPoint");
+         var data = DB_RoomUserInfoInfo.Serialize(roomUserInfo);
+         var packetData =
+             new PacketData<PacketDataInfo.EGameLogicPacketType>(PacketDataInfo.EGameLogicPacketType.Client_EnterRoom, data);
+         NetworkManager.Instance.SendToServer(ESendServerType.GameLogic, packetData.ToPacket());
+     }
+     
+    private void ExitGame()
+    {
          var data = new PacketData<PacketDataInfo.EGameLogicPacketType>(PacketDataInfo.EGameLogicPacketType.Client_ExitGame);
          Debug.Log("[Client] Exit UDP Server");
          NetworkManager.Instance.SendToServer(ESendServerType.GameLogic, data.ToPacket());
-     }
+    }
 }

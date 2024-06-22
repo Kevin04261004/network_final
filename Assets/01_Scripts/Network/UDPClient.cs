@@ -22,7 +22,6 @@ namespace _01_Scripts.Network
             };
             receiveThread.Start();
         }
-
         protected abstract void ConnectToServer();
         private void Init()
         {

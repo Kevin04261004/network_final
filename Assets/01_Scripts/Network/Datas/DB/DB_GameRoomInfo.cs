@@ -13,18 +13,6 @@ using UnityEngine;
 | isPlaying    | tinyint(1)       | NO   |     | NULL    |                |
 +--------------+------------------+------+-----+---------+----------------+
 */
-/*
-+--------------+------------------+------+-----+---------+----------------+
-| Field        | Type             | Null | Key | Default | Extra          |
-+--------------+------------------+------+-----+---------+----------------+
-| roomId       | int unsigned     | NO   | PRI | NULL    | auto_increment |
-| roomName     | varchar(16)      | YES  |     | NULL    |                |
-| maxPlayer    | tinyint unsigned | NO   |     | NULL    |                |
-| isPublic     | tinyint(1)       | NO   |     | NULL    |                |
-| roomPassword | varchar(16)      | YES  |     | NULL    |                |
-| isPlaying    | tinyint(1)       | NO   |     | NULL    |                |
-+--------------+------------------+------+-----+---------+----------------+
-*/
 public static class DB_GameRoomInfo
 {
     public static readonly int ROOM_ID_SIZE = sizeof(int);
@@ -42,18 +30,23 @@ public static class DB_GameRoomInfo
     public static byte[] Serialize(DB_GameRoom room)
     {
         Debug.Assert(room != null);
-
         int size = GetByteSize();
         byte[] data = new byte[size];
         byte[] roomIdBytes = BitConverter.GetBytes(room.RoomId);
         byte[] roomNameBytes = new byte[ROOM_NAME_SIZE];
-        byte[] maxPlayerBytes = new byte[1];
+        byte[] maxPlayerBytes = new byte[MAX_PLAYER_SIZE];
         byte[] isPublicBytes = BitConverter.GetBytes(room.IsPublic);
         byte[] roomPWBytes = new byte[ROOM_PW_SIZE];
         byte[] isPlayingBytes = BitConverter.GetBytes(room.IsPlaying);
 
-        MyEncoder.Encode(room.RoomPassword, roomPWBytes, 0, roomPWBytes.Length);
-        MyEncoder.Encode(room.RoomName, roomNameBytes, 0, roomNameBytes.Length);
+        if (!string.IsNullOrEmpty(room.RoomName))
+        {
+            MyEncoder.Encode(room.RoomName, roomNameBytes, 0, roomNameBytes.Length);   
+        }
+        if (!string.IsNullOrEmpty(room.RoomPassword))
+        {
+            MyEncoder.Encode(room.RoomPassword, roomPWBytes, 0, roomPWBytes.Length);
+        }
         maxPlayerBytes[0] = room.MaxPlayer;
 
         int offset = 0;
