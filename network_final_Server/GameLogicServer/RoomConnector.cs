@@ -6,13 +6,15 @@ using System.Net.Sockets;
 
 namespace GameLogicServer
 {
-    public class RoomManager
+    public class RoomConnector
     {
         public DBServer dbServer;
+        Random random;
 
-        public RoomManager(DBServer logicServer)
+        public RoomConnector(DBServer logicServer)
         {
             this.dbServer = logicServer;
+            random = new Random();
         }
 
         public void CreateRoom(TcpClient client, DB_GameRoom gameRoom)
@@ -60,10 +62,30 @@ namespace GameLogicServer
                 dbServer.Send(data.ToPacket(), client);
             }
         }
-        public void EnterRandomRoom(IPEndPoint endPoint)
+        public void ExitRoom(TcpClient client)
         {
-            Logger.Log($"{endPoint.Address}", "랜덤 방에 참가하였습니다.", ConsoleColor.DarkYellow);
-            
+            /* 주의: 이 부분은 LogicServer에서 IPEndPoint를 사용하여 삭제한다. */
+
+            //if (!dbServer.clients.ContainsKey(client))
+            //{
+            //    return;
+            //}
+            //DatabaseConnector.ExitRoom(dbServer.clients[client].Id);
+        }
+        public void EnterRandomRoom(TcpClient client)
+        {
+            Logger.Log($"{client.Client.RemoteEndPoint}", "랜덤 방에 참가하였습니다.", ConsoleColor.DarkYellow);
+
+            if (DatabaseConnector.FindCanJoinRoom(out DB_GameRoom canJoinRoom))
+            {
+                EnterRoom(client, canJoinRoom);
+            }
+            else
+            {
+                int randomNumber = random.Next(1000, 10000);
+                DB_GameRoom gameRoom = new DB_GameRoom($"Room{randomNumber}");
+                CreateRoom(client, gameRoom);
+            }
         }
     }
 }

@@ -1,19 +1,23 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using DYUtil;
 using GameLogicServer.Datas;
 using GameLogicServer.Datas.Database;
+using MySqlX.XDevAPI;
 
 namespace GameLogicServer
 {
     public class LogicServer : SocketUDPServer<PacketDataInfo.EGameLogicPacketType>
     {
         public NetworkObjectManager networkObjectManager;
+        public RoomHandler roomHandler;
         public LogicServer(int portNum, PacketHandler<PacketDataInfo.EGameLogicPacketType, IPEndPoint> handler) : base(portNum, handler)
         {
             networkObjectManager = new NetworkObjectManager();
+            roomHandler = new RoomHandler(this);
         }
         protected override void ProcessData(IPEndPoint clientIPEndPoint, PacketDataInfo.EGameLogicPacketType packetType, byte[] buffer)
         {
@@ -23,7 +27,7 @@ namespace GameLogicServer
         protected override void SetAllHandlers()
         {
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_TryConnectToServer, ClientConnected);
-            packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_ExitGame, ClientDisConnected);
+            packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_ExitGameLogic, ClientDisConnected);
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_RequireCreateNetworkObject, CreateNetworkObjectRequirement);
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_EnterRoom, ClientEnterRoom);
         
@@ -56,9 +60,27 @@ namespace GameLogicServer
             roomUserInfo.IPEndPoint = endPoint.ToString();
             DatabaseConnector.TryJoinRoom(roomUserInfo);
 
-
+            SendClientEnter(roomUserInfo);
+        }
+        /// <summary>
+        /// TCP로 방에 접속하고, UDP에서 방에서 나옴.
+        /// </summary>
+        private void ClientExitRoom(IPEndPoint endPoint, byte[] data)
+        {
+            DatabaseConnector.ExitRoom(endPoint);
+            
         }
         #endregion
+        private void SendClientEnter(DB_RoomUserInfo userInfo)
+        {
+            uint roomId = userInfo.RoomId;
+            List<DB_RoomUserInfo> clients = DatabaseConnector.GetData<DB_RoomUserInfo>($"roomId = {roomId}");
+            for (int i = 0; i < clients.Count; ++i)
+            {
+                DB_RoomUserInfoInfo.TryParseIPEndPoint(clients[i].IPEndPoint, out IPEndPoint endPoint);
+                roomHandler.ClientEnterRoom(roomId, endPoint);
+            }
+        }
         private void SendServerCreateNetworkObjectSuccess(byte[] data, uint startID, IPEndPoint endPoint)
         {
             byte[] startIDBytes = BitConverter.GetBytes(startID);

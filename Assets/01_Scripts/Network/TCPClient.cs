@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -106,4 +107,5 @@ public abstract class TCPClient<T> : MonoBehaviour where T : Enum
         NetworkManager.Instance.NetworkStream?.Close();
         NetworkManager.Instance.DatabaseTcpClient?.Close();
     }
+    
 }

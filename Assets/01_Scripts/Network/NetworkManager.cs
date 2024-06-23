@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
+using Task = System.Threading.Tasks.Task;
 
 public enum ESendServerType
 {
@@ -24,7 +25,6 @@ public class NetworkManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
     public EndPoint GameLogicServerEndPoint { get; set; } = null;
     public Socket GameLogicUDPClientSock { get; set; } = null;
     public TcpClient DatabaseTcpClient { get; set; } = null;
@@ -51,5 +51,11 @@ public class NetworkManager : MonoBehaviour
                 Debug.Assert(false, "Add Case!!!");
                 break;
         }
+    }
+
+    public async Task SendToServerAsync(ESendServerType serverType, byte[] packet)
+    {
+        await NetworkStream.WriteAsync(packet, 0, packet.Length);
+        await NetworkStream.FlushAsync();
     }
 }

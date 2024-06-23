@@ -11,12 +11,12 @@ namespace GameLogicServer
     public class DBServer : TCPListenerServer<PacketDataInfo.EDataBasePacketType>
     {
         public Dictionary<TcpClient, DB_UserLoginInfo> clients { get; set; }
-        public RoomManager roomManager;
+        public RoomConnector roomConnector;
 
         public DBServer(int port, PacketHandler<PacketDataInfo.EDataBasePacketType, TcpClient> handler) : base(port, handler)
         {
             clients = new Dictionary<TcpClient, DB_UserLoginInfo>();
-            roomManager = new RoomManager(this);
+            roomConnector = new RoomConnector(this);
 
         }
 
@@ -33,7 +33,7 @@ namespace GameLogicServer
             packetHandler.SetHandler(PacketDataInfo.EDataBasePacketType.Client_CreateAccount, CreateAccount);
             packetHandler.SetHandler(PacketDataInfo.EDataBasePacketType.Client_EnterRandomRoom, ClientEnterRandomRoom);
             packetHandler.SetHandler(PacketDataInfo.EDataBasePacketType.Client_CreateRoom, ClientCreateRoom);
-
+            packetHandler.SetHandler(PacketDataInfo.EDataBasePacketType.Client_ExitGameDB, ClientExitGame);
         }
         #region Delegate PacketHandle Functions
         public void ClientTryLogin(TcpClient client, byte[] data)
@@ -53,6 +53,11 @@ namespace GameLogicServer
             {
                 ClientLoginFail(client);
             }
+        }
+        private void ClientExitGame(TcpClient client, byte[] data)
+        {
+            Logger.Log($"{client.Client.RemoteEndPoint}", "님이 게임을 종료하였습니다.", ConsoleColor.DarkMagenta);
+            ClientExitRoom(client, data);
         }
         public void ClientCheckHasID(TcpClient client, byte[] data)
         {
@@ -95,12 +100,16 @@ namespace GameLogicServer
         }
         public void ClientEnterRandomRoom(TcpClient client, byte[] data)
         {
-            
+            roomConnector.EnterRandomRoom(client);
         }
         public void ClientCreateRoom(TcpClient client, byte[] data)
         {
             DB_GameRoom gameRoom = DB_GameRoomInfo.DeSerialize(data);
-            roomManager.CreateRoom(client, gameRoom);
+            roomConnector.CreateRoom(client, gameRoom);
+        }
+        private void ClientExitRoom(TcpClient tcpClient, byte[] data)
+        {
+            roomConnector.ExitRoom(tcpClient);
         }
         #endregion
 

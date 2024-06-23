@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -68,6 +69,46 @@ namespace GameLogicServer.Datas.Database
             string ipEndPoint = Encoding.UTF8.GetString(ipEndPointBytes);
 
             return new DB_RoomUserInfo(roomId, id, ipEndPoint);
+        }
+        public static bool TryParseIPEndPoint(string str, out IPEndPoint endPoint)
+        {
+            endPoint = null;
+
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                return false;
+            }
+
+            string[] parts = str.Split(':');
+            if (parts.Length != 2)
+            {
+                return false;
+            }
+
+            if (!IPAddress.TryParse(parts[0], out IPAddress ipAddress))
+            {
+                return false;
+            }
+
+            if (!int.TryParse(parts[1], out int port))
+            {
+                return false;
+            }
+
+            endPoint = new IPEndPoint(ipAddress, port);
+            return true;
+        }
+        public static bool TryParseIPEndPoint(IPEndPoint endPoint, out string str)
+        {
+            str = null;
+
+            if (endPoint == null)
+            {
+                return false;
+            }
+
+            str = $"{endPoint.Address}:{endPoint.Port}";
+            return true;
         }
     }
 }

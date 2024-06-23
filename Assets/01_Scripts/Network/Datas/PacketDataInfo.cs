@@ -5,7 +5,7 @@ public static class PacketDataInfo
     {
         None = 0,
         Client_TryConnectToServer,
-        Client_ExitGame,
+        Client_ExitGameLogic,
         Client_RequireCreateNetworkObject,
         Server_CreateNetworkObjectSuccess,
         Client_EnterRoom,
@@ -30,6 +30,7 @@ public static class PacketDataInfo
         Server_CreateRoomSuccess,
         Server_ClientEnterRoomSuccess,
         Server_ClientEnterRoomFail,
+        Client_ExitGameDB,
     }
 
     public static int PacketIDSize = sizeof(char);

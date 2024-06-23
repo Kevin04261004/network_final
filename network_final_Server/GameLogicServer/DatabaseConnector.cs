@@ -4,6 +4,7 @@ using MySql.Data.MySqlClient;
 using Org.BouncyCastle.Tls;
 using System;
 using System.Diagnostics;
+using System.Net;
 using System.Reflection;
 using System.Text;
 
@@ -179,12 +180,77 @@ namespace GameLogicServer
         }
         public static bool TryJoinRoom(DB_RoomUserInfo roomUserInfo)
         {
-            string compareRoomUserInfoQuery = $"id = \'{roomUserInfo.Id}\'";
+            ExitRoom(roomUserInfo.Id);
+            return InsertData<DB_RoomUserInfo>(roomUserInfo);
+        }
+        public static void ExitRoom(IPEndPoint endPoint)
+        {
+            DB_RoomUserInfoInfo.TryParseIPEndPoint(endPoint, out string str);
+            string compareRoomUserInfoQuery = $"IPEndPoint = \'{str}\'";
             if (HasData<DB_RoomUserInfo>(compareRoomUserInfoQuery))
             {
+                DB_RoomUserInfo userInfo = GetData<DB_RoomUserInfo>(compareRoomUserInfoQuery)[0];
+                Debug.Assert(userInfo != null);
+                string compareRoomIdQuery = $"roomId = {userInfo.RoomId}";
+                if (!HasData<DB_RoomUserInfo>(compareRoomIdQuery))
+                {
+                    DeleteData<DB_RoomUserInfo>(compareRoomIdQuery);
+                    Logger.Log($"{userInfo.RoomId}", "방이 삭제 되었습니다.", ConsoleColor.DarkGreen);
+                }
                 DeleteData<DB_RoomUserInfo>(compareRoomUserInfoQuery);
+                Logger.Log($"{userInfo.Id}", "님이 DB에서 제거되었습니다.", ConsoleColor.DarkGreen);
             }
-            return InsertData<DB_RoomUserInfo>(roomUserInfo);
+        }
+        public static void ExitRoom(string id)
+        {
+            string compareRoomUserInfoQuery = $"id = \'{id}\'";
+            if (HasData<DB_RoomUserInfo>(compareRoomUserInfoQuery))
+            {
+                DB_RoomUserInfo userInfo = GetData<DB_RoomUserInfo>(compareRoomUserInfoQuery)[0];
+                Debug.Assert(userInfo != null);
+                string compareRoomIdQuery = $"roomId = {userInfo.RoomId}";
+                if (!HasData<DB_RoomUserInfo>(compareRoomIdQuery))
+                {
+                    DeleteData<DB_RoomUserInfo>(compareRoomIdQuery);
+                    Logger.Log($"{userInfo.RoomId}", "방이 삭제 되었습니다.", ConsoleColor.DarkGreen);
+                }
+                DeleteData<DB_RoomUserInfo>(compareRoomUserInfoQuery);
+                Logger.Log($"{userInfo.Id}", "님이 DB에서 제거되었습니다.", ConsoleColor.DarkGreen);
+            }
+        }
+        public static bool FindCanJoinRoom(out DB_GameRoom canJoinRoom)
+        {
+            canJoinRoom = null;
+            List<DB_GameRoom> gameRoomList = GetData<DB_GameRoom>("1");
+
+            for (int i = 0; i < gameRoomList.Count; ++i)
+            {
+                DB_GameRoom gameRoom = gameRoomList[i];
+                int playerCount = GetPlayerCount(gameRoom.RoomId);
+                if (playerCount == 0)
+                {
+                    DeleteData<DB_GameRoom>($"roomId = {gameRoom.RoomId}");
+                    continue;
+                }
+                if (!gameRoom.IsPublic)
+                {
+                    continue;
+                }
+                if (gameRoom.IsPlaying)
+                {
+                    continue;
+                }
+                if ((int)gameRoomList[i].MaxPlayer - GetPlayerCount(gameRoom.RoomId) > 0)
+                {
+                    canJoinRoom = gameRoom;
+                    return true;
+                }
+            }
+            return false;
+        }
+        public static int GetPlayerCount(uint roomId)
+        {
+            return GetData<DB_RoomUserInfo>($"roomId = {roomId}").Count;
         }
         private static bool DeleteData<T>(string condition)
         {
@@ -242,7 +308,7 @@ namespace GameLogicServer
                 }
             }
         }
-        private static List<T> GetData<T>(string condition) where T : new()
+        public static List<T> GetData<T>(string condition) where T : new()
         {
             Debug.Assert(!string.IsNullOrEmpty(condition));
             Debug.Assert(connection != null);

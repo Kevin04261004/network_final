@@ -6,10 +6,12 @@
         {
             None = 0,
             Client_TryConnectToServer,
-            Client_ExitGame,
+            Client_ExitGameLogic,
             Client_RequireCreateNetworkObject,
             Server_CreateNetworkObjectSuccess,
             Client_EnterRoom,
+            Server_P2P_ClientEnter,
+            Server_P2P_ClientExit,
         }
 
         public enum EDataBasePacketType
@@ -31,7 +33,7 @@
             Server_CreateRoomSuccess,
             Server_ClientEnterRoomSuccess,
             Server_ClientEnterRoomFail,
-
+            Client_ExitGameDB,
         }
 
         public static int PacketIDSize = sizeof(char);

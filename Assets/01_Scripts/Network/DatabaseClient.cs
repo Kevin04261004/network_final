@@ -1,4 +1,5 @@
 using System.Net;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class DatabaseClient : TCPClient<PacketDataInfo.EDataBasePacketType>
@@ -12,6 +13,17 @@ public class DatabaseClient : TCPClient<PacketDataInfo.EDataBasePacketType>
 
     protected override void OnApplicationQuit()
     {
+        Task.Run(async () =>
+        {
+            await SendExitMessageAndCloseServer();
+        }).Wait();
+    }
+
+    private async Task SendExitMessageAndCloseServer()
+    {
+        var packetData =
+            new PacketData<PacketDataInfo.EDataBasePacketType>(PacketDataInfo.EDataBasePacketType.Client_ExitGameDB);
+        await NetworkManager.Instance.SendToServerAsync(ESendServerType.Database, packetData.ToPacket());
         CloseServer();
     }
 }
