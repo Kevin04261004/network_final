@@ -48,8 +48,11 @@ public class LogicClient : UDPClient<PacketDataInfo.EGameLogicPacketType>
      
     private void ExitGame()
     {
-         var data = new PacketData<PacketDataInfo.EGameLogicPacketType>(PacketDataInfo.EGameLogicPacketType.Client_ExitGameLogic);
-         Debug.Log("[Client] Exit UDP Server");
-         NetworkManager.Instance.SendToServer(ESendServerType.GameLogic, data.ToPacket());
+        var data = new PacketData<PacketDataInfo.EGameLogicPacketType>(PacketDataInfo.EGameLogicPacketType.Client_ExitRoom);
+        Debug.Log("[Client] Exit Room");
+        NetworkManager.Instance.SendToServer(ESendServerType.GameLogic, data.ToPacket());
+        data = new PacketData<PacketDataInfo.EGameLogicPacketType>(PacketDataInfo.EGameLogicPacketType.Client_ExitGameLogic);
+        Debug.Log("[Client] Exit UDP Server");
+        NetworkManager.Instance.SendToServer(ESendServerType.GameLogic, data.ToPacket());
     }
 }

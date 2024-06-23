@@ -9,6 +9,10 @@ public static class PacketDataInfo
         Client_RequireCreateNetworkObject,
         Server_CreateNetworkObjectSuccess,
         Client_EnterRoom,
+        Server_P2P_ClientEnter,
+        Server_P2P_ClientExit,
+        Client_ExitRoom,
+            
     }
 
     public enum EDataBasePacketType

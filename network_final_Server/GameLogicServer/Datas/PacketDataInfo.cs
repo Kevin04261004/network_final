@@ -12,6 +12,8 @@
             Client_EnterRoom,
             Server_P2P_ClientEnter,
             Server_P2P_ClientExit,
+            Client_ExitRoom,
+            
         }
 
         public enum EDataBasePacketType

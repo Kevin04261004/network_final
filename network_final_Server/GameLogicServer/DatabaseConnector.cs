@@ -192,13 +192,13 @@ namespace GameLogicServer
                 DB_RoomUserInfo userInfo = GetData<DB_RoomUserInfo>(compareRoomUserInfoQuery)[0];
                 Debug.Assert(userInfo != null);
                 string compareRoomIdQuery = $"roomId = {userInfo.RoomId}";
+                DeleteData<DB_RoomUserInfo>(compareRoomUserInfoQuery);
+                Logger.Log($"{userInfo.Id}", "님이 DB에서 제거되었습니다.", ConsoleColor.DarkGreen);
                 if (!HasData<DB_RoomUserInfo>(compareRoomIdQuery))
                 {
                     DeleteData<DB_RoomUserInfo>(compareRoomIdQuery);
                     Logger.Log($"{userInfo.RoomId}", "방이 삭제 되었습니다.", ConsoleColor.DarkGreen);
                 }
-                DeleteData<DB_RoomUserInfo>(compareRoomUserInfoQuery);
-                Logger.Log($"{userInfo.Id}", "님이 DB에서 제거되었습니다.", ConsoleColor.DarkGreen);
             }
         }
         public static void ExitRoom(string id)

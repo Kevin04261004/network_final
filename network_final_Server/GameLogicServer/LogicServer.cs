@@ -30,7 +30,7 @@ namespace GameLogicServer
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_ExitGameLogic, ClientDisConnected);
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_RequireCreateNetworkObject, CreateNetworkObjectRequirement);
             packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_EnterRoom, ClientEnterRoom);
-        
+            packetHandler.SetHandler(PacketDataInfo.EGameLogicPacketType.Client_ExitRoom, ClientExitRoom);
         }
         #region Delegate PacketHandle Functions
         private void ClientConnected(IPEndPoint endPoint, byte[] data)
@@ -67,19 +67,49 @@ namespace GameLogicServer
         /// </summary>
         private void ClientExitRoom(IPEndPoint endPoint, byte[] data)
         {
+            Logger.Log($"{endPoint.Address}", "Exit Room", ConsoleColor.White);
+
             DatabaseConnector.ExitRoom(endPoint);
-            
+
+            DB_RoomUserInfoInfo.TryParseIPEndPoint(endPoint, out string str);
+            Debug.Assert(str != null);
+            DB_RoomUserInfo userInfo = DatabaseConnector.GetData<DB_RoomUserInfo>($"IPEndPoint = \'{str}\'")[0];
+            Debug.Assert(userInfo != null);
+
+            SendClientExit(userInfo);
         }
         #endregion
         private void SendClientEnter(DB_RoomUserInfo userInfo)
         {
             uint roomId = userInfo.RoomId;
             List<DB_RoomUserInfo> clients = DatabaseConnector.GetData<DB_RoomUserInfo>($"roomId = {roomId}");
+            Debug.Assert(clients != null);
+
+            byte[] sendData = new byte[clients.Count * DB_RoomUserInfoInfo.GetByteSize()];
+            int offset = 0;
             for (int i = 0; i < clients.Count; ++i)
             {
                 DB_RoomUserInfoInfo.TryParseIPEndPoint(clients[i].IPEndPoint, out IPEndPoint endPoint);
                 roomHandler.ClientEnterRoom(roomId, endPoint);
+                byte[] dataPerClient = DB_RoomUserInfoInfo.Serialize(clients[i]);
+                Array.Copy(dataPerClient, 0, sendData, offset, dataPerClient.Length);
             }
+            PacketData packetData = new PacketData(PacketDataInfo.EGameLogicPacketType.Server_P2P_ClientEnter, sendData);
+            roomHandler.SendToRoomClients(roomId, packetData.ToPacket());
+        }
+        private void SendClientExit(DB_RoomUserInfo userInfo)
+        {
+            uint roomId = userInfo.RoomId;
+            List<DB_RoomUserInfo> clients = DatabaseConnector.GetData<DB_RoomUserInfo>($"roomId = {roomId}");
+            Debug.Assert(clients != null);
+
+            Debug.Assert(userInfo.IPEndPoint != null);
+            DB_RoomUserInfoInfo.TryParseIPEndPoint(userInfo.IPEndPoint, out IPEndPoint endPoint);
+            roomHandler.ClientExitRoom(roomId, endPoint);
+
+            byte[] data = DB_RoomUserInfoInfo.Serialize(userInfo);
+            PacketData packetData = new PacketData(PacketDataInfo.EGameLogicPacketType.Server_P2P_ClientExit, data);
+            roomHandler.SendToRoomClients(roomId, packetData.ToPacket());
         }
         private void SendServerCreateNetworkObjectSuccess(byte[] data, uint startID, IPEndPoint endPoint)
         {
