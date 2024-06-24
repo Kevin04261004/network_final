@@ -12,7 +12,7 @@ public static class PacketDataInfo
         Server_P2P_ClientEnter,
         Server_P2P_ClientExit,
         Client_ExitRoom,
-            
+        Server_P2P_ClientUserLoginInfo
     }
 
     public enum EDataBasePacketType

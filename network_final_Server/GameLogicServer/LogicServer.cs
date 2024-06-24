@@ -86,16 +86,29 @@ namespace GameLogicServer
             Debug.Assert(clients != null);
 
             byte[] sendData = new byte[clients.Count * DB_RoomUserInfoInfo.GetByteSize()];
+            byte[] userSendData = new byte[clients.Count * DB_UserLoginInfoInfo.GetByteSize()];
             int offset = 0;
+            int userOffset = 0;
             for (int i = 0; i < clients.Count; ++i)
             {
+                /* Send RoomUserInfo */
                 DB_RoomUserInfoInfo.TryParseIPEndPoint(clients[i].IPEndPoint, out IPEndPoint endPoint);
                 roomHandler.ClientEnterRoom(roomId, endPoint);
                 byte[] dataPerClient = DB_RoomUserInfoInfo.Serialize(clients[i]);
                 Array.Copy(dataPerClient, 0, sendData, offset, dataPerClient.Length);
                 offset += dataPerClient.Length;
+
+                /* Send UserLoginInfo */
+                DB_UserLoginInfo userLoginInfo = DatabaseConnector.GetData<DB_UserLoginInfo>($"Id = \'{clients[i].Id}\'")[0];
+                userLoginInfo.Password = "";
+                byte[] infoPerClient = DB_UserLoginInfoInfo.Serialize(userLoginInfo);
+                Array.Copy(infoPerClient, 0, userSendData, userOffset, infoPerClient.Length);
+                userOffset += infoPerClient.Length;
             }
             PacketData packetData = new PacketData(PacketDataInfo.EGameLogicPacketType.Server_P2P_ClientEnter, sendData);
+            roomHandler.SendToRoomClients(roomId, packetData.ToPacket());
+
+            packetData = new PacketData(PacketDataInfo.EGameLogicPacketType.Server_P2P_ClientUserLoginInfo, userSendData);
             roomHandler.SendToRoomClients(roomId, packetData.ToPacket());
         }
         private void SendClientExit(DB_RoomUserInfo userInfo)

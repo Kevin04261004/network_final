@@ -12,7 +12,12 @@ namespace GameLogicServer.Datas.Database
         public string Password { get; set; }
         public string NickName { get; set; }
 
-
+        public DB_UserLoginInfo()
+        {
+            Id = string.Empty;
+            Password = string.Empty;
+            NickName = string.Empty;
+        }
         public DB_UserLoginInfo(string id, string password, string nickName)
         {
             Id = id;
