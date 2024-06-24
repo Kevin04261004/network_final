@@ -28,11 +28,11 @@ namespace GameLogicServer
             switch(receiveFrom)
             {
                 case IPEndPoint endPoint:
-                    return endPoint.Address.ToString();
+                    return endPoint.ToString();
                 case TcpClient tcpClient:
                     if (tcpClient.Client.RemoteEndPoint is IPEndPoint clientEndPoint)
                     {
-                        return clientEndPoint.Address.ToString();
+                        return clientEndPoint.ToString();
                     }
                     break;
                 default:

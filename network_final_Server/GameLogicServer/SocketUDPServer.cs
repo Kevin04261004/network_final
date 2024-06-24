@@ -30,7 +30,15 @@ namespace GameLogicServer
             PacketType packetType = (PacketType)Enum.ToObject(typeof(PacketType), 0);
             while (true)
             {
-                int recvByteSize = serverSock.ReceiveFrom(recvBuffer, ref clientEndPoint);
+                int recvByteSize = 0;
+                try
+                {
+                    recvByteSize = serverSock.ReceiveFrom(recvBuffer, ref clientEndPoint);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("Receive Error", $"{ex.Message}");
+                }
 
                 IPEndPoint clientIPEndPoint = (IPEndPoint)clientEndPoint;
                 if (partialSize == 0)

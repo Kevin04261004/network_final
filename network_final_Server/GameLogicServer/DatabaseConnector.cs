@@ -196,7 +196,7 @@ namespace GameLogicServer
                 Logger.Log($"{userInfo.Id}", "님이 DB에서 제거되었습니다.", ConsoleColor.DarkGreen);
                 if (!HasData<DB_RoomUserInfo>(compareRoomIdQuery))
                 {
-                    DeleteData<DB_RoomUserInfo>(compareRoomIdQuery);
+                    DeleteData<DB_GameRoom>(compareRoomIdQuery);
                     Logger.Log($"{userInfo.RoomId}", "방이 삭제 되었습니다.", ConsoleColor.DarkGreen);
                 }
             }

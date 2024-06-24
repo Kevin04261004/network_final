@@ -69,14 +69,14 @@ namespace GameLogicServer
         {
             Logger.Log($"{endPoint.Address}", "Exit Room", ConsoleColor.White);
 
-            DatabaseConnector.ExitRoom(endPoint);
 
             DB_RoomUserInfoInfo.TryParseIPEndPoint(endPoint, out string str);
             Debug.Assert(str != null);
             DB_RoomUserInfo userInfo = DatabaseConnector.GetData<DB_RoomUserInfo>($"IPEndPoint = \'{str}\'")[0];
             Debug.Assert(userInfo != null);
-
             SendClientExit(userInfo);
+
+            DatabaseConnector.ExitRoom(endPoint);
         }
         #endregion
         private void SendClientEnter(DB_RoomUserInfo userInfo)
@@ -93,6 +93,7 @@ namespace GameLogicServer
                 roomHandler.ClientEnterRoom(roomId, endPoint);
                 byte[] dataPerClient = DB_RoomUserInfoInfo.Serialize(clients[i]);
                 Array.Copy(dataPerClient, 0, sendData, offset, dataPerClient.Length);
+                offset += dataPerClient.Length;
             }
             PacketData packetData = new PacketData(PacketDataInfo.EGameLogicPacketType.Server_P2P_ClientEnter, sendData);
             roomHandler.SendToRoomClients(roomId, packetData.ToPacket());

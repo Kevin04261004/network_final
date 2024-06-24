@@ -16,6 +16,7 @@ public class SceneHandler : MonoBehaviour
     public float fadeDuration = 1.0f;
     private void Awake()
     {
+        Application.targetFrameRate = 60;
         if (Instance == null)
         {
             Instance = this;

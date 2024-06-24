@@ -10,12 +10,12 @@ namespace GameLogicServer.Datas
 {
     public class RoomHandler
     {
-        public Dictionary<uint, HashSet<IPEndPoint>> rooms;
+        public Dictionary<uint, List<IPEndPoint>> rooms;
         private LogicServer logicServer;
         public RoomHandler(LogicServer server)
         {
             logicServer = server;
-            rooms = new Dictionary<uint, HashSet<IPEndPoint>>();
+            rooms = new Dictionary<uint, List<IPEndPoint>>();
         }
 
         public void ClientEnterRoom(uint roomId, IPEndPoint endPoint)
@@ -24,7 +24,10 @@ namespace GameLogicServer.Datas
             {
                 AddRoom(roomId);
             }
-            rooms[roomId].Add(endPoint);
+            if (!rooms[roomId].Contains(endPoint))
+            {
+                rooms[roomId].Add(endPoint);
+            }
         }
         public void ClientExitRoom(uint roomId, IPEndPoint endPoint)
         {
@@ -37,7 +40,10 @@ namespace GameLogicServer.Datas
         }
         public void SendToRoomClients(uint roomId, byte[] data)
         {
-            Debug.Assert(HasRoom(roomId));
+            if (!HasRoom(roomId))
+            {
+                return;
+            }
             foreach(IPEndPoint targetClient in rooms[roomId])
             {
                 logicServer.Send(data, targetClient);
@@ -45,7 +51,7 @@ namespace GameLogicServer.Datas
         }
         private void AddRoom(uint roomId)
         {
-            rooms.Add(roomId, new HashSet<IPEndPoint>());
+            rooms.Add(roomId, new List<IPEndPoint>());
         }
         private bool HasRoom(uint roomId)
         {
