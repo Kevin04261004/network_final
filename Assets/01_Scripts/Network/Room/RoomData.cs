@@ -5,12 +5,34 @@ using System.Net;
 using GameLogicServer.Datas.Database;
 using UnityEngine;
 
-public class RoomUserData
+public class NetworkPlayer
 {
-    public DB_UserLoginInfo userLoginInfo { get; set; }
-    public DB_RoomUserInfo roomUserInfo { get; set; }
-
-    public RoomUserData(DB_RoomUserInfo roomUserInfo)
+    public DB_UserLoginInfo userLoginInfo { private get; set; }
+    public DB_RoomUserInfo roomUserInfo { private get; set; }
+    
+    public bool IsMine
+    {
+        get
+        {
+            DB_RoomUserInfoInfo.TryParseIPEndPoint((IPEndPoint)NetworkManager.Instance.GameLogicUDPClientSock.RemoteEndPoint, out string str);
+            return str == roomUserInfo.IPEndPoint;
+        }
+    }
+    public bool IsHost => roomUserInfo.IsHost;
+    public IPEndPoint IPEndPoint
+    {
+        get
+        {
+            DB_RoomUserInfoInfo.TryParseIPEndPoint(roomUserInfo.IPEndPoint, out IPEndPoint endPoint);
+            return endPoint;
+        }
+    }
+    public string NickName => userLoginInfo.NickName.TrimEnd('\0');
+    public string Id => userLoginInfo.Id.TrimEnd('\0');
+    public uint OrderInRoom => roomUserInfo.OrderinRoom;
+    public bool IsReady => roomUserInfo.IsReady;
+    
+    public NetworkPlayer(DB_RoomUserInfo roomUserInfo)
     {
         this.roomUserInfo = roomUserInfo;
         this.userLoginInfo = null;
@@ -18,7 +40,7 @@ public class RoomUserData
 };
 public class RoomData : MonoBehaviour
 {
-    public List<RoomUserData> players { get; set; } = new List<RoomUserData>();
+    public List<NetworkPlayer> players { get; set; } = new List<NetworkPlayer>();
     [SerializeField] private RoomScene roomScene;
     public void Awake()
     {
@@ -33,9 +55,7 @@ public class RoomData : MonoBehaviour
     {
         foreach (var player in players)
         {
-            string endPoint = player.roomUserInfo.IPEndPoint.TrimEnd('\0');
-            string id = player.roomUserInfo.Id.TrimEnd('\0');
-            Debug.Log($"{player.roomUserInfo.OrderinRoom}: EndPoint_{endPoint}, Id_{id}");
+            Debug.Log($"{player.OrderInRoom}: EndPoint_{player.IPEndPoint}, Id_{player.Id}");
         }
     }
     
@@ -94,7 +114,7 @@ public class RoomData : MonoBehaviour
 
     private void OrderPlayerListByOrderInRoom()
     {
-        List<RoomUserData> newList = players.OrderBy(t => t.roomUserInfo.OrderinRoom).ToList();
+        List<NetworkPlayer> newList = players.OrderBy(t => t.OrderInRoom).ToList();
         players.Clear();
         players = newList;
     }
@@ -102,7 +122,7 @@ public class RoomData : MonoBehaviour
     {
         foreach (var player in players)
         {
-            if (userInfo.Id == player.roomUserInfo.Id)
+            if (userInfo.Id == player.Id)
             {
                 player.roomUserInfo = userInfo;
                 return;
@@ -114,7 +134,7 @@ public class RoomData : MonoBehaviour
     {
         foreach (var player in players)
         {
-            if (loginInfo.Id == player.roomUserInfo.Id)
+            if (loginInfo.Id == player.Id)
             {
                 player.userLoginInfo = loginInfo;
                 return;
@@ -126,11 +146,11 @@ public class RoomData : MonoBehaviour
     // TODO: 이곳에서 플레이어 생성 및 삭제 진행.
     private void UserEnterRoom(DB_RoomUserInfo userInfo)
     {
-        players.Add(new RoomUserData(userInfo));
+        players.Add(new NetworkPlayer(userInfo));
     }
     private void UserExitRoom(uint exitPlayerOrderRoomId)
     {
-        foreach (var player in players.Where(player => player.roomUserInfo.OrderinRoom == exitPlayerOrderRoomId))
+        foreach (var player in players.Where(player => player.OrderInRoom == exitPlayerOrderRoomId))
         {
             players.Remove(player);
             break;

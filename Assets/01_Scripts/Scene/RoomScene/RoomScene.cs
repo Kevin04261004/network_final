@@ -8,7 +8,7 @@ public class RoomScene : MonoBehaviour
     [SerializeField] private GameObject UserInfoGrid_Prefab;
     [SerializeField] private Transform Panel;
     [SerializeField] private TextMeshProUGUI playerCount;
-    public void SetPanel(List<RoomUserData> list)
+    public void SetPanel(List<NetworkPlayer> list)
     {
         RemoveAllGrid();
         foreach (var user in list)
@@ -21,13 +21,13 @@ public class RoomScene : MonoBehaviour
         });
     }
 
-    private void AddGrid(RoomUserData roomUserData)
+    private void AddGrid(NetworkPlayer networkPlayer)
     {
         MainThreadWorker.Instance.EnqueueJob(() =>
         {
             UserInfoGrid userInfoGrid = Instantiate(UserInfoGrid_Prefab, Vector3.zero, Quaternion.identity, Panel).GetComponent<UserInfoGrid>();
-            userInfoGrid.SetNickName(roomUserData.userLoginInfo.NickName);
-            userInfoGrid.SetImage(roomUserData.roomUserInfo.IsHost, roomUserData.roomUserInfo.IsReady);
+            userInfoGrid.SetNickName(networkPlayer.NickName);
+            userInfoGrid.SetImage(networkPlayer.IsHost, networkPlayer.IsReady);
         });
     }
 
