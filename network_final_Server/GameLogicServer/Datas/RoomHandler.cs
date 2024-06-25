@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DYUtil;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -10,6 +11,8 @@ namespace GameLogicServer.Datas
 {
     public class RoomHandler
     {
+
+        // TODO: 서버가 시작되었을 떄 DB에 있는 모든 Room정보를 가져와 Dicitionary에 할당할 것.
         public Dictionary<uint, List<IPEndPoint>> rooms;
         private LogicServer logicServer;
         public RoomHandler(LogicServer server)
@@ -18,7 +21,7 @@ namespace GameLogicServer.Datas
             rooms = new Dictionary<uint, List<IPEndPoint>>();
         }
 
-        public void ClientEnterRoom(uint roomId, IPEndPoint endPoint)
+        public void AddRoom(uint roomId, IPEndPoint endPoint)
         {
             if (!HasRoom(roomId))
             {
@@ -29,7 +32,7 @@ namespace GameLogicServer.Datas
                 rooms[roomId].Add(endPoint);
             }
         }
-        public void ClientExitRoom(uint roomId, IPEndPoint endPoint)
+        public void RemoveRome(uint roomId, IPEndPoint endPoint)
         {
             Debug.Assert(HasRoom(roomId));
             rooms[roomId].Remove(endPoint);
@@ -46,6 +49,7 @@ namespace GameLogicServer.Datas
             }
             foreach(IPEndPoint targetClient in rooms[roomId])
             {
+                Logger.Log("TargetClients", $"{targetClient}");
                 logicServer.Send(data, targetClient);
             }
         }

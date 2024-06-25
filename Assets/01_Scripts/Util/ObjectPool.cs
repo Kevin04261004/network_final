@@ -20,7 +20,8 @@ public class ObjectPool : MonoBehaviour
     {
         GameLogicPacketHandler.Instance.SetHandler(PacketDataInfo.EGameLogicPacketType.Server_CreateNetworkObjectSuccess, CreateNetworkObject);
         yield return new WaitForSeconds(1);
-        InitPool();
+        // InitPool();
+        // TODO: 추후 방장이 서버에 요청할 수 있게 제작 필요.
     }
 
     private void InitPool()

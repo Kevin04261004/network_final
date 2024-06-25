@@ -19,7 +19,7 @@ namespace GameLogicServer
 
         public void CreateRoom(TcpClient client, DB_GameRoom gameRoom)
         {
-            if (DatabaseConnector.HasRoomName(gameRoom.RoomName))
+            if (DatabaseConnector.HasRoom(gameRoom.RoomName))
             {
                 Logger.Log($"{client.Client.RemoteEndPoint}", "방 생성에 실패하였습니다.", ConsoleColor.Red);
                 PacketData data = new PacketData(PacketDataInfo.EDataBasePacketType.Server_CreateRoomFail);
@@ -47,7 +47,12 @@ namespace GameLogicServer
         public void EnterRoom(TcpClient client, DB_GameRoom gameRoom)
         {
             uint roomId = gameRoom.RoomId;
-            DB_RoomUserInfo roomUser = new DB_RoomUserInfo(roomId, dbServer.clients[client].Id, ((IPEndPoint)client.Client.RemoteEndPoint).ToString());
+            DB_RoomUserInfoInfo.TryParseIPEndPoint((IPEndPoint)client.Client.RemoteEndPoint, out string str);
+            DB_RoomUserInfo roomUser = new DB_RoomUserInfo(roomId, dbServer.clients[client].Id, str, false, 0, false);
+            if (!DatabaseConnector.HasRoomUser(gameRoom.RoomId))
+            {
+                roomUser.IsHost = true;
+            }
             byte[] gameRoomBytes = DB_GameRoomInfo.Serialize(gameRoom);
             if (DatabaseConnector.TryJoinRoom(roomUser))
             {

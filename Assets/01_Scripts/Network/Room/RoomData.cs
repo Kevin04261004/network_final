@@ -5,12 +5,21 @@ using System.Net;
 using GameLogicServer.Datas.Database;
 using UnityEngine;
 
+public class RoomUserData
+{
+    public DB_UserLoginInfo userLoginInfo { get; set; }
+    public DB_RoomUserInfo roomUserInfo { get; set; }
+
+    public RoomUserData(DB_RoomUserInfo roomUserInfo)
+    {
+        this.roomUserInfo = roomUserInfo;
+        this.userLoginInfo = null;
+    }
+};
 public class RoomData : MonoBehaviour
 {
-    public Dictionary<int, DB_RoomUserInfo> players { get; set; } = new Dictionary<int, DB_RoomUserInfo>();
+    public List<RoomUserData> players { get; set; } = new List<RoomUserData>();
     [SerializeField] private RoomScene roomScene;
-    public Dictionary<DB_RoomUserInfo, DB_UserLoginInfo> userInfos { get; set; } =
-        new Dictionary<DB_RoomUserInfo, DB_UserLoginInfo>();
     public void Awake()
     {
         GameLogicPacketHandler.Instance.SetHandler(PacketDataInfo.EGameLogicPacketType.Server_P2P_ClientEnter, P2P_ClientEnter);
@@ -24,7 +33,9 @@ public class RoomData : MonoBehaviour
     {
         foreach (var player in players)
         {
-            Debug.Log($"{player.Key}: {player.Value.Id}, {player.Value.IPEndPoint}");
+            string endPoint = player.roomUserInfo.IPEndPoint.TrimEnd('\0');
+            string id = player.roomUserInfo.Id.TrimEnd('\0');
+            Debug.Log($"{player.roomUserInfo.OrderinRoom}: EndPoint_{endPoint}, Id_{id}");
         }
     }
     
@@ -39,19 +50,28 @@ public class RoomData : MonoBehaviour
         {
             Array.Copy(data, i * dataSize, userData, 0, dataSize);
             DB_RoomUserInfo temp = DB_RoomUserInfoInfo.DeSerialize(userData);
-            UserEnterRoom(i, temp);
+            UpdateOrAddRoomUserInfo(temp);
         }
     }
 
-    private void P2P_ClientExit(IPEndPoint endPoint, byte[] data)
+    private void P2P_ClientExit(IPEndPoint endPoint, byte[] data) // data = roomUserBytes + exitPlayerOrderRoomId;
     {
         Debug.Assert(data != null);
-        int dataSize = DB_RoomUserInfoInfo.GetByteSize();
-        byte[] userData = new byte[dataSize];
-        Array.Copy(data, 0, userData, 0, dataSize);
-        DB_RoomUserInfo temp = DB_RoomUserInfoInfo.DeSerialize(userData);
-        UserExitRoom(temp);
-        DisConnectUserLoginInfo(temp);
+        byte[] roomUserBytes = new byte[data.Length - sizeof(uint)];
+        byte[] exitPlayerOrderRoomId = new byte[sizeof(uint)];
+
+        int offset = 0;
+        Array.Copy(data, offset, roomUserBytes, 0, roomUserBytes.Length);
+        offset += roomUserBytes.Length;
+        Array.Copy(data, offset, exitPlayerOrderRoomId, 0, exitPlayerOrderRoomId.Length);
+        offset += exitPlayerOrderRoomId.Length;
+
+        uint ExitPlayerOrderRoomId = BitConverter.ToUInt32(exitPlayerOrderRoomId);
+        UserExitRoom(ExitPlayerOrderRoomId);
+        P2P_ClientEnter(endPoint, roomUserBytes);
+        
+        OrderPlayerListByOrderInRoom();
+        roomScene.SetPanel(players);
     }
 
     private void P2P_ClientUserLoginInfo(IPEndPoint endPoint, byte[] data)
@@ -65,35 +85,55 @@ public class RoomData : MonoBehaviour
         {
             Array.Copy(data, i * dataSize, userData, 0, dataSize);
             DB_UserLoginInfo temp = DB_UserLoginInfoInfo.Deserialize(userData);
-            ConnectUserLoginInfo(i, temp);
+            ConnectUserLoginInfo(temp);
         }
-        roomScene.SetPanel(userInfos);
-    }
-    private void UserEnterRoom(int gameId, DB_RoomUserInfo userInfo)
-    {
-        if (!players.TryAdd(gameId, userInfo))
-        {
-            players[gameId] = userInfo;
-        }
+        
+        OrderPlayerListByOrderInRoom();
+        roomScene.SetPanel(players);
     }
 
-    private void ConnectUserLoginInfo(int index, DB_UserLoginInfo loginInfo)
+    private void OrderPlayerListByOrderInRoom()
     {
-        if (!userInfos.TryAdd(players[index], loginInfo))
-        {
-            userInfos[players[index]] = loginInfo;
-        }
+        List<RoomUserData> newList = players.OrderBy(t => t.roomUserInfo.OrderinRoom).ToList();
+        players.Clear();
+        players = newList;
     }
-    private void UserExitRoom(DB_RoomUserInfo userInfo)
+    private void UpdateOrAddRoomUserInfo(DB_RoomUserInfo userInfo)
     {
-        foreach (var player in players.Where(player => player.Value.Id == userInfo.Id))
+        foreach (var player in players)
         {
-            players.Remove(player.Key);
+            if (userInfo.Id == player.roomUserInfo.Id)
+            {
+                player.roomUserInfo = userInfo;
+                return;
+            }
+        }
+        UserEnterRoom(userInfo);
+    }
+    private void ConnectUserLoginInfo(DB_UserLoginInfo loginInfo)
+    {
+        foreach (var player in players)
+        {
+            if (loginInfo.Id == player.roomUserInfo.Id)
+            {
+                player.userLoginInfo = loginInfo;
+                return;
+            }
+        }
+        Debug.Assert(false);
+    }
+
+    // TODO: 이곳에서 플레이어 생성 및 삭제 진행.
+    private void UserEnterRoom(DB_RoomUserInfo userInfo)
+    {
+        players.Add(new RoomUserData(userInfo));
+    }
+    private void UserExitRoom(uint exitPlayerOrderRoomId)
+    {
+        foreach (var player in players.Where(player => player.roomUserInfo.OrderinRoom == exitPlayerOrderRoomId))
+        {
+            players.Remove(player);
             break;
         }
-    }
-    private void DisConnectUserLoginInfo(DB_RoomUserInfo roomUserInfo)
-    {
-        userInfos.Remove(roomUserInfo);
     }
 }

@@ -1,6 +1,8 @@
 ﻿using DYUtil;
+using GameLogicServer.Datas;
 using GameLogicServer.Datas.Database;
 using MySql.Data.MySqlClient;
+using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Tls;
 using System;
 using System.Diagnostics;
@@ -157,9 +159,31 @@ namespace GameLogicServer
                 return false;
             }
         }
-        public static bool HasRoomName(string roomName)
+        public static bool HasRoom(string roomName)
         {
             return HasData<DB_GameRoom>($"RoomName = \'{roomName}\'");
+        }
+        public static bool HasRoomUser(uint roomId)
+        {
+            return HasData<DB_RoomUserInfo>($"roomId = {roomId}");
+        }
+        public static void SetUserRoomNum(uint roomId)
+        {
+            List<DB_RoomUserInfo> roomClients = GetData<DB_RoomUserInfo>($"roomId = {roomId}");
+
+            Logger.Log("Setting", "User Room number", ConsoleColor.DarkMagenta);
+            for(int i = 0; i < roomClients.Count; ++i)
+            {
+                DB_RoomUserInfo userInfo = roomClients[i];
+                Logger.Log($"{i}", $"{userInfo.Id}", ConsoleColor.DarkMagenta);
+                userInfo.OrderinRoom = (uint)i;
+                UpdateRoomUserInfo(userInfo);
+            }
+            
+        }
+        public static void UpdateRoomUserInfo(DB_RoomUserInfo userInfo)
+        {
+            UpdateData<DB_RoomUserInfo>(userInfo, $"id = \'{userInfo.Id}\'");
         }
         public static List<DB_GameRoom> GetAllGameRoom()
         {
@@ -167,7 +191,7 @@ namespace GameLogicServer
         }
         public static DB_GameRoom GetGameRoom(string roomName)
         {
-            if (!HasRoomName(roomName))
+            if (!HasRoom(roomName))
             {
                 return null;
             }
@@ -411,6 +435,67 @@ namespace GameLogicServer
             }
             return true;
         }
+        private static bool UpdateData<T>(T table, string condition)
+        {
+            Debug.Assert(connection != null);
+            try
+            {
+                connection.Open();
+                string tableName = GetTableName<T>();
+                StringBuilder updateBuilder = new StringBuilder();
+                BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public;
+                foreach (var property in table.GetType().GetProperties(bindingFlags))
+                {
+                    var value = property.GetValue(table);
+                    if (value != null)
+                    {
+                        updateBuilder.Append(property.Name);
+                        updateBuilder.Append(" = ");
+
+                        switch (property.PropertyType.ToString())
+                        {
+                            case "System.DateTime":
+                                updateBuilder.Append("'");
+                                updateBuilder.Append(((DateTime)value).ToString("yyyy-MM-dd HH:mm:ss"));
+                                updateBuilder.Append("'");
+                                break;
+                            case "System.String":
+                                updateBuilder.Append("'");
+                                updateBuilder.Append(value.ToString());
+                                updateBuilder.Append("'");
+                                break;
+                            default:
+                                updateBuilder.Append(value.ToString());
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        updateBuilder.Append(property.Name);
+                        updateBuilder.Append(" = NULL");
+                    }
+                    updateBuilder.Append(", ");
+                }
+                // Remove the trailing ", "
+                updateBuilder.Length -= 2;
+                string sql = $"UPDATE {tableName} SET {updateBuilder.ToString()} WHERE {condition}";
+                Logger.Log("MySQL", sql);
+                MySqlCommand cmd = new MySqlCommand(sql, connection);
+                cmd.ExecuteNonQuery();
+                connection.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                return false;
+            }
+            finally
+            {
+                connection?.Close();
+            }
+            return true;
+        }
+
         private static void SelectData<T>(string condition)
         {
             Debug.Assert(connection != null);

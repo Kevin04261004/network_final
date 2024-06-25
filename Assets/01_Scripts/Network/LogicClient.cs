@@ -39,7 +39,7 @@ public class LogicClient : UDPClient<PacketDataInfo.EGameLogicPacketType>
          DB_GameRoom curGameRoom = CurrentGameRoomData.Instance.GameRoom;
          Debug.Assert(NetworkManager.Instance.GameLogicUDPClientSock != null);
          DB_RoomUserInfo roomUserInfo =
-             new DB_RoomUserInfo(curGameRoom.RoomId, UserGameData.Instance.GameData.Id, "clientIPEndPoint");
+             new DB_RoomUserInfo(curGameRoom.RoomId, UserGameData.Instance.GameData.Id, "clientIPEndPoint", false, 0, false);
          var data = DB_RoomUserInfoInfo.Serialize(roomUserInfo);
          var packetData =
              new PacketData<PacketDataInfo.EGameLogicPacketType>(PacketDataInfo.EGameLogicPacketType.Client_EnterRoom, data);
