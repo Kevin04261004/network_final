@@ -28,7 +28,7 @@ public class NetworkPlayer
         }
     }
     public string NickName => userLoginInfo.NickName.TrimEnd('\0');
-    public string Id => userLoginInfo.Id.TrimEnd('\0');
+    public string Id => roomUserInfo.Id.TrimEnd('\0');
     public uint OrderInRoom => roomUserInfo.OrderinRoom;
     public bool IsReady => roomUserInfo.IsReady;
     
@@ -122,7 +122,7 @@ public class RoomData : MonoBehaviour
     {
         foreach (var player in players)
         {
-            if (userInfo.Id == player.Id)
+            if (userInfo.Id.TrimEnd('\0') == player.Id)
             {
                 player.roomUserInfo = userInfo;
                 return;
@@ -134,7 +134,7 @@ public class RoomData : MonoBehaviour
     {
         foreach (var player in players)
         {
-            if (loginInfo.Id == player.Id)
+            if (loginInfo.Id.TrimEnd('\0') == player.Id)
             {
                 player.userLoginInfo = loginInfo;
                 return;
