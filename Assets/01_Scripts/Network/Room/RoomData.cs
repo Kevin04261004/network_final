@@ -40,6 +40,10 @@ public class NetworkPlayer
 };
 public class RoomData : MonoBehaviour
 {
+    private NetworkPlayerEnterRoom OnNetworkPlayerEnter;
+    private NetworkPlayerExitRoom OnNetworkPlayerExit;
+    public delegate void NetworkPlayerEnterRoom(NetworkPlayer networkPlayer);
+    public delegate void NetworkPlayerExitRoom(NetworkPlayer networkPlayer);
     public List<NetworkPlayer> players { get; set; } = new List<NetworkPlayer>();
     [SerializeField] private RoomScene roomScene;
     public void Awake()
@@ -146,13 +150,20 @@ public class RoomData : MonoBehaviour
     // TODO: 이곳에서 플레이어 생성 및 삭제 진행.
     private void UserEnterRoom(DB_RoomUserInfo userInfo)
     {
-        players.Add(new NetworkPlayer(userInfo));
+        NetworkPlayer player = new NetworkPlayer(userInfo);
+        players.Add(player);
+
+        Debug.Assert(OnNetworkPlayerEnter != null);
+        OnNetworkPlayerEnter(player);
     }
     private void UserExitRoom(uint exitPlayerOrderRoomId)
     {
         foreach (var player in players.Where(player => player.OrderInRoom == exitPlayerOrderRoomId))
         {
             players.Remove(player);
+            
+            Debug.Assert(OnNetworkPlayerExit != null);
+            OnNetworkPlayerExit(player);
             break;
         }
     }
