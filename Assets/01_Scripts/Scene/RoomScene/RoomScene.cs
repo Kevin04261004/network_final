@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using GameLogicServer.Datas.Database;
 using TMPro;
@@ -8,6 +9,18 @@ public class RoomScene : MonoBehaviour
     [SerializeField] private GameObject UserInfoGrid_Prefab;
     [SerializeField] private Transform Panel;
     [SerializeField] private TextMeshProUGUI playerCount;
+    private Canvas _canvas;
+
+    private void Awake()
+    {
+        TryGetComponent(out _canvas);
+    }
+
+    private void Update()
+    {
+        _canvas.enabled = SceneHandler.Instance.GameType == SceneHandler.EGameType.Room;
+    }
+
     public void SetPanel(List<NetworkPlayer> list)
     {
         RemoveAllGrid();

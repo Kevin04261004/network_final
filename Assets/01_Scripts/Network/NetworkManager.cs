@@ -38,7 +38,7 @@ public class NetworkManager : MonoBehaviour
                 Debug.Assert(GameLogicUDPClientSock != null);
                 Debug.Assert(GameLogicServerEndPoint != null);
                 GameLogicUDPClientSock.SendTo(packet, GameLogicServerEndPoint);
-                Debug.Log("Send GameLogic Packet");
+                Debug.Log("Sending GameLogic Packet");
                 break;
             case ESendServerType.Database:
                 Debug.Assert(DatabaseTcpClient != null, "DatabaseTcpClient is not initialized.");
@@ -55,6 +55,10 @@ public class NetworkManager : MonoBehaviour
 
     public async Task SendToServerAsync(ESendServerType serverType, byte[] packet)
     {
+        if (serverType != ESendServerType.Database)
+        {
+            return;
+        }
         await NetworkStream.WriteAsync(packet, 0, packet.Length);
         await NetworkStream.FlushAsync();
     }

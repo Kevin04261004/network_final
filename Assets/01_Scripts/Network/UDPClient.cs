@@ -30,6 +30,8 @@ namespace _01_Scripts.Network
                 NetworkManager.Instance.GameLogicUDPClientSock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                 IPAddress ipAddr = IPAddress.Parse(serverIP);
                 NetworkManager.Instance.GameLogicServerEndPoint = new IPEndPoint(ipAddr, PORT_NUM);
+                Debug.Assert(NetworkManager.Instance.GameLogicUDPClientSock != null);
+                Debug.Assert(NetworkManager.Instance.GameLogicServerEndPoint != null);
             }
             catch (Exception ex)
             {
@@ -37,7 +39,7 @@ namespace _01_Scripts.Network
                 throw;
             }
         }
-        protected abstract void ProcessData(IPEndPoint serverIPEndPoint, T packetType, byte[] buffer);
+        protected abstract void ProcessData(IPEndPoint serverIPEndPoint, Int16 packetType, byte[] buffer);
         private void ReceiveFromServer()
         {
             // Init();
@@ -49,7 +51,7 @@ namespace _01_Scripts.Network
             int partialSize = 0;
 
             Int16 packetSize = 0;
-            T packetType = (T)Enum.ToObject(typeof(T), 0);
+            Int16 packetType = 0;
 
             while (true)
             {
@@ -68,7 +70,7 @@ namespace _01_Scripts.Network
                     offset += PacketDataInfo.PacketSizeSize;
                     char packetID = BitConverter.ToChar(recvBuffer, offset);
                     offset += PacketDataInfo.PacketIDSize;
-                    packetType = (T)Enum.ToObject(typeof(T), BitConverter.ToInt16(recvBuffer, offset));
+                    packetType = BitConverter.ToInt16(recvBuffer, offset);
                     offset += PacketDataInfo.PacketTypeSize;
                     Array.Copy(recvBuffer, offset, partialBuffer, partialSize, recvByteSize);
                     partialSize = recvByteSize;
@@ -85,7 +87,14 @@ namespace _01_Scripts.Network
 
                     byte[] data = new byte[packetSize - PacketDataInfo.HeaderSize];
                     Array.Copy(partialBuffer, 0, data, 0, data.Length);
-                    ProcessData((IPEndPoint)remoteEndPoint, packetType, data);
+                    if (remoteEndPoint.Equals(NetworkManager.Instance.GameLogicServerEndPoint)) // ReceiveFromServer
+                    {
+                        ProcessData((IPEndPoint)remoteEndPoint, packetType, data);
+                    }
+                    else
+                    {
+                        RoomManager.Instance.ProcessData((IPEndPoint)remoteEndPoint, packetType, data);
+                    }
                 } 
             }
         }

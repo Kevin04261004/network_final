@@ -6,14 +6,23 @@ using UnityEngine.UI;
 
 public class SceneHandler : MonoBehaviour
 {
+    public enum EGameType
+    {
+        Start,
+        Title,
+        Room,
+        InGame,
+    }
     public static SceneHandler Instance { get; private set; }
     public readonly static string TitleScene = "TitleScene";
     public readonly static string RoomScene = "RoomScene";
+    public readonly static string RoomData = "RoomData";
     public readonly static string InGameScene = "InGameScene";
     public readonly static string ServerManagerScene = "ServerManagerScene";
     public Dictionary<string, LoadSceneMode> loadScenes = new Dictionary<string, LoadSceneMode>();
     public Image fadeImage;
     public float fadeDuration = 1.0f;
+    public EGameType GameType { get; private set; } = EGameType.Start;
     private void Awake()
     {
         Application.targetFrameRate = 60;
@@ -34,6 +43,7 @@ public class SceneHandler : MonoBehaviour
             return;
         }
         LoadScene(ServerManagerScene);
+        LoadScene(RoomData);
         LoadSceneWithFade(TitleScene);
     }
     
@@ -43,6 +53,7 @@ public class SceneHandler : MonoBehaviour
         loadScenes.Add(RoomScene, LoadSceneMode.Additive);
         loadScenes.Add(InGameScene, LoadSceneMode.Additive);
         loadScenes.Add(ServerManagerScene, LoadSceneMode.Additive);
+        loadScenes.Add(RoomData, LoadSceneMode.Additive);
     }
 
     public void LoadSceneWithFade(string sceneName)
@@ -79,12 +90,18 @@ public class SceneHandler : MonoBehaviour
 
     private IEnumerator LoadSceneRoutine(string sceneName, LoadSceneMode mode)
     {
+        if (sceneName == TitleScene)
+        {
+            GameType = EGameType.Title;
+        }
         if (sceneName == RoomScene)
         {
+            GameType = EGameType.Room;
             yield return SceneManager.UnloadSceneAsync(TitleScene);
         }
         else if (sceneName == InGameScene)
         {
+            GameType = EGameType.InGame;
             yield return SceneManager.UnloadSceneAsync(RoomScene);
         }
 

@@ -207,6 +207,7 @@ public class TitleScene : MonoBehaviour
         {
             _bufferingImage.MinusCount();
             CurrentGameRoomData.Instance.GameRoom = curGameRoom;
+            LogicClient.Instance.UDPConnectToRoom();
             SceneHandler.Instance.LoadScene(SceneHandler.RoomScene);
         });
         

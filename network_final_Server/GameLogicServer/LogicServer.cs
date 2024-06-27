@@ -37,6 +37,8 @@ namespace GameLogicServer
         {
             Logger.Log($"{endPoint.Address}", "Success Connect Server", ConsoleColor.Green);
             connectedClients.Add(endPoint);
+            var packet = new PacketData(PacketDataInfo.EGameLogicPacketType.Server_Temp);
+            Send(packet.ToPacket(), endPoint);
         }
         private void ClientDisConnected(IPEndPoint endPoint, byte[] data)
         {

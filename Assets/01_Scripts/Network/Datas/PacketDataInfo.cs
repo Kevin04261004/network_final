@@ -5,6 +5,7 @@ public static class PacketDataInfo
     {
         None = 0,
         Client_TryConnectToServer,
+        Server_Temp,
         Client_ExitGameLogic,
         Client_RequireCreateNetworkObject,
         Server_CreateNetworkObjectSuccess,
@@ -14,7 +15,6 @@ public static class PacketDataInfo
         Client_ExitRoom,
         Server_P2P_ClientUserLoginInfo
     }
-
     public enum EDataBasePacketType
     {
         None = 0,
@@ -35,6 +35,16 @@ public static class PacketDataInfo
         Server_ClientEnterRoomSuccess,
         Server_ClientEnterRoomFail,
         Client_ExitGameDB,
+    }
+    
+    public enum EP2PPacketType
+    {
+        None = 0,
+        PlayerID_TransformPosition,
+        PlayerID_TransformRotation,
+        PlayerID_TransformScale,
+        PlayerID_TransformPositionAndRotation,
+        
     }
 
     public static int PacketIDSize = sizeof(char);

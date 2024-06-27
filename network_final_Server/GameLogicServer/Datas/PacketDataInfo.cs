@@ -6,6 +6,7 @@
         {
             None = 0,
             Client_TryConnectToServer,
+            Server_Temp,
             Client_ExitGameLogic,
             Client_RequireCreateNetworkObject,
             Server_CreateNetworkObjectSuccess,

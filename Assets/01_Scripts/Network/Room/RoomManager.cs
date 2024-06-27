@@ -5,49 +5,25 @@ using System.Net;
 using GameLogicServer.Datas.Database;
 using UnityEngine;
 
-public class NetworkPlayer
+public class RoomManager : MonoBehaviour
 {
-    public DB_UserLoginInfo userLoginInfo { private get; set; }
-    public DB_RoomUserInfo roomUserInfo { private get; set; }
-    
-    public bool IsMine
-    {
-        get
-        {
-            DB_RoomUserInfoInfo.TryParseIPEndPoint((IPEndPoint)NetworkManager.Instance.GameLogicUDPClientSock.RemoteEndPoint, out string str);
-            return str == roomUserInfo.IPEndPoint;
-        }
-    }
-    public bool IsHost => roomUserInfo.IsHost;
-    public IPEndPoint IPEndPoint
-    {
-        get
-        {
-            DB_RoomUserInfoInfo.TryParseIPEndPoint(roomUserInfo.IPEndPoint, out IPEndPoint endPoint);
-            return endPoint;
-        }
-    }
-    public string NickName => userLoginInfo.NickName.TrimEnd('\0');
-    public string Id => roomUserInfo.Id.TrimEnd('\0');
-    public uint OrderInRoom => roomUserInfo.OrderinRoom;
-    public bool IsReady => roomUserInfo.IsReady;
-    
-    public NetworkPlayer(DB_RoomUserInfo roomUserInfo)
-    {
-        this.roomUserInfo = roomUserInfo;
-        this.userLoginInfo = null;
-    }
-};
-public class RoomData : MonoBehaviour
-{
-    private NetworkPlayerEnterRoom OnNetworkPlayerEnter;
-    private NetworkPlayerExitRoom OnNetworkPlayerExit;
+    public static RoomManager Instance { get; private set; }
+    public NetworkPlayerEnterRoom OnNetworkPlayerEnter { get; set; }
+    public NetworkPlayerExitRoom OnNetworkPlayerExit { get; set; }
     public delegate void NetworkPlayerEnterRoom(NetworkPlayer networkPlayer);
     public delegate void NetworkPlayerExitRoom(NetworkPlayer networkPlayer);
     public List<NetworkPlayer> players { get; set; } = new List<NetworkPlayer>();
     [SerializeField] private RoomScene roomScene;
     public void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
         GameLogicPacketHandler.Instance.SetHandler(PacketDataInfo.EGameLogicPacketType.Server_P2P_ClientEnter, P2P_ClientEnter);
         GameLogicPacketHandler.Instance.SetHandler(PacketDataInfo.EGameLogicPacketType.Server_P2P_ClientExit, P2P_ClientExit);
         GameLogicPacketHandler.Instance.SetHandler(PacketDataInfo.EGameLogicPacketType.Server_P2P_ClientUserLoginInfo, P2P_ClientUserLoginInfo);
@@ -124,37 +100,37 @@ public class RoomData : MonoBehaviour
     }
     private void UpdateOrAddRoomUserInfo(DB_RoomUserInfo userInfo)
     {
-        foreach (var player in players)
+        foreach (var player in players.Where(player => userInfo.Id.TrimEnd('\0') == player.Id))
         {
-            if (userInfo.Id.TrimEnd('\0') == player.Id)
-            {
-                player.roomUserInfo = userInfo;
-                return;
-            }
+            player.roomUserInfo = userInfo;
+            return;
         }
+
         UserEnterRoom(userInfo);
     }
-    private void ConnectUserLoginInfo(DB_UserLoginInfo loginInfo)
-    {
-        foreach (var player in players)
-        {
-            if (loginInfo.Id.TrimEnd('\0') == player.Id)
-            {
-                player.userLoginInfo = loginInfo;
-                return;
-            }
-        }
-        Debug.Assert(false);
-    }
-
     // TODO: 이곳에서 플레이어 생성 및 삭제 진행.
     private void UserEnterRoom(DB_RoomUserInfo userInfo)
     {
         NetworkPlayer player = new NetworkPlayer(userInfo);
         players.Add(player);
+    }
+    private void ConnectUserLoginInfo(DB_UserLoginInfo loginInfo)
+    {
+        foreach (var player in players.Where(player => loginInfo.Id.TrimEnd('\0') == player.Id))
+        {
+            /* first set info */
+            if (!player.IsUserLoginInfoConnected)
+            {
+                player.userLoginInfo = loginInfo;
+                Debug.Assert(OnNetworkPlayerEnter != null);
+                OnNetworkPlayerEnter(player);
+            }
+            /* reset info */
+            player.userLoginInfo = loginInfo;
+            return;
+        }
 
-        Debug.Assert(OnNetworkPlayerEnter != null);
-        OnNetworkPlayerEnter(player);
+        Debug.Assert(false);
     }
     private void UserExitRoom(uint exitPlayerOrderRoomId)
     {
@@ -166,5 +142,66 @@ public class RoomData : MonoBehaviour
             OnNetworkPlayerExit(player);
             break;
         }
+    }
+
+    /* P2P Send */
+    public enum ESendTo
+    {
+        Self,
+        AllClients,
+        AllClientsExceptSelf,
+    }
+    public void SendPacket(ESendTo sendTo, byte[] packet)
+    {
+        switch (sendTo)
+        {
+            case ESendTo.Self:
+                SendPacket(GetMyIPEndPoint(), packet);
+                break;
+            case ESendTo.AllClients:
+                foreach (var player in players)
+                {
+                    SendPacket(player.IPEndPoint, packet);
+                }
+                break;
+            case ESendTo.AllClientsExceptSelf:
+                foreach (var player in players.Where(player => !player.IsMine))
+                {
+                    SendPacket(player.IPEndPoint, packet);
+                }
+                break;
+            default:
+                Debug.Assert(false, "Add Case!!!");
+                break;
+        }
+    }
+
+    public IPEndPoint GetMyIPEndPoint()
+    {
+        IPEndPoint myIPEndPoint = null;
+        foreach (var player in players)
+        {
+            if (player.IsMine)
+            {
+                myIPEndPoint = player.IPEndPoint;
+            }
+        }
+
+        Debug.Assert(myIPEndPoint != null);
+        
+        return myIPEndPoint;
+    }
+    
+    private void SendPacket(IPEndPoint targetClient, byte[] packet)
+    {
+        Debug.Assert(NetworkManager.Instance.GameLogicUDPClientSock != null);
+        NetworkManager.Instance.GameLogicUDPClientSock.SendTo(packet, targetClient);
+    }
+
+    public void ProcessData(IPEndPoint serverIPEndPoint, Int16 packetType, byte[] buffer)
+    {
+        PacketDataInfo.EP2PPacketType type = (PacketDataInfo.EP2PPacketType)packetType;
+        
+        RoomPacketHandler.Instance.ProcessPacket(serverIPEndPoint, type, buffer);
     }
 }

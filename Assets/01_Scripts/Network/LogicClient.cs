@@ -1,23 +1,39 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Net;
 using _01_Scripts.Network;
 using UnityEngine;
 
 public class LogicClient : UDPClient<PacketDataInfo.EGameLogicPacketType>
 {
-    protected override void ProcessData(IPEndPoint serverIPEndPoint, PacketDataInfo.EGameLogicPacketType packetType, byte[] buffer)
+    public static LogicClient Instance { get; private set; }
+
+    protected override void Awake()
     {
-        Debug.Assert(packetType != PacketDataInfo.EGameLogicPacketType.None);
-        
-        GameLogicPacketHandler.Instance.ProcessPacket(serverIPEndPoint, packetType, buffer);
-    }
-    
-    private void Start()
-    {
-        UDPConnectToRoom();
+        base.Awake();
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        GameLogicPacketHandler.Instance.SetHandler(PacketDataInfo.EGameLogicPacketType.Server_Temp, Temp);
     }
 
-     protected override void OnApplicationQuit()
+    private void Temp(IPEndPoint endPoint, byte[] data)
+    {
+        ;
+    }
+    protected override void ProcessData(IPEndPoint serverIPEndPoint, Int16 packetType, byte[] buffer)
+    {
+        PacketDataInfo.EGameLogicPacketType type = (PacketDataInfo.EGameLogicPacketType)packetType;
+        Debug.Assert(type != PacketDataInfo.EGameLogicPacketType.None);
+        
+        GameLogicPacketHandler.Instance.ProcessPacket(serverIPEndPoint, type, buffer);
+    }
+    protected override void OnApplicationQuit()
      {
          ExitGame();
          CloseServer();
@@ -27,14 +43,9 @@ public class LogicClient : UDPClient<PacketDataInfo.EGameLogicPacketType>
          var packetData = new PacketData<PacketDataInfo.EGameLogicPacketType>(PacketDataInfo.EGameLogicPacketType.Client_TryConnectToServer);
          Debug.Log("[Client] Try Connect to UDP Server");
          NetworkManager.Instance.SendToServer(ESendServerType.GameLogic, packetData.ToPacket());
-
-         if (CurrentGameRoomData.Instance.GameRoom == null)
-         {
-             return;
-         }
      }
 
-     private void UDPConnectToRoom()
+     public void UDPConnectToRoom()
      {
          DB_GameRoom curGameRoom = CurrentGameRoomData.Instance.GameRoom;
          Debug.Assert(NetworkManager.Instance.GameLogicUDPClientSock != null);
