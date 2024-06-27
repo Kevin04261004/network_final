@@ -1,4 +1,5 @@
 using System;
+using GameLogicServer.Datas.Database;
 using UnityEngine;
 
 public class NetworkTransformSync : MonoBehaviour
@@ -24,18 +25,21 @@ public class NetworkTransformSync : MonoBehaviour
     }
     private byte[] GetTransformPositionAndRotationPacket()
     {
-        byte[] data = new byte[MyVector3Info.GetByteSize() * 2 + DB_RoomUserInfoInfo.ORDER_IN_ROOM_SIZE];
+        byte[] data = new byte[MyVector3Info.GetByteSize() * 2 + DB_UserLoginInfoInfo.NICKNAME_SIZE];
         byte[] posBytes = MyVector3Info.Serialize(transform.position);
         byte[] rotBytes = MyVector3Info.Serialize(transform.rotation);
-        byte[] orderInRoomBytes = BitConverter.GetBytes(NetworkPlayerData.OrderInRoom);
+        byte[] nickNameBytes = new byte[DB_UserLoginInfoInfo.NICKNAME_SIZE];
+        
+        
+        MyEncoder.Encode(NetworkPlayerData.NickName, nickNameBytes, 0, DB_UserLoginInfoInfo.NICKNAME_SIZE);
 
         int offset = 0;
         Array.Copy(posBytes, 0, data, offset, posBytes.Length);
         offset += posBytes.Length;
         Array.Copy(rotBytes, 0, data, offset, rotBytes.Length);
         offset += rotBytes.Length;
-        Array.Copy(orderInRoomBytes, 0, data, offset, orderInRoomBytes.Length);
-        offset += orderInRoomBytes.Length;
+        Array.Copy(nickNameBytes, 0, data, offset, nickNameBytes.Length);
+        offset += nickNameBytes.Length;
             
         var packetData =
             new PacketData<PacketDataInfo.EP2PPacketType>(PacketDataInfo.EP2PPacketType.PlayerID_TransformPositionAndRotation, data);
