@@ -55,8 +55,24 @@ namespace _01_Scripts.Network
 
             while (true)
             {
+                if (NetworkManager.Instance.GameLogicUDPClientSock == null)
+                {
+                    Init();
+                    ConnectToServer();
+                }
+
                 EndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
-                int recvByteSize = NetworkManager.Instance.GameLogicUDPClientSock.ReceiveFrom(recvBuffer, ref remoteEndPoint);
+                int recvByteSize = 0;
+                try
+                {
+                    recvByteSize = NetworkManager.Instance.GameLogicUDPClientSock.ReceiveFrom(recvBuffer, ref remoteEndPoint);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    
+                    continue;
+                }
 
                 if (partialSize == 0)
                 {

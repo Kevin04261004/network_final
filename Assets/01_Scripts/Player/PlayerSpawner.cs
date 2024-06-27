@@ -34,8 +34,11 @@ public class PlayerSpawner : MonoBehaviour
     }
     private void DeletePlayer(NetworkPlayer networkPlayer)
     {
-        Destroy(SpawnedPlayer[networkPlayer.NickName.TrimEnd('\0')].gameObject);
-        SpawnedPlayer.Remove(networkPlayer.NickName.TrimEnd('\0'));
+        MainThreadWorker.Instance.EnqueueJob(() =>
+        {
+            Destroy(SpawnedPlayer[networkPlayer.NickName.TrimEnd('\0')].gameObject);
+            SpawnedPlayer.Remove(networkPlayer.NickName.TrimEnd('\0')); 
+        });
     }
 
     #region Delegate Functions
