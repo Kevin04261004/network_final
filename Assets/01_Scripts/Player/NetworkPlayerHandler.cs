@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(PlayerInputHandler),typeof(PlayerMovement))]
 public class NetworkPlayerHandler : MonoBehaviour
@@ -12,13 +13,18 @@ public class NetworkPlayerHandler : MonoBehaviour
     private PlayerInput _playerInput;
     /* Others */
     private NetworkTransformSync _transformSync;
+    private NetworkAnimationSync _animationSync;
+
     [SerializeField] private GameObject _aimCamera;
+    [SerializeField] private Transform _panty;
     public NetworkPlayer NetworkPlayerData
     {
         set
         {
             IsMine = value.IsMine;
             _transformSync.NetworkPlayerData = value;
+            _animationSync.NetworkPlayerData = value;
+            // _panty.GetComponent<SkinnedMeshRenderer>().material.color = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
         }
     }
     public bool IsMine
@@ -37,6 +43,8 @@ public class NetworkPlayerHandler : MonoBehaviour
                 _playerMovement.enabled = false;
                 _playerInput.enabled = false;
             }
+            _transformSync.enabled = true;
+            _animationSync.enabled = true;
             _aimCamera.SetActive(value);
         }
     }
@@ -46,15 +54,25 @@ public class NetworkPlayerHandler : MonoBehaviour
         TryGetComponent(out _playerInput);
         TryGetComponent(out _playerMovement);
         TryGetComponent(out _transformSync);
+        TryGetComponent(out _animationSync);
     }
     public void SetPosAndRot(Vector3 pos, Quaternion rot)
     {
-        // TODO: NetworkTransformmSync를 사용하여 자연스러운 보간 구현하기.
+        // TODO: NetworkTransformSync를 사용하여 자연스러운 보간 구현하기.
         MainThreadWorker.Instance.EnqueueJob(() =>
         {
-            transform.position = pos;
-            transform.rotation = rot; 
+            _transformSync.targetPosition = pos;
+            _transformSync.targetRotation = rot;
+            _transformSync.interpolationStartTime = Time.time;
         });
     }
-    
+
+    public void SetAnimation(bool moveKey, bool shiftKey)
+    {
+        MainThreadWorker.Instance.EnqueueJob(() =>
+        {
+            _animationSync.MoveKeyDown = moveKey;
+            _animationSync.ShiftKeyDown = shiftKey;
+        });
+    }
 }

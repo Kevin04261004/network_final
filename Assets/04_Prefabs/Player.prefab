@@ -2104,6 +2104,7 @@ GameObject:
   - component: {fileID: 2452029156663786894}
   - component: {fileID: 9080386521445242398}
   - component: {fileID: 3802327924167884907}
+  - component: {fileID: 2057098371072052596}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -2191,7 +2192,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2783665047420098096}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e3a972c141892ad41a29a93e8558d8bd, type: 3}
   m_Name: 
@@ -2208,7 +2209,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2783665047420098096}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfa3bf374b08d944c80755eb46ca4375, type: 3}
   m_Name: 
@@ -2236,12 +2237,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2783665047420098096}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 99e54e5746301184eb76ac3f34af579d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _aimCamera: {fileID: 6253567636831651258}
+  _panty: {fileID: 7479296812613292657}
 --- !u!114 &3802327924167884907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2249,11 +2251,28 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2783665047420098096}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dd921f5476cb49c44888aca7f8f149cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animator: {fileID: 6444694088400044555}
+  _playerStat: {fileID: 11400000, guid: 7fb7b3a19dfe7754db36515260a3c048, type: 2}
+  _sendPacketPerSec: 6
+--- !u!114 &2057098371072052596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2783665047420098096}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21be16feb4044e44c91cfecb5673480a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animator: {fileID: 6444694088400044555}
+  _playerStat: {fileID: 11400000, guid: 7fb7b3a19dfe7754db36515260a3c048, type: 2}
   _sendPacketPerSec: 6
 --- !u!1 &2840015478840508594
 GameObject:
@@ -5982,7 +6001,7 @@ SkinnedMeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 0
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 95fcf9331ca635c459a201f2c56f44dc, type: 2}

@@ -40,10 +40,11 @@ public static class PacketDataInfo
     public enum EP2PPacketType
     {
         None = 0,
-        PlayerID_TransformPosition,
-        PlayerID_TransformRotation,
-        PlayerID_TransformScale,
-        PlayerID_TransformPositionAndRotation,
+        PlayerNickName_TransformPosition,
+        PlayerNickName_TransformRotation,
+        PlayerNickName_TransformScale,
+        PlayerNickName_TransformPositionAndRotation,
+        PlayerNickName_KeyInput,
         
     }
 

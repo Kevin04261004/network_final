@@ -15,7 +15,8 @@ public class PlayerSpawner : MonoBehaviour
         RoomManager.Instance.OnNetworkPlayerEnter += SpawnPlayer;
         RoomManager.Instance.OnNetworkPlayerExit += DeletePlayer;
         
-        RoomPacketHandler.Instance.SetHandler(PacketDataInfo.EP2PPacketType.PlayerID_TransformPositionAndRotation, SetNetworkPlayerTransform);
+        RoomPacketHandler.Instance.SetHandler(PacketDataInfo.EP2PPacketType.PlayerNickName_TransformPositionAndRotation, SetNetworkPlayerTransform);
+        RoomPacketHandler.Instance.SetHandler(PacketDataInfo.EP2PPacketType.PlayerNickName_KeyInput, SetAnimationWithKeyInput);
     }
     private void OnDisable()
     {
@@ -26,10 +27,10 @@ public class PlayerSpawner : MonoBehaviour
     {
         MainThreadWorker.Instance.EnqueueJob(() =>
         {
-            GameObject spawnPlayer = Instantiate(Player_Prefab, transform.position, transform.rotation, transform);
+            GameObject spawnPlayer = Instantiate(Player_Prefab, transform.localPosition, transform.rotation, transform);
             NetworkPlayerHandler handler = spawnPlayer.GetComponent<NetworkPlayerHandler>();
+            SpawnedPlayer.Add(networkPlayer.NickName.TrimEnd('\0'), handler);
             handler.NetworkPlayerData = networkPlayer;
-            SpawnedPlayer.Add(networkPlayer.NickName.TrimEnd('\0'), handler); 
         });
     }
     private void DeletePlayer(NetworkPlayer networkPlayer)
@@ -37,7 +38,7 @@ public class PlayerSpawner : MonoBehaviour
         MainThreadWorker.Instance.EnqueueJob(() =>
         {
             Destroy(SpawnedPlayer[networkPlayer.NickName.TrimEnd('\0')].gameObject);
-            SpawnedPlayer.Remove(networkPlayer.NickName.TrimEnd('\0')); 
+            SpawnedPlayer.Remove(networkPlayer.NickName.TrimEnd('\0'));
         });
     }
 
@@ -60,6 +61,25 @@ public class PlayerSpawner : MonoBehaviour
         Quaternion rot = MyVector3Info.ToQuaternion(rotBytes);
         string nickName = Encoding.UTF8.GetString(nickNameBytes);
         SpawnedPlayer[nickName.TrimEnd('\0')].SetPosAndRot(pos, rot);
+    }
+    private void SetAnimationWithKeyInput(IPEndPoint endPoint, byte[] data)
+    {
+        byte[] wasd_Bytes = new byte[sizeof(bool)];
+        byte[] shift_Bytes = new byte[sizeof(bool)];
+        byte[] nickNameBytes = new byte[DB_UserLoginInfoInfo.NICKNAME_SIZE];
+
+        int offset = 0;
+        Array.Copy(data, offset, wasd_Bytes, 0, wasd_Bytes.Length);
+        offset += wasd_Bytes.Length;
+        Array.Copy(data, offset, shift_Bytes, 0, shift_Bytes.Length);
+        offset += shift_Bytes.Length;
+        Array.Copy(data, offset, nickNameBytes, 0, nickNameBytes.Length);
+        offset += nickNameBytes.Length;
+
+        bool wasd = BitConverter.ToBoolean(wasd_Bytes);
+        bool shift = BitConverter.ToBoolean(shift_Bytes);
+        string nickName = Encoding.UTF8.GetString(nickNameBytes);
+        SpawnedPlayer[nickName.TrimEnd('\0')].SetAnimation(wasd, shift);
     }
     #endregion
 }
