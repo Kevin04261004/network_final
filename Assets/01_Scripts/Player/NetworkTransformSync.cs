@@ -28,9 +28,8 @@ public class NetworkTransformSync : MonoBehaviour
                 transform.position = Vector3.Lerp(transform.position, targetPosition, fraction);
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, fraction);
                 float distance = Vector3.Distance(transform.position, targetPosition);
-                float targetSpeed = distance > 0.008f ? _playerStat.WalkSpeed : 0f;
+                float targetSpeed = ((fraction > 0.8f) || (distance < 0.001f)) ? 0f : _playerStat.WalkSpeed;
 
-                // Smoothly adjust speed towards targetSpeed using Mathf.Lerp
                 speed = Mathf.Lerp(_animator.GetFloat(Speed) * _playerStat.RunSpeed, targetSpeed, Time.deltaTime * SpeedChangeRate);
             }
             else

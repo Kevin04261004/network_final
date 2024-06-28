@@ -10,6 +10,17 @@ public class PlayerSpawner : MonoBehaviour
 {
     [SerializeField] private GameObject Player_Prefab;
     private Dictionary<string, NetworkPlayerHandler> SpawnedPlayer = new Dictionary<string, NetworkPlayerHandler>();
+
+    /* for Debug */
+    [ContextMenu("Print Players Dictionary")]
+    public void PrintDictionary()
+    {
+        foreach (var player in SpawnedPlayer)
+        {
+            Debug.Log($"{player.Key}");
+        }
+    }
+    
     private void Awake()
     {
         RoomManager.Instance.OnNetworkPlayerEnter += SpawnPlayer;
@@ -27,9 +38,10 @@ public class PlayerSpawner : MonoBehaviour
     {
         MainThreadWorker.Instance.EnqueueJob(() =>
         {
-            GameObject spawnPlayer = Instantiate(Player_Prefab, transform.localPosition, transform.rotation, transform);
+            GameObject spawnPlayer = Instantiate(Player_Prefab, transform.position, transform.rotation, transform);
             NetworkPlayerHandler handler = spawnPlayer.GetComponent<NetworkPlayerHandler>();
             SpawnedPlayer.Add(networkPlayer.NickName.TrimEnd('\0'), handler);
+            spawnPlayer.SetActive(true);
             handler.NetworkPlayerData = networkPlayer;
         });
     }

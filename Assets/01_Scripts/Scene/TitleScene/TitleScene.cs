@@ -179,7 +179,6 @@ public class TitleScene : MonoBehaviour
         MainThreadWorker.Instance.EnqueueJob(() =>
         {
             _bufferingImage.AddCount();
-            _bufferingImage.AddCount();
         });
     }
     private void CreateRoomFail(IPEndPoint endPoint, byte[] data)

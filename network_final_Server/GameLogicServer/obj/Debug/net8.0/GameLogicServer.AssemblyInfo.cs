@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GameLogicServer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+047181c4bcc68382abd31c7936d0520a66e5b75b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8a2f23b9218d090ceae5eac38f0b1e744386195d")]
 [assembly: System.Reflection.AssemblyProductAttribute("GameLogicServer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GameLogicServer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
